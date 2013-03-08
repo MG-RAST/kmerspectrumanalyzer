@@ -1,0 +1,53 @@
+palmoil: ~/git/counting-ecoli/image $ ../src/PFGE_analysis.py 
+/Users/wltrimbl/git/counting-ecoli/src/tifffile.py:1956: UserWarning: failed to import _tifffile.decodepackbits
+  warnings.warn("failed to import %s" % module_function)
+/Users/wltrimbl/git/counting-ecoli/src/tifffile.py:1956: UserWarning: failed to import _tifffile.decodelzw
+  warnings.warn("failed to import %s" % module_function)
+/Users/wltrimbl/git/counting-ecoli/src/tifffile.py:1956: UserWarning: failed to import _tifffile.unpackints
+  warnings.warn("failed to import %s" % module_function)
+
+Analysing ../image/gels/ICeuI_small.tif, plotting to ../image/analysis/ICeuI_small_123_*.svg
+
+Sample C_4_22: 40720, 103161, 120782
+Sample E_1_37: 37299, 117873, 138060
+Sample A_3_34: 40036, 115992, 139086
+
+Analysing ../image/gels/ICeuI_small.tif, plotting to ../image/analysis/ICeuI_small_456_*.svg
+
+Sample K12: 40378, 93239, 133099
+Sample B_4_28: 41747, 94779, 136862
+Sample D_4_27: 41062, 120097, 179801
+
+Analysing ../image/gels/ICeuI_medium.tif, plotting to ../image/analysis/ICeuI_medium_123456_*.svg
+
+Sample K12: 528111, 663270, 702109
+Sample B_4_28: 540151, 645404, 720752
+Sample E_1_37: 547142, 708712, 812800
+Sample A_3_34: 525392, 680359, 683855
+Sample C_4_22: 530441, 680359, 733957
+Sample D_4_27: 538598, 711042, 831831
+
+Analysing ../image/gels/ICeuI_large.tif, plotting to ../image/analysis/ICeuI_large_1_*.svg
+
+Sample E_1_37: 2905916
+
+Analysing ../image/gels/ICeuI_large.tif, plotting to ../image/analysis/ICeuI_large_23_*.svg
+
+Sample C_4_22: 2939489
+Sample A_3_34: 2684174
+
+Analysing ../image/gels/ICeuI_large.tif, plotting to ../image/analysis/ICeuI_large_456_*.svg
+
+Sample K12: 2792703
+Sample B_4_28: 2866877
+Sample D_4_27: 3000390
+
+
+A_3_34: 4868894
+B_4_28: 5046572
+C_4_22: 5148909
+D_4_27: 5422821
+E_1_37: 5267802
+K12: 4952909
+
+See ../image/analysis/ for analysis plots
