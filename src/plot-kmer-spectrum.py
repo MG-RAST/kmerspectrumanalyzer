@@ -12,18 +12,35 @@ def getcolor(a):
     l = a % len(colorlist)
     return(colorlist[l])
 
+
+def calcmedian(yd, y, num):
+    '''interpolates, returning value of yd corresponding to to num on y'''
+    try :
+        top = np.max(np.nonzero(y > num)) 
+    except:
+        top = None
+    try :
+        bottom = np.min(np.nonzero(y <= num)) 
+    except:
+        bottom = None
+    if top != None and bottom != None:
+        cutoff = yd[bottom] + ( ( num - y[bottom] ) / (y[top] - y[bottom]) * (yd[top] -yd[bottom])  )
+    elif top != None and bottom == None:
+        cutoff = ( ( num *1.0 ) / (y[top] ) * (yd[top])  )
+    elif top == None and bottom != None:
+        cutoff = yd[bottom]
+    else:  
+        cutoff = 0
+    if num <= 1: 
+        cutoff = np.ceil(cutoff - .001)
+    return(cutoff)
+
 def cleanlabel(label):
     '''Sanitizes graph labels of unintersting file extensions'''
-    if label.find(".preprocess.kmerhistogram.txt") > 0:
-        label = label[0:(label.find(".preprocess.kmerhistogram.txt"))]
-    if label.find(".histhist") > 0:
-        label = label[0:(label.find(".histhist"))]
-    if label.find(".fastq") > 0:
-        label = label[0:(label.find(".fastq"))]
-    if label.find(".txt") > 0:
-        label = label[0:(label.find(".txt"))]
-    if label.find(".csv") > 0:
-        label = label[0:(label.find(".csv"))]
+    suffixes = [".histhist", ".fastq", "txt", ".csv", ".037.kmerhistogram"]
+    for suffix in suffixes:
+        if label.find(suffix) > 0:
+            label = label[0:(label.find(suffix))]
     return label
 
 def getmgrkmerspectrum(accessionnumber):
@@ -36,18 +53,30 @@ def getmgrkmerspectrum(accessionnumber):
         some_url = some_url+"&auth=%s" % key
     sys.stderr.write("Sending request for "+some_url+"\n")
     time.sleep(1)
+# Ok, exception handling here is a mess.  So far we've seen GET errors, JSON["ERROR"], 
+# empty JSON objects, and invalid JSON objects
     try: 
         jsonobject = urllib.urlopen(some_url).read()
     except: 
         sys.stderr.write("Error retrieving %s"%some_url) 
-    j = json.loads(jsonobject)
+    try: 
+        j = json.loads(jsonobject)
+    except ValueError:
+        sys.stderr.write("Error parsing %s"%some_url) 
+        j = {} 
     try: 
         sys.stderr.write("Error with %s\nERROR : %s\n"%(some_url, j["ERROR"]))
         dataarray = None
     except KeyError:
-        spectrum = j["qc"]["kmer"]["15_mer"]["data"]
-        dataarray = np.array(spectrum, dtype="float")
-        dataarray = dataarray[:, 0:2]
+        try:
+            spectrum = j["qc"]["kmer"]["15_mer"]["data"]
+            dataarray = np.array(spectrum, dtype="float")
+            try:
+                dataarray = dataarray[:, 0:2]
+            except IndexError:
+                dataarray = np.atleast_2d(np.array( [1, 0] ) )
+        except KeyError:
+            dataarray = np.atleast_2d(np.array( [1, 0] ) )
     return dataarray
 
 def makegraphs(a, filename, option=6, label=None, n=0):
@@ -188,18 +217,15 @@ def printstats(a, filename, filehandle=None, n=0):
     j  = cn / T
     H = 10**(sum(- c1 * j * np.log(j) /np.log(10)))  # Entropy
     H2 = 1  /(sum( c1*j* j ))                         # Reyni entropy
-    M90 = yd[np.nonzero(y > 0.1)[0]][0]
-    M50 = yd[np.nonzero(y > 0.5)[0]][0]
-    M10 = yd[np.nonzero(y > 0.9)[0]][0]
-    M100 = yd.max()
-    # Fraction consumed are derived from yd vs y graph
-    F100 = 1- y[np.nonzero(yd < 100    )][0]
-    F10K = 1- y[np.nonzero(yd < 10000  )][0]
-    F1M  = 1- y[np.nonzero(yd < 1000000)][0]
-    M90 = yd[np.nonzero(y > 0.1)[0]][0]
-    M50 = yd[np.nonzero(y > 0.5)[0]][0]
-    M10 = yd[np.nonzero(y > 0.9)[0]][0]
-    M100 = yd.max()
+    w  = yo/yo.max()
+    wd = yd
+    M90 = calcmedian(wd, w, .9)    # 90th percentile by observations
+    M50 = calcmedian(wd, w, .5)    # 50th percentile by observations
+    M10 = calcmedian(wd, w, .1)    # 10th percentile by observations
+    M100 = calcmedian(wd, w, 1.0)  # should be the same as wd.max()
+    F100 = calcmedian(w, wd, 100)    # fraction of data in top 100 kmers
+    F10K = calcmedian(w, wd, 10000)  # in 10K kmers
+    F1M =  calcmedian(w, wd, 1000000) # in 1M kmers
     if filehandle == None:
         consensusfh = open(filename, "w")
     else :
@@ -230,7 +256,7 @@ def main(filename, option=6, label=None, n=0 ):
     if opts.filetype.upper() == "MGM":
         a = getmgrkmerspectrum(filename)
     elif opts.filetype == "file":
-        a = loadfile(filename)
+        a = np.atleast_2d(loadfile(filename))
     else: 
         raise ValueError("%s is invalid type (valid types are mgm and file)"%opts.filetype ) 
     if label == None:
