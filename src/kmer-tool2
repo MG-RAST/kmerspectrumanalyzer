@@ -139,7 +139,7 @@ def main(args):
   parser.add_option("-m", "--max", dest="max", default=10.0, type="float", help="Maximum size (in Gb) to count, files larger are split [default 10.0].")
   parser.add_option("-p", "--procs", dest="procs", default=4, type="int", help="Number of processors to use [default 4].")
   parser.add_option("-l", "--length", dest="length", default=None, type="int", help="Length of kmer to use.")
-  parser.add_option("-s", "--size", dest="size", default="1G", help="Size of hash to use, number of unique kmers [default '1G']")
+  parser.add_option("-s", "--size", dest="size", default="1000000000", help="Size of hash to use, number of unique kmers [default '1000000000']")
   parser.add_option("-c", "--count", dest="count", default=12, type="int", help="Count size in bits [default '12']")
   parser.add_option("-f", "--format", dest="format", default='histo', help="Output format, one of: %s [default 'histo']"%(", ".join(FORMATS)))
   parser.add_option("--histo_max", dest="histo_max", default=10000000, type="int", help="Max count value for histogram [default 10000000]")
