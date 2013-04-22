@@ -106,8 +106,10 @@ if __name__ == '__main__':
     plt.title(infile, fontsize=18)
     plt.xlabel(xlabel, fontsize=16)
     plt.ylabel(ylabel, fontsize=16)
-    plt.xlim([0, 1000])
-    plt.ylim([0, 1000])
+    if opts.m !="0" :
+        plt.xlim([0, 1000])
+    if opts.n !="0" :
+        plt.ylim([0, 1000])
     if (opts.interact):
         plt.show()
     plt.savefig(outfile+".al1.png")
