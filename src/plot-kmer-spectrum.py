@@ -8,7 +8,7 @@ from optparse import OptionParser
 import time
 
 def getcolor(a):
-    colorlist = ["b", "g", "r", "c", "y", "m", "k"] 
+    colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet", "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"] 
     l = a % len(colorlist)
     return(colorlist[l])
 
@@ -79,6 +79,15 @@ def getmgrkmerspectrum(accessionnumber):
             dataarray = np.atleast_2d(np.array( [1, 0] ) )
     return dataarray
 
+def sortbycp(a):
+    CP = np.concatenate( ( a, np.atleast_2d(a[:,0] * a[:,1]).T  ), axis=1 )
+#    S = np.flipud(np.sort(CP.view('float,float,float'), order=['f2'], axis=0).view(np.float))  # sorted by abundance
+    S = []
+    for c in np.argsort(CP[:, 2]):
+        S.append(a[c, :])
+    A = (np.flipud(np.array(S)))
+    return A
+
 def makegraphs(a, filename, option=6, label=None, n=0):
     '''Draw graphs, one at a time, and add them to the current plot'''
     (cn, c1, yd, yo, zd, zo, y) = calccumsum(a)
@@ -86,16 +95,18 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         tracelabel = cleanlabel(filename)
     else: 
         tracelabel = cleanlabel(label)
-    b = np.flipud(np.sort(a.view('float,float'), order=['f0'], axis=0).view(np.float))  # sorted by coverage
+    b = np.flipud(np.sort(a.view('float,float'), order=['f0'], axis=0).view(np.float))  # sorted by abundance/coverage
     c = np.flipud(np.sort(a.view('float,float'), order=['f1'], axis=0).view(np.float))  # sorted by size
+    d = sortbycp(a)
     (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo, b_y) = calccumsum(b)
-    (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo, c_y) = calccumsum(c)  
+    (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo, c_y) = calccumsum(c)
+    (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo, d_y) = calccumsum(d)
     x = np.arange(len(b[:, 0]))                  # rank
     color = getcolor(n)
     if option == 0:
         pA = plt.loglog(cn, c1, "-",  color = color, label=tracelabel)
         pA = plt.loglog(cn, c1, ".",  color = color)
-        plt.xlabel("kmer coverage")
+        plt.xlabel("kmer abundance")
         plt.ylabel("number of kmers")
         plt.legend(loc="upper right")
     if option == 0 or option == -1:
@@ -106,7 +117,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
     elif option == 1:
         pA = plt.loglog(cn, cn*c1, "-", color=color, label=tracelabel )
         pA = plt.loglog(cn, cn*c1, '.', color=color)
-        plt.xlabel("kmer coverage")
+        plt.xlabel("kmer abundance")
         plt.ylabel("kmers observed")
         plt.legend(loc="upper right")
         plt.grid(1)
@@ -115,30 +126,30 @@ def makegraphs(a, filename, option=6, label=None, n=0):
             sys.stderr.write("saving output table in %s.1.plot.csv\n" % filename) 
             np.savetxt("%s.1.plot.csv" % filename,  c, fmt = ['%d', '%d'] , delimiter="\t" )
     elif option == 2:
-        pA = plt.loglog(yo, cn, label=tracelabel )
+        pA = plt.loglog(yo, cn, color=color, label=tracelabel )
         plt.xlabel("observed kmers ")
-        plt.ylabel("kmer coverage")
+        plt.ylabel("kmer abundance")
         plt.legend(loc="lower left")
         plt.grid(1)
     elif option == 3: 
         y = yo/ yo.max() 
-        pA = plt.semilogy(y, cn, label=tracelabel )
-        pA = plt.semilogy(y, cn, '.')
+        pA = plt.semilogy(y, cn, color=color, label=tracelabel )
+        pA = plt.semilogy(y, cn, '.', color=color )
         plt.xlabel("fraction of observed sequence")
-        plt.ylabel("kmer coverage ")
+        plt.ylabel("kmer abundance ")
         plt.grid(1)
         plt.legend(loc="lower left")
-    elif option == 4:     # Fraction of distinct kmers vs coverage  NOT RECOMMENDED
+    elif option == 4:     # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
         y = yd/ yd.max() 
-        pA = plt.semilogy(y, cn, label=tracelabel )
-        pA = plt.semilogy(y, cn, '.')
+        pA = plt.semilogy(y, cn, color=color, label=tracelabel )
+        pA = plt.semilogy(y, cn, '.', color=color )
         plt.xlabel("fraction of distinct sequence")
-        plt.ylabel("kmer coverage")
+        plt.ylabel("kmer abundance")
         plt.legend(loc="upper right")
         plt.grid(1)
     elif option == 5: 
         z = zo/ zo.max() 
-        pA = plt.semilogx( yd, z , '-', color=color )
+        pA = plt.semilogx( yd, z, '-', color=color )
         pA = plt.semilogx( yd, z, '.', color=color, label=tracelabel )
         plt.xlabel("kmer rank")
         plt.ylabel("fraction of observed kmers")
@@ -151,7 +162,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         pA = plt.loglog( yd, cn, '-', color=color, label=tracelabel)
         pA = plt.loglog( yd, cn, '.', color=color )
         plt.xlabel("kmer rank")
-        plt.ylabel("kmer coverage ")
+        plt.ylabel("kmer abundance ")
         plt.xlim((1, 10**8))
         plt.ylim(1, 10**7)
         plt.grid(1)
@@ -173,7 +184,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.grid(1)
         plt.legend(loc="upper right") 
     elif option == 9:
-        pA = plt.plot( x, c_zo/max(c_zo) , '-', color=color, label=tracelabel)
+        pA = plt.plot( x, d_zo , '-', color=color, label=tracelabel)
         plt.xlabel("contig size rank ")
         plt.ylabel("frac data explained ")
         plt.grid(1)
@@ -201,11 +212,15 @@ def calccumsum(a):
     '''Calcaulates the cumulative-sum vectors from a 2d numpy array of [cov, num].  Note depends on upstream sort '''  
     cn = a[:, 0]                          #   Coverage
     c1 = a[:, 1]                          #   number of distinct kmers.
-    cp = cn * c1  # elementwise multiply     observed kmers by coverage
+    cn[np.nonzero(np.isnan(cn)) ] = 0
+    c1[np.nonzero(np.isnan(c1)) ] = 0
+    cn[np.nonzero(np.isinf(cn)) ] = 0
+    c1[np.nonzero(np.isinf(c1)) ] = 0
+    cp = cn * c1  # elementwise multiply     observed kmers by abundance
     yd = np.flipud(np.flipud(c1).cumsum()) # cumulative number of distinct kmers (top to bottom)
     yo = np.flipud(np.flipud(cp).cumsum()) # cumulative number of observed kmers (top to bottom)
     zd = np.cumsum(c1)                     # cumulative number of distinct kmers (bottom to top)
-    zo = np.cumsum(cp)                     # cumulative number of distinct kmers (bottom to top)
+    zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
     y = zo/ zo.max() 
     return(cn, c1, yd, yo, zd, zo, y)
 
