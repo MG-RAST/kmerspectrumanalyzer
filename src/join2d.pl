@@ -51,28 +51,31 @@ foreach my $file (@filenames)
 		{
 		chomp;
 		my @a = split(/$delim/);
-#		print "$a[$index]\t$a[$sumcol]\n";
-#	if($binomial) {my @w = split(/ /,$a[$index]); $key = "$w[0] $w[1]";}
-	 $key1 =$a[$index]; 
-	 $key2 =$a[$index2]; 
-	if($count==0) {$target = $a[$sumcol];} 
-	     else   {$target = 1; ;}
-#		if(!exists($hashref->{$key1}->{$key2})) 
-{$key1index{$key1} =1; $key2index{$key2} = 1;}
-
-if(exists($hashref->{$key1}->{$key2} )) 
-	{
-	if($count ==0) {print STDERR "Duplicate ($key1, $key2) already equal to  $hashref->{$key1}->{$key2} \n";}
-	         else {$hashref->{$key1}->{$key2} += $target;}
-	} 
-	else
-	{
-	$hashref->{$key1}->{$key2} = $target;
-	}
+		$key1 =$a[$index]; 
+		 $key2 =$a[$index2]; 
+		if($count==0) {$target = $a[$sumcol];} 
+		     else   {$target = 1; ;}
+		$key1index{$key1} =1; 
+		$key2index{$key2} = 1;
+		if ($key1[0] != '#')
+			{
+			if(exists($hashref->{$key1}->{$key2} )) 
+				{
+				if($count ==0) 
+					{print STDERR "Duplicate ($key1, $key2) already equal to  $hashref->{$key1}->{$key2} \n";}
+				else 
+					{$hashref->{$key1}->{$key2} += $target;}
+				} 
+			else
+				{
+				$hashref->{$key1}->{$key2} = $target;
+				}
+			}
 
 		}
 	$i++;
 	}
+
 # Print first (header) row:
 print "0\t";
 foreach my $key1 (sort {$a <=> $b} keys %key1index)
@@ -83,15 +86,13 @@ print "\n";
 
 # Print data table:
 foreach my $key2 (sort {$a <=> $b} keys %key2index) 
-{
-print "$key2\t";
-foreach my $key1 (sort {$a <=> $b} keys %key1index)
 	{
-# print "$key1\t";
-if(!(exists($hashref->{$key1}->{$key2}))) { $hashref->{$key1}->{$key2} = 0;}
- 
-print "$hashref->{$key1}->{$key2}\t";	
-
-	}
-print "\n";
+	print "$key2\t";
+	foreach my $key1 (sort {$a <=> $b} keys %key1index)
+		{
+		# print "$key1\t";
+		if(!(exists($hashref->{$key1}->{$key2}))) { $hashref->{$key1}->{$key2} = 0;}
+		print "$hashref->{$key1}->{$key2}\t";	
+		}
+	print "\n";
 	}
