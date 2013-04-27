@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 import sys, os
 from optparse import OptionParser
 
-def decimate(a, d):  # subroutine to reduce dimensionality
+def decimate(a, d): 
+    '''subroutine to reduce the dimensionality of a rectangular (2d histogram) matrix
+     parameters are the original matrix a and a number or tuple with the decimation factor'''
     try:
         d2 = d[1]
         d1 = d[0]
@@ -30,7 +32,8 @@ def decimate(a, d):  # subroutine to reduce dimensionality
     print "decimate return:", np.array(b).shape
     return(np.array(b))
 
-def decimate_withcovest(a, covest):  # subroutine to reduce dimensionality
+def decimate_withcovest(a, covest): 
+    '''attempt to discretize the 2d spectrum when the central abundance is known'''
     simple = np.zeros([10, 10])
     for i in range(10):
         for j in range(10):
@@ -100,8 +103,6 @@ if __name__ == '__main__':
     reducedata = 1 
     np.savetxt(infile+".all.csv", reduceddata)
     print "Shape: ", reduceddata.shape
-#    extent=[xax[0], xax[-1], yax[0], yax[-1]]
-#    plt.imshow(np.log(reduceddata.T), interpolation="nearest", aspect="auto", extent=extent, origin="lower")
     plt.imshow(np.log(reduceddata.T), interpolation="nearest", aspect="auto", origin="lower")
     plt.title(infile, fontsize=18)
     plt.xlabel(xlabel, fontsize=16)

@@ -6,14 +6,14 @@ from Bio import SeqIO
 
 def gccontent(sq):
   l = len(sq)
-  gc_count=0
+  gc_count = 0
   for ch in sq:
      if ch in ['G', 'C', 'g', 'c']:
        gc_count += 1
   try:
     r = float(float(gc_count) / l)
   except:
-    r=0
+    r = 0
   return r
 
 if __name__ == '__main__':
@@ -29,17 +29,17 @@ if __name__ == '__main__':
 
   in_fh  = open(opts.inp)
   if(opts.outp):
-    out_fh= open(opts.outp,"w")
+    out_fh = open(opts.outp,"w")
 
   sys.stderr.write("Processing %s ... "%(opts.inp, ))
-  pattern=re.compile("med21mer=(\d*)") 
-  records=SeqIO.parse(in_fh, "fastq")
+  pattern = re.compile("med21mer=(\d*)") 
+  records = SeqIO.parse(in_fh, "fastq")
   for seq_record1 in records:
-    seq_record2=records.next()
-    m1=int(pattern.search(seq_record1.description).group(1))
-    m2=int(pattern.search(seq_record2.description).group(1))
-    g1=gccontent(str(seq_record1.seq))
-    g2=gccontent(str(seq_record2.seq))
+    seq_record2 = records.next()
+    m1 = int(pattern.search(seq_record1.description).group(1))
+    m2 = int(pattern.search(seq_record2.description).group(1))
+    g1 = gccontent(str(seq_record1.seq))
+    g2 = gccontent(str(seq_record2.seq))
 #    print "%d\t%d\t%.2f\t%.2f"%(m1, m2,g1,g2)
   if 1:
     if m1 > 75 and m2 > 75 :

@@ -35,7 +35,7 @@ def gccontent(sq):
     return r
 
 def read_index(filename):
-    gian ={}
+    gian = {}
     sys.stderr.write("Processing table %s  ...\n"%(filename,))
     in_idx  = open(filename)
     for l in in_idx:
@@ -71,6 +71,8 @@ def kmerabundance(seq, index):
         average = float(sum(a)) / len(a)
     except IndexError:
         average = 0
+    except ZeroDivisionError:
+        average = 0
     return  (minimum, median, maximum, average)
 
 if __name__ == '__main__':
@@ -95,9 +97,9 @@ if __name__ == '__main__':
         in_two = open(opts.two)
     if not opts.cutoff:
         sys.stderr.write("Warning: missing cutoff paramter -l\n")
-        opts.cutoff=0
+        opts.cutoff = 0
     if opts.outstem == None: 
-        opts.outstem=opts.one
+        opts.outstem = opts.one
     in_one  = open(opts.one)
     in_idx  = open(opts.index)
     if opts.verbose or 1 : sys.stderr.write("Processing sequences %s and table %s  ...\n"%(opts.one, opts.index))
@@ -107,7 +109,7 @@ if __name__ == '__main__':
     giant = {}
     sys.stderr.write("Reading index...\n")
     indexlist = opts.index.split(",")
-    indexes=[]
+    indexes = []
     for i in range(len(indexlist)):
         giant = read_index(indexlist[i]) 
         indexes.append(giant)
@@ -131,13 +133,14 @@ if __name__ == '__main__':
         if (seq1.find("N") == -1 and seq2.find("N") == -1 ) :
             (min1, med1, max1, avg1) = kmerabundance(seq1, indexes[0])
             (min2, med2, max2, avg2) = kmerabundance(seq2, indexes[0])
-            seq_record1.description="%s med%dmer=%d max%dmer=%d min%dmer=%d"%(seq_record1.description, k, med1, k, max1, k, min1)
-            seq_record2.description="%s med%dmer=%d max%dmer=%d min%dmer=%d"%(seq_record2.description, k, med2, k, max2, k, min2)
-            if med1  > float(opts.cutoff) and med2 > float(opts.cutoff) or 1  :
+            seq_record1.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d" % (seq_record1.description, k, med1, k, max1, k, min1)
+            seq_record2.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d"%(seq_record2.description, k, med2, k, max2, k, min2)
+            if med1  > float(opts.cutoff) and med2 > float(opts.cutoff)  :
                 SeqIO.write([seq_record1, seq_record2], out_high, typ)
             else:
                 SeqIO.write([seq_record1, seq_record2], out_low1, typ)
   
     out_low1.close()
     out_high.close()
-    if opts.verbose: sys.stderr.write("Done. \n")
+    if opts.verbose: 
+        sys.stderr.write("Done. \n")

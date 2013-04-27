@@ -80,7 +80,7 @@ def getmgrkmerspectrum(accessionnumber):
     return dataarray
 
 def sortbycp(a):
-    CP = np.concatenate( ( a, np.atleast_2d(a[:,0] * a[:,1]).T  ), axis=1 )
+    CP = np.concatenate( ( a, np.atleast_2d(a[:, 0] * a[:, 1]).T  ), axis=1 )
 #    S = np.flipud(np.sort(CP.view('float,float,float'), order=['f2'], axis=0).view(np.float))  # sorted by abundance
     S = []
     for c in np.argsort(CP[:, 2]):
@@ -308,15 +308,20 @@ if __name__ == '__main__':
          default=None, help="file containing list of targets and labels")
     parser.add_option("-t", "--type", dest="filetype", 
          default="file", help="type for file list (file,mgm)")
+    parser.add_option("-w", "--writetype", dest="writetype", 
+         default="pdf", help="file type for output (pdf,png)")
     parser.add_option("-a", "--appendlogfile", dest="logfile", 
          default="kmers.log", help="logfile for summary statistics")
   
     (opts, args) = parser.parse_args()
     option = opts.option
+    writetype = opts.writetype
+    assert writetype == "png" or writetype == "pdf"
+
     if opts.outfile: 
-        imagefilename = "%s.%d.pdf" % (opts.outfile, option)
+        imagefilename = "%s.%d.%s" % (opts.outfile, option, writetype)
     else: 
-        imagefilename = "out.%d.pdf" % (option,)
+        imagefilename = "out.%d.%s" % (option, writetype)
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
     if opts.filetype == "mgm":  
         try:

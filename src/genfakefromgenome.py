@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 import sys, os
-import scipy
 from scipy import stats
 import numpy as np
 from optparse import OptionParser
 
 def count(x):
-   hash={}
+   '''Adds list of elements to a dictionary counting the occurrences of each'''
+   hash = {}
    for element in x:
       try: 
           hash[element] += 1
@@ -24,34 +24,32 @@ def nbinomrvs(poissonlambda, alpha, size=1):
     return       stats.nbinom.rvs( 1/alpha, 1 / ( 1 + poissonlambda * alpha )  , size=size) 
 
 if __name__ == '__main__':
-  usage  = "usage: %prog -i <input sequence file> <coverage>"
-  parser = OptionParser(usage)
-  parser.add_option("-i", "--input",  dest="infile", default=None, help="Input genome spectrum.")
-  parser.add_option("-s", "--shape",  dest="shape", default=.04, help="Shape parameter.")
+    usage  = "usage: %prog -i <input sequence file> <coverage>"
+    parser = OptionParser(usage)
+    parser.add_option("-i", "--input",  dest="infile", default=None, help="Input genome spectrum.")
+    parser.add_option("-s", "--shape",  dest="shape", default=.04, help="Shape parameter.")
+    
+    (opts, args) = parser.parse_args()
+    coverage = float(args[0])
+    filename = opts.infile
+    if not (filename and os.path.isfile(filename) ):
+        parser.error("Missing input file" )
+    sys.stderr.write("Generating fake data from %s\n"%filename)
+    shap = float(opts.shape)
+    m = []
+    for l in open(opts.infile):  
+        l = l.rstrip()
+        h = l.split("\t")
+        try :
+            n   = int(h[0]) 
+        except: 
+            h = l.split(" ")
+            n   = int(h[0]) 
+        a_n = int(h[1]) 
+        m.extend(nbinomrvs( coverage * n   , shap/n , size=a_n ) )
+    h = count(m)
+    
+    for i in sorted(h.keys()) :
+        print i, "\t", h[i]
   
-  (opts, args) = parser.parse_args()
-  coverage = float(args[0])
-  filename = opts.infile
-  if not (filename and os.path.isfile(filename) ):
-    parser.error("Missing input file" )
-  sys.stderr.write("Generating fake data from %s\n"%filename)
-  shap = float(opts.shape)
-  m=[]
-  for l in open(opts.infile):  
-     l=l.rstrip()
-     h=l.split("\t")
-     try :
-       n   = int(h[0]) 
-     except: 
-       h=l.split(" ")
-       n   = int(h[0]) 
-     a_n = int(h[1]) 
-     m.extend(nbinomrvs( coverage * n   , shap/n , size=a_n ) )
-#        total +  np.max([parameters[i+2], 0]) *  nbinompdf(xvalues, n * cov, shap/n)
   
-  h = count(m)
-  
-  for i in sorted(h.keys()) :
-     print i, "\t", h[i]
-
-
