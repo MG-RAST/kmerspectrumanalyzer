@@ -36,7 +36,7 @@ def calcmedian(yd, y, num):
 
 def cleanlabel(label):
     '''Sanitizes graph labels of unintersting file extensions'''
-    suffixes = [".histhist", ".fastq", "_info_contigstats.txt", ".txt", ".csv", ".037.kmerhistogram"]
+    suffixes = [".histhist", ".fastq", "_info_contigstats.txt", ".stats.txt", ".txt", ".csv", ".037.kmerhistogram"]
     for suffix in suffixes:
         if label.find(suffix) > 0:
             label = label[0:(label.find(suffix))]
@@ -198,6 +198,36 @@ def makegraphs(a, filename, option=6, label=None, n=0):
     elif option == 12:
         pA = plt.plot( c_zd , c_zo , '.-', color=color, label=tracelabel)
         plt.xlabel("cumulative contig size")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 13:
+        pA = plt.plot( x , b_cn , '.-', color=color, label=tracelabel)
+        plt.xlabel("contig cov rank ")
+        plt.ylabel("kmer abundance")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 14:
+        pA = plt.plot( x , d_cn*d_c1 , '.-', color=color, label=tracelabel)
+        plt.xlabel("contig expl rank ")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 15:
+        pA = plt.plot( x , c_c1 , '.-', color=color, label=tracelabel)
+        plt.xlabel("contig size rank")
+        plt.ylabel("contig size")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 16:
+        pA = plt.plot( x , c_yd , '.-', color=color, label=tracelabel)
+        plt.xlabel("contig expl rank ")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 17:
+        pA = plt.plot( x , d_cn*d_c1 , '.-', color=color, label=tracelabel)
+        plt.xlabel("contig expl rank ")
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
         plt.legend(loc="upper right")
