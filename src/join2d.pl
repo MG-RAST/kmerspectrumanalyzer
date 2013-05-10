@@ -51,14 +51,14 @@ foreach my $file (@filenames)
 		{
 		chomp;
 		my @a = split(/$delim/);
-		$key1 =$a[$index]; 
-		 $key2 =$a[$index2]; 
+		$key1 = $a[$index]; 
+		$key2 = $a[$index2]; 
 		if($count==0) {$target = $a[$sumcol];} 
 		     else   {$target = 1; ;}
-		$key1index{$key1} =1; 
-		$key2index{$key2} = 1;
-		if ($key1[0] != '#')
+		if (substr($a[0], 0, 1) ne '#')
 			{
+			$key1index{$key1} = 1; 
+			$key2index{$key2} = 1;
 			if(exists($hashref->{$key1}->{$key2} )) 
 				{
 				if($count ==0) 
