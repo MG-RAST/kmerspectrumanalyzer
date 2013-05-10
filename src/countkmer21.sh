@@ -1,3 +1,4 @@
 #!/bin/bash
 filename=$1
-kmer-tool2  -t fastq -l 21 -f histo -i $1 -o $1.21 
+k=21
+kmer-tool2  -t fastq -l $k -f histo -i $filename -o $filename.${k}
