@@ -9,8 +9,6 @@ gunzip SRR0168??.fastq.gz
 zcat SRR0168??.fastq.gz  > SRR016860A.fastq
 wget ftp://ftp-trace.ncbi.nih.gov/genomes/Bacteria/Escherichia_coli_DH1_uid161951/NC_017625.fna
 
-# concatenate 
-cat SRR016858.fastq SRR016859.fastq SRR016860.fastq > SRR016860A.fastq
 # countkmer21.sh SRR016860.fastq  # out of memory on micro instance
 # countkmer15.sh SRR016860.fastq  # out of memory on micro instance
 

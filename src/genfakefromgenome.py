@@ -51,5 +51,3 @@ if __name__ == '__main__':
     
     for i in sorted(h.keys()) :
         print i, "\t", h[i]
-  
-  
