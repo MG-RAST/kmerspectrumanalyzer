@@ -134,7 +134,7 @@ if __name__ == '__main__':
             (min1, med1, max1, avg1) = kmerabundance(seq1, indexes[0])
             (min2, med2, max2, avg2) = kmerabundance(seq2, indexes[0])
             seq_record1.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d" % (seq_record1.description, k, med1, k, max1, k, min1)
-            seq_record2.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d"%(seq_record2.description, k, med2, k, max2, k, min2)
+            seq_record2.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d" % (seq_record2.description, k, med2, k, max2, k, min2)
             if med1  > float(opts.cutoff) and med2 > float(opts.cutoff)  :
                 SeqIO.write([seq_record1, seq_record2], out_high, typ)
             else:
