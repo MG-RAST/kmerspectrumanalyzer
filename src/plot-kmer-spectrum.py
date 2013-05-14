@@ -3,9 +3,11 @@
 
 import sys, os
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib as mpl
 from optparse import OptionParser
 import time
+mpl.use('Agg')
+import matplotlib.pyplot as plt
 
 def getcolor(index):
     colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet", "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"] 
@@ -348,6 +350,12 @@ if __name__ == '__main__':
     else: 
         imagefilename = "out.%d.%s" % (graphtype, writetype)
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
+    if not opts.interactive:
+        sys.stderr.write("Supressing X")
+        plt.ioff()    
+    else:
+        mpl.use('TkAgg')   # only invoke interactive backend if requested with -i 
+        import matplotlib.pyplot as plt
     if opts.filetype == "mgm":  
         try:
             key = os.environ["MGRKEY"]
