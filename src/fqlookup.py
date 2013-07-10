@@ -5,6 +5,8 @@ from optparse import OptionParser
 from Bio import SeqIO
 from string import maketrans
 
+CHOMPSIZE = 100
+
 def lesserkmer(s):
     '''returns the lesser of a kmer and its reverse complement'''
     t = revc(s)
@@ -35,7 +37,7 @@ def gccontent(sq):
     return r
 
 def read_index(filename):
-    gian ={}
+    gian = {}
     sys.stderr.write("Processing table %s  ...\n"%(filename,))
     in_idx  = open(filename)
     for l in in_idx:
@@ -45,11 +47,11 @@ def read_index(filename):
     return gian
 
 def kmerabundance(seq, index):
-    '''looks up kmer abundance of each kmer in sequence, returns summary statistics'''
+    '''looks up kmer abundance of each kmer in sequence, returns summary statistics; index is the kmer hash'''
     a = []
     for i in range(0, len(seq) - k):
         word = seq[i:i+k]
-        w = lesserkmer(word)
+        w = lesserkmer(str(word).upper())
         try:
             a.append(index[w])
         except KeyError:
@@ -81,9 +83,10 @@ if __name__ == '__main__':
     parser.add_option("-i", "--index",  dest="index", default=None, help="input index(es), comma delimited ")
     parser.add_option("-t", "--type",  dest="typ", default="fastq", help="input datatype (fastq, fasta)")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=True, help="Verbose [default off]")
+    parser.add_option("-c", "--contig", dest="contig", action="store_true", default=False, help="Process contig")
     (opts, args) = parser.parse_args()
     typ = opts.typ
-    if not opts.typ and opts.one[-1] == "a" or opts.one[-1] == "A":
+    if not opts.typ and opts.one[-1] == "a" or opts.one[-1] == "A" or opts.contig:
         typ = "fasta"
     if not (opts.one):
         parser.error("Missing input filename")
@@ -94,9 +97,10 @@ if __name__ == '__main__':
     in_one  = open(opts.one)
     sys.stderr.write("Reading index...\n")
     indexlist = opts.index.split(",")
-    indexes=[]
+    indexes = []
     for i in range(len(indexlist)):
-        giant = read_index(indexlist[i]) 
+        sys.sterr.write("adding index %d" % i)
+        giant = read_index(indexlist[i])    # this is the kmer hash
         indexes.append(giant)
     k = len(next(indexes[0].iterkeys()))
     sys.stderr.write("Done slurping... set k = %d\n" % (k,))
@@ -108,20 +112,34 @@ if __name__ == '__main__':
     else:
         records2 = records1
     n = 0
-  
-    for seq_record1 in records1:
-        n += 1
-        seq_record2 = records2.next()
-        seq1 = str(seq_record1.seq)
-        seq2 = str(seq_record2.seq)
-        decoration=""
-        if (seq1.find("N") == -1 and seq2.find("N") == -1 ) :
-            for indexno in range(len(indexlist)):
-                (min1, med1, max1, avg1) = kmerabundance(str(seq1)+"N"+str(seq2), indexes[indexno])
-#                sys.stdout.write("%d\t%d\n%d\t%d\n" % ( min1, med1, max1, avg1 ) )
-                decoration = decoration + " %d %d %d %.1f "%(  min1, med1, max1, avg1 )
-            seq_record1.description="%s %s"%(seq_record1.description, decoration)
-            seq_record2.description="%s"%(seq_record2.description, ) # decoration)
+    if not opts.contig: 
+        for seq_record1 in records1:
+            n += 1
+            seq_record2 = records2.next()
+            seq1 = str(seq_record1.seq)
+            seq2 = str(seq_record2.seq)
+            decoration = ""
+            if (seq1.find("N") == -1 and seq2.find("N") == -1 ) :
+                for indexno in range(len(indexlist)):
+                    (min1, med1, max1, avg1) = kmerabundance(str(seq1)+"N"+str(seq2), indexes[indexno])
+    #                sys.stdout.write("%d\t%d\n%d\t%d\n" % ( min1, med1, max1, avg1 ) )
+                    decoration = decoration + " %d %d %d %.1f " % (  min1, med1, max1, avg1 )
+                seq_record1.description = "%s %s" % (seq_record1.description, decoration)
+                seq_record2.description = "%s" % (seq_record2.description, ) # decoration)
+    
+                SeqIO.write([seq_record1, seq_record2], sys.stdout, typ)
+        if opts.verbose: sys.stderr.write("Done. \n")
+    else:
+        for seq_record in records1:
+            header = seq_record.description
+            for i in range(len(seq_record.seq) - CHOMPSIZE) :
+                for indexno in range(len(indexlist)):
+                    if indexno == 0:
+                        print "Scores.%s" % header,
+                    seq = seq_record.seq[i : i+CHOMPSIZE] 
+                    (min1, med1, max1, avg1) = kmerabundance(seq, indexes[indexno]) 
+                    print "%d %d %d %.1f" % (min1, med1, max1, avg1),
+                print
 
-            SeqIO.write([seq_record1, seq_record2], sys.stdout, typ)
-    if opts.verbose: sys.stderr.write("Done. \n")
+
+
