@@ -1,4 +1,5 @@
 #!/bin/bash
+
 sudo apt-get update
 sudo apt-get install -y git 
 git clone http://github.com/wltrimbl/kmerspectrumanalyzer.git   # The development versison

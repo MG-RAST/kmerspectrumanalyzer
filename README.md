@@ -13,7 +13,7 @@ Prerequisites
 
 License
     kmerspectrumanalyzer is under the BSD license; see LICENSE.
-    Distribution, modification and redicstribution, incorporation
+    Distribution, modification and redistribution, incorporation
     into other software, and pretty much everything else is allowed.
 
 Organization
