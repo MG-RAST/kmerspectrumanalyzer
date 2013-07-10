@@ -9,8 +9,6 @@ ln -s ../orig/SRR000333.fastq SRR000333.fastq
 ln -s ../orig/SRR016816.fastq SRR016816.fastq   # late
 ln -s ../orig/SRR402885.fastq SRR402885.fastq   # late
 
-
-
 cd ..
 
 cat orig/SRR036211_?.fastq > total/SRR036211B.fastq
