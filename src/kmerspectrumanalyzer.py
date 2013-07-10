@@ -109,6 +109,7 @@ def windowmask(xxx, yyy, covest, multipleorder):
     index = np.where( temp > 0  )
     returnx = xxx[index]
     returny = yyy[index]
+    assert len(returnx) > 0  # There is no data in range.   This is not going to work.
     print "windowmask: returnx size", len(returnx), "max", max(returnx), "min", min(returnx)
     return returnx, returny
 
@@ -131,6 +132,7 @@ def writedetails():
     print "sumerr\t%f" % sumscorefn(plsq)
 
 def plotfit():
+    '''Produce plot of fit'''
     partialx = x
     partialy = y * x
     partialm = x * fitfn(x, plsq, fittermsorder )
@@ -209,7 +211,7 @@ if __name__ == '__main__':
     lenpad = len(padp)
 #  guess method 1:  mean + total of the truncated distribution 
     z1 = padp[(LOWCUTOFF-1):]
-    guessx = sum(z1[LOWCUTOFF-1:]) / sum(paddedy1[LOWCUTOFF-1:])   
+    guessx = sum(padp[LOWCUTOFF-1:]) / sum(paddedy1[LOWCUTOFF-1:])   
     guessy = sum(paddedy1[LOWCUTOFF-1:]) 
     print "Guessing... cov=", guessx,  " size=", guessy
   
