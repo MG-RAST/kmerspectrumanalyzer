@@ -5,6 +5,8 @@ import sys, os
 from scipy import stats
 from scipy.optimize import leastsq
 from optparse import OptionParser
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 
 def pad(xvalues, yvalues):
