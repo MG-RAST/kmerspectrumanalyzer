@@ -347,8 +347,11 @@ if __name__ == '__main__':
 
     if opts.outfile: 
         imagefilename = "%s.%d.%s" % (opts.outfile, graphtype, writetype)
-    else: 
-        imagefilename = "out.%d.%s" % (graphtype, writetype)
+    elif opts.filelist: 
+        imagefilename = "%s.%d.%s" % (opts.filelist, graphtype, writetype)
+        sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
+    else : 
+        imagefilename = "%s.%d.%s" % (args[0], graphtype, writetype)
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
     if not opts.interactive:
         sys.stderr.write("Supressing X")
