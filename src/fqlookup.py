@@ -10,9 +10,9 @@ CHOMPSIZE = 100
 def lesserkmer(s):
     '''returns the lesser of a kmer and its reverse complement'''
     t = revc(s)
-    if t < s :
+    if t < s:
         return t
-    else :
+    else:
         return s
 
 def revc(s):
@@ -76,7 +76,7 @@ def kmerabundance(seq, index):
     return  (minimum, median, maximum, average)
 
 if __name__ == '__main__':
-    usage  = "usage: %prog -1 <file1> [-2 <file2>] -i <index> \n"
+    usage = "usage: \n"
     parser = OptionParser(usage)
     parser.add_option("-1", "--one",  dest="one", default=None, help="Input file 1")
     parser.add_option("-2", "--two",  dest="two", default=None, help="Input file 2 (interleaved if absent)")
@@ -94,7 +94,7 @@ if __name__ == '__main__':
         parser.error("Missing input file %s"% opts.one )
     if (opts.two and os.path.isfile(opts.two) ):
         in_two = open(opts.two)
-    in_one  = open(opts.one)
+    in_one = open(opts.one)
     sys.stderr.write("Reading index...\n")
     indexlist = opts.index.split(",")
     indexes = []
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     
                 SeqIO.write([seq_record1, seq_record2], sys.stdout, typ)
         if opts.verbose: sys.stderr.write("Done. \n")
-    else:
+    else:   # decorate contigs 
         for seq_record in records1:
             header = seq_record.description
             for i in range(len(seq_record.seq) - CHOMPSIZE) :
