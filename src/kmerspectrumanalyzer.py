@@ -158,7 +158,7 @@ def plotfit():
 
 
 if __name__ == '__main__':
-    USAGE  = "usage: %prog [options] <input table filename> "
+    USAGE  = "usage: kmerspectrumanalyzer.py [options] <input table filename> "
     PARSER = OptionParser(USAGE)
     PARSER.add_option("-q", "--likelihood",  dest="likelihood", 
          action="store_true", default=False, 
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     (OPTS, ARGS) = PARSER.parse_args()
     try:
         INFILE = ARGS[0]
-    except NameError:
+    except IndexError:
         PARSER.error("Missing table filename input argument \n%s\n"%USAGE)
     if not (INFILE and os.path.isfile(INFILE) ):
         PARSER.error("Missing input filename\n%s\n"%USAGE)

@@ -319,7 +319,8 @@ def main(filename, opt=6, label=None, n=0 ):
     return n  
 
 if __name__ == '__main__':
-    usage  = "usage: %prog [options] <datafile> [<datafile2> <datafile3...]"
+    usage  = '''usage: plot-kmer-spectrum.py [options] <datafile> [<datafile2> <datafile3>...] 
+       plot-kmer-spectrum.py [options] -l <list of targets, labels> '''
     parser = OptionParser(usage)
     parser.add_option("-d", "--dump",   dest="dump",   action="store_true", 
          default=False, help="dump table with outputs ")
@@ -343,18 +344,20 @@ if __name__ == '__main__':
     (opts, args) = parser.parse_args()
     graphtype = opts.option
     writetype = opts.writetype
+    if len(args) == 0 and not opts.filelist:
+         print "Missing input file argument!"
+         sys.exit(usage)
     assert writetype == "png" or writetype == "pdf"
 
     if opts.outfile: 
         imagefilename = "%s.%d.%s" % (opts.outfile, graphtype, writetype)
     elif opts.filelist: 
         imagefilename = "%s.%d.%s" % (opts.filelist, graphtype, writetype)
-        sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
     else : 
         imagefilename = "%s.%d.%s" % (args[0], graphtype, writetype)
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
     if not opts.interactive:
-        sys.stderr.write("Supressing X")
+        sys.stderr.write("Supressing X\n")
         plt.ioff()    
     else:
         mpl.use('TkAgg')   # only invoke interactive backend if requested with -i 
