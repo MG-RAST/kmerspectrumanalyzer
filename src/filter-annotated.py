@@ -3,7 +3,6 @@
 import sys, os, re
 from optparse import OptionParser
 from Bio import SeqIO
-#import random
 
 def gccontent(sq):
     '''function returns gc content of sequence'''
@@ -43,11 +42,11 @@ if __name__ == '__main__':
         g1 = gccontent(str(seq_record1.seq))
         g2 = gccontent(str(seq_record2.seq))
   #    print "%d\t%d\t%.2f\t%.2f"%(m1, m2,g1,g2)
-    if 1:
-        if m1 > 75 and m2 > 75 :
-            SeqIO.write([seq_record1, seq_record2], sys.stdout , "fastq")
-        else:
-            if opts.outp:
-              SeqIO.write([seq_record1, seq_record2], out_fh , "fastq")
+        if 1:
+            if m1 > 75 and m2 > 75 :
+                SeqIO.write([seq_record1, seq_record2], sys.stdout , "fastq")
+            else:
+                if opts.outp:
+                    SeqIO.write([seq_record1, seq_record2], out_fh , "fastq")
     if opts.verbose: 
         sys.stderr.write("Done. \n")

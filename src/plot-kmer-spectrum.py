@@ -345,8 +345,8 @@ if __name__ == '__main__':
     graphtype = opts.option
     writetype = opts.writetype
     if len(args) == 0 and not opts.filelist:
-         print "Missing input file argument!"
-         sys.exit(usage)
+        print "Missing input file argument!"
+        sys.exit(usage)
     assert writetype == "png" or writetype == "pdf"
 
     if opts.outfile: 

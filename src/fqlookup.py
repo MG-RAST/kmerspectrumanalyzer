@@ -99,7 +99,7 @@ if __name__ == '__main__':
     indexlist = opts.index.split(",")
     indexes = []
     for i in range(len(indexlist)):
-        sys.sterr.write("adding index %d" % i)
+        sys.stderr.write("adding index %d" % i)
         giant = read_index(indexlist[i])    # this is the kmer hash
         indexes.append(giant)
     k = len(next(indexes[0].iterkeys()))

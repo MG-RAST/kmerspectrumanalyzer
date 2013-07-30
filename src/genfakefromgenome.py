@@ -6,14 +6,14 @@ import numpy as np
 from optparse import OptionParser
 
 def count(x):
-   '''Adds list of elements to a dictionary counting the occurrences of each'''
-   hash = {}
-   for element in x:
-      try: 
-          hash[element] += 1
-      except KeyError:
-          hash[element] = 1
-   return hash
+    '''Adds list of elements to a dictionary counting the occurrences of each'''
+    countdict = {}
+    for element in x:
+        try: 
+            countdict[element] += 1
+        except KeyError:
+            countdict[element] = 1
+    return countdict
 
 def nbinompdf(xvalues, poissonlambda, alpha):
     '''Negative binomial with lambda, alpha parameterization.'''
