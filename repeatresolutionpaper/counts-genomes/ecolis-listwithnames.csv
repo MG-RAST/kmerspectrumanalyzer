@@ -1,0 +1,27 @@
+gi	Refseq accession	Name			
+49175990	NC_000913.2	EC str. K-12 substr. MG1655 chromosome			
+26245917	NC_004431.1	EC CFT073 chromosome			
+388476123	NC_007779.1	EC str. K-12 substr. W3110 	 SRR306102 with mod		
+110640213	NC_008253.1	EC 536			
+157159467	NC_009800.1	EC HS			
+170018061	NC_010468.1	EC ATCC 8739 chromosome			
+170079663	NC_010473.1	EC str. K-12 substr. DH10B chromosome 	DRR001003 with plasmid		
+218552585	NC_011741.1	EC IAI1 chromosome			
+218687878	NC_011745.1	EC ED1a chromosome			
+218693476	NC_011748.1	EC 55989 chromosome			
+218698419	NC_011750.1	EC IAI39 chromosome			
+222154829	NC_011993.1	EC LF82			
+238899406	NC_012759.1	EC BW2952 chromosome			
+387823261	NC_012892.2	EC BL21(DE3)   	454:  SRR018054, SRR018053, SRR018055		
+387825439	NC_012971.2	EC BL21(DE3) chromosome 	 (JMB Genome sequences of Escherichia coli B strains REL606 and BL21(DE3)) 2009   Sanger clones		http://www.ncbi.nlm.nih.gov/pubmed/19786035
+386593590	NC_017625.1	EC DH1 chromosome JGI	454:  SRR016858 SRR016859 SRR016860 	Illumina:   SRR072776 SRR090721	
+387619774	NC_017638.1	EC DH1			http://www.plosone.org/article/info%3Adoi%2F10.1371%2Fjournal.pone.0019534
+253771435	NC_012947.1	EC 'BL21-Gold(DE3)pLysS AG' chromosome			
+254160123	NC_012967.1	EC B str. REL606 chromosome			
+386597751	NC_017628.1	EC IHE3034 chromosome			
+					
+386617516	NC_017644.1	EC NA114 chromosome			
+386627502	NC_017651.1	EC str. 'clone D i2' chromosome			
+386632422	NC_017652.1	EC str. 'clone D i14' chromosome			
+386703215	NC_017663.1	EC P12b chromosome			
+443615330	NC_020163.1	EC APEC O78			
