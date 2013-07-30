@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 # retrieve 454 DH1 sequencing run, in three parts
 wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR016/SRR016860/SRR016860.fastq.gz

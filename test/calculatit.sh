@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 cd total
 for i in *.fastq; do echo $i; countkmer21.sh $i; done 

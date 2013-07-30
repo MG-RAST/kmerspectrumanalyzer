@@ -1,3 +1,4 @@
+#!/bin/bash
 cd total
 
 ln -s ../orig/SRR036083.fastq SRR036083.fastq
@@ -6,8 +7,8 @@ ln -s ../orig/SRR387449.fastq SRR387449.fastq
 ln -s ../orig/SRR341577.fastq SRR341577.fastq
 ln -s ../orig/SRR006331.fastq SRR006331.fastq
 ln -s ../orig/SRR000333.fastq SRR000333.fastq 
-ln -s ../orig/SRR016816.fastq SRR016816.fastq   # late
-ln -s ../orig/SRR402885.fastq SRR402885.fastq   # late
+ln -s ../orig/SRR016816.fastq SRR016816.fastq  
+ln -s ../orig/SRR402885.fastq SRR402885.fastq 
 
 cd ..
 
@@ -25,7 +26,7 @@ cat orig/SRR769600_?.fastq > total/SRR769600B.fastq
 cat orig/SRR769601_?.fastq > total/SRR769601B.fastq
 cat orig/SRR769602_?.fastq > total/SRR769602B.fastq
 cat orig/SRR769603_?.fastq > total/SRR769603B.fastq
-cat orig/SRR488146_?.fastq > total/SRR488146B.fastq  # late
+cat orig/SRR488146_?.fastq > total/SRR488146B.fastq 
 
 cat orig/SRR03996[3456].fastq > total/SRR039966A.fastq 
 cat orig/SRR006330.fastq orig/SRR006332.fastq > total/SRR006332A.fastq
