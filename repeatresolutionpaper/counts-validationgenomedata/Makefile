@@ -5,7 +5,7 @@ FASTQFILES = $(wildcard *.fastq)
 HISTFILES = $(subst .fastq,.fastq.21,$(FASTQFILES))
 FITFILES  = $(subst .fastq,.fastq.21.fit.csv,$(FASTQFILES))
 
-.PRECIOUS: %.21
+.SECONDARY: %.21
 
 all: $(FITFILES)
         echo $(FITFILES)
