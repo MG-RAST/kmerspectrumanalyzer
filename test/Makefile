@@ -30,6 +30,6 @@ NC_017625.fna:
 	kmerdriver.sh $^
 
 # fit 454 data for genome size
-NC_017625.pdf: 
+NC_017625.6.pdf: 
 	plot-kmer-spectrum.py NC_017625.fna.21  SRR016860A.fastq.21 -o NC_017625
 
