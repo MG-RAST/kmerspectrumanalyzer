@@ -28,7 +28,10 @@ into other software, and pretty much everything else is allowed.
 
 ## Paper
 A paper describing interpreting the results of kmercounting has
-been submitted Mar 2013; the manuscript can be found in 
+been published August 2013 in BMC Genomics. 2013 14(1):537
+"Rapid quantification of sequence repeats to resolve the size, structure and contents of bacterial genomes."
+Williams D, Trimble WL, Shilts M, Meyer F, and Ochman H. PMID: 23924250
+The manuscript can be found in 
 repeatresolutionpaper/manuscript.
 
 ## Authors
