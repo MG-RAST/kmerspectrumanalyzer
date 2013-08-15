@@ -1,6 +1,7 @@
 #!/bin/bash
+# This script should be sufficient to install the dependencies on a blank EC2 node
 
-sudo apt-get update
+#sudo apt-get update
 sudo apt-get install -y git 
 git clone http://github.com/wltrimbl/kmerspectrumanalyzer.git   # The development versison
 # git clone http://github.com/MG-RAST/kmerspectrumanalyzer.git 

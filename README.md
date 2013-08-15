@@ -7,6 +7,12 @@ interpret the kmer spectrum (the histogram of abundances of
 oligonucleotide patterns of fixed length) of short-read 
 sequence datasets.  
 
+This tool counts the numbers of occurrences of long kmers
+in a short-read dataset, which must be provided as a single 
+fasta or fastq file, producing a small kmer repeat histogram.
+The kmerspectrumanalyzer and plot-kmer-spectrum scripts 
+prodvide visualizations and fits of this kmer spectrum. 
+
 ## Prerequisites
 This package depends on numpy, scipy, matplotlib, and 
 the University of Maryland's Jellyfish kmer counting library.
@@ -25,14 +31,14 @@ into other software, and pretty much everything else is allowed.
 *   src    -- contains scripts
 *   pfge_analysis  -- PFGE gel images (and analysis once generated)
 *   repeatresolutionpaper  -- contains data supporting the paper
+*   test -- example invokations and testing scripts
 
 ## Paper
 A paper describing interpreting the results of kmercounting has
 been published August 2013 in BMC Genomics. 2013 14(1):537
 "Rapid quantification of sequence repeats to resolve the size, structure and contents of bacterial genomes."
 Williams D, Trimble WL, Shilts M, Meyer F, and Ochman H. PMID: 23924250
-The manuscript can be found in 
-repeatresolutionpaper/manuscript.
+The manuscript can be found in repeatresolutionpaper/manuscript.
 
 ## Authors
 *   Will Trimble (Argonne National Laboratory)
