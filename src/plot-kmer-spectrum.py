@@ -241,6 +241,8 @@ def calccumsum(a):
     yo = np.flipud(np.flipud(cp).cumsum()) # cumulative number of observed kmers (top to bottom)
     zd = np.cumsum(c1)                     # cumulative number of distinct kmers (bottom to top)
     zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
+    if zo.max() == 0 :
+        raise Exception
     y = zo / zo.max() 
     return(cn, c1, yd, yo, zd, zo, y)
 
@@ -248,7 +250,6 @@ def printstats(a, filename, filehandle=None, n=0):
     '''Prints summary statistics to filename'''
     cn, c1, yd, yo, zd, zo, y = calccumsum(a)
     T  = zo.max()
-    y  = zo/ T
     j  = cn / T
     intermediate = - c1 * j * np.log(j) 
     intermediate[np.isnan(intermediate)] = 0     # allows calculation with 0 counts in some rows
@@ -303,8 +304,8 @@ def main(filename, opt=6, label=None, n=0 ):
     if a.shape[1] > 0 :
         a = (a[np.lexsort((a[:, 1], a[:, 0]))])
         sys.stderr.write("Making graphs for %s\n" % filename)
-        makegraphs(a, filename, opt, label, n=n )
         try: 
+            makegraphs(a, filename, opt, label, n=n )
             sys.stderr.write("Printing stats in logfile %s %d\n" % (opts.logfile, n))
             printstats(a, filename, filehandle=logfh, n=n )
             printstats(a, filename, filehandle=sys.stdout, n=n) 
