@@ -300,7 +300,7 @@ def main(filename, opt=6, label=None, n=0 ):
         raise ValueError("%s is invalid type (valid types are mgm and file)"%opts.filetype ) 
     if label == None:
         label = filename
-    if a != None:
+    if a != None and a.size != 0:
         a = (a[np.lexsort((a[:, 1], a[:, 0]))])
         sys.stderr.write("Making graphs for %s\n" % filename)
         makegraphs(a, filename, opt, label, n=n )
