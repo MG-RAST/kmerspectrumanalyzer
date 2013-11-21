@@ -254,8 +254,13 @@ def printstats(a, filename, filehandle=None, n=0):
     T  = zo.max()
     y  = zo/ T
     j  = cn / T
-    H = 10**(sum(- c1 * j * np.log(j) /np.log(10)))  # Entropy
-    H2 = 1  /(sum( c1*j* j ))                         # Reyni entropy
+    print np.sum(j==0)
+    intermediate = - c1 * j * np.log(j) 
+    intermediate[np.isnan(intermediate)] = 0     # allows calculation with 0 counts in some rows
+    H = np.exp(sum(intermediate))                # Entropy
+    if T == 0 :
+        H = np.NaN
+    H2 = 1 / sum( c1*j*j )                    # Reyni entropy
     w  = yo/yo.max()
     wd = yd
     M90 = calcmedian(wd, w, .9)    # 90th percentile by observations
