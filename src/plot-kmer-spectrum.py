@@ -47,7 +47,7 @@ def getmgrkmerspectrum(accessionnumber):
     import urllib
     import json
     assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format"%accessionnumber)
-    some_url = "http://api.metagenomics.anl.gov/api2.cgi/metagenome_statistics/%s?verbosity=full" % accessionnumber
+    some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
     if key != None:
         some_url = some_url+"&auth=%s" % key
     sys.stderr.write("Sending request for "+some_url+"\n")
@@ -68,7 +68,7 @@ def getmgrkmerspectrum(accessionnumber):
         dataarray = None
     except KeyError:
         try:
-            spectrum = j["qc"]["kmer"]["15_mer"]["data"]
+            spectrum = j["statistics"]["qc"]["kmer"]["15_mer"]["data"]
             dataarray = np.array(spectrum, dtype="float")
             try:
                 dataarray = dataarray[:, 0:2]
@@ -300,7 +300,7 @@ def main(filename, opt=6, label=None, n=0 ):
         raise ValueError("%s is invalid type (valid types are mgm and file)"%opts.filetype ) 
     if label == None:
         label = filename
-    if a != None:
+    if a != None and a.size != 0:
         a = (a[np.lexsort((a[:, 1], a[:, 0]))])
         sys.stderr.write("Making graphs for %s\n" % filename)
         makegraphs(a, filename, opt, label, n=n )
