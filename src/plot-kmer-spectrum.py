@@ -250,7 +250,6 @@ def printstats(a, filename, filehandle=None, n=0):
     T  = zo.max()
     y  = zo/ T
     j  = cn / T
-    print np.sum(j==0)
     intermediate = - c1 * j * np.log(j) 
     intermediate[np.isnan(intermediate)] = 0     # allows calculation with 0 counts in some rows
     H = np.exp(sum(intermediate))                # Entropy
