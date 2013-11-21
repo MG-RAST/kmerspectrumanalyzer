@@ -236,10 +236,6 @@ def calccumsum(a):
     '''Calcaulates the cumulative-sum vectors from a 2d numpy array of [cov, num].  Note depends on upstream sort '''  
     cn = a[:, 0]                          #   Coverage
     c1 = a[:, 1]                          #   number of distinct kmers.
-    cn[np.nonzero(np.isnan(cn)) ] = 0
-    c1[np.nonzero(np.isnan(c1)) ] = 0
-    cn[np.nonzero(np.isinf(cn)) ] = 0
-    c1[np.nonzero(np.isinf(c1)) ] = 0
     cp = cn * c1  # elementwise multiply     observed kmers by abundance
     yd = np.flipud(np.flipud(c1).cumsum()) # cumulative number of distinct kmers (top to bottom)
     yo = np.flipud(np.flipud(cp).cumsum()) # cumulative number of observed kmers (top to bottom)
