@@ -47,7 +47,7 @@ def getmgrkmerspectrum(accessionnumber):
     import urllib
     import json
     assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format"%accessionnumber)
-    some_url = "http://api.metagenomics.anl.gov/api2.cgi/metagenome_statistics/%s?verbosity=full" % accessionnumber
+    some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
     if key != None:
         some_url = some_url+"&auth=%s" % key
     sys.stderr.write("Sending request for "+some_url+"\n")
@@ -68,7 +68,7 @@ def getmgrkmerspectrum(accessionnumber):
         dataarray = None
     except KeyError:
         try:
-            spectrum = j["qc"]["kmer"]["15_mer"]["data"]
+            spectrum = j["statistics"]["qc"]["kmer"]["15_mer"]["data"]
             dataarray = np.array(spectrum, dtype="float")
             try:
                 dataarray = dataarray[:, 0:2]
@@ -236,15 +236,13 @@ def calccumsum(a):
     '''Calcaulates the cumulative-sum vectors from a 2d numpy array of [cov, num].  Note depends on upstream sort '''  
     cn = a[:, 0]                          #   Coverage
     c1 = a[:, 1]                          #   number of distinct kmers.
-    cn[np.nonzero(np.isnan(cn)) ] = 0
-    c1[np.nonzero(np.isnan(c1)) ] = 0
-    cn[np.nonzero(np.isinf(cn)) ] = 0
-    c1[np.nonzero(np.isinf(c1)) ] = 0
     cp = cn * c1  # elementwise multiply     observed kmers by abundance
     yd = np.flipud(np.flipud(c1).cumsum()) # cumulative number of distinct kmers (top to bottom)
     yo = np.flipud(np.flipud(cp).cumsum()) # cumulative number of observed kmers (top to bottom)
     zd = np.cumsum(c1)                     # cumulative number of distinct kmers (bottom to top)
     zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
+    if zo.max() == 0 :
+        raise Exception
     y = zo / zo.max() 
     return(cn, c1, yd, yo, zd, zo, y)
 
@@ -252,10 +250,13 @@ def printstats(a, filename, filehandle=None, n=0):
     '''Prints summary statistics to filename'''
     cn, c1, yd, yo, zd, zo, y = calccumsum(a)
     T  = zo.max()
-    y  = zo/ T
     j  = cn / T
-    H = 10**(sum(- c1 * j * np.log(j) /np.log(10)))  # Entropy
-    H2 = 1  /(sum( c1*j* j ))                         # Reyni entropy
+    intermediate = - c1 * j * np.log(j) 
+    intermediate[np.isnan(intermediate)] = 0     # allows calculation with 0 counts in some rows
+    H = np.exp(sum(intermediate))                # Entropy
+    if T == 0 :
+        H = np.NaN
+    H2 = 1 / sum( c1*j*j )                    # Reyni entropy
     w  = yo/yo.max()
     wd = yd
     M90 = calcmedian(wd, w, .9)    # 90th percentile by observations
@@ -300,11 +301,11 @@ def main(filename, opt=6, label=None, n=0 ):
         raise ValueError("%s is invalid type (valid types are mgm and file)"%opts.filetype ) 
     if label == None:
         label = filename
-    if a != None:
+    if a.shape[1] > 0 :
         a = (a[np.lexsort((a[:, 1], a[:, 0]))])
         sys.stderr.write("Making graphs for %s\n" % filename)
-        makegraphs(a, filename, opt, label, n=n )
         try: 
+            makegraphs(a, filename, opt, label, n=n )
             sys.stderr.write("Printing stats in logfile %s %d\n" % (opts.logfile, n))
             printstats(a, filename, filehandle=logfh, n=n )
             printstats(a, filename, filehandle=sys.stdout, n=n) 
