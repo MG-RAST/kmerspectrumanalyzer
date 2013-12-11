@@ -19,6 +19,7 @@ TYPES   = ['fasta', 'fastq', 'hash']
 FORMATS = ['hash', 'stats', 'dump', 'histo']
 
 def run_cmd(cmd):
+    '''Wrapper for Popen, returns stdout, stderr'''
     proc = subprocess.Popen( cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE )
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
@@ -26,21 +27,27 @@ def run_cmd(cmd):
     return stdout, stderr
 
 def random_str(size=6):
+    '''Retruns random alphanumeric sequence for temporary filenames.'''
     chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for x in range(size))
 
-def split_fasta(in_file, fhdl_set, max_size):
+def split_fasta(in_fh, file_base, max_size):
+    '''Splits fasta file into files of approx max_size bytes.'''
     curr_size = 0
     curr_buff = 0
     curr_file = 0
     strbuffer = ''
-    for line in open(in_file):
+    fhdl_name = [ "%s.%d" % (file_base, curr_file + 1) ] 
+    fhdl_set  = [ open(fhdl_name[curr_file], "w") ] 
+    for line in in_fh:
         head = fa_re.match(line)
         if head and ((curr_size + curr_buff) >= max_size):
             fhdl_set[curr_file].write(strbuffer)
             curr_size = 0
             curr_buff = 0
             curr_file += 1
+            fhdl_name.append( "%s.%d" % (file_base, curr_file + 1) ) 
+            fhdl_set.append( open(fhdl_name[curr_file], "w") ) 
             strbuffer = ''
         if head and (curr_buff > BUFFER):
             fhdl_set[curr_file].write(strbuffer)
@@ -51,19 +58,28 @@ def split_fasta(in_file, fhdl_set, max_size):
         curr_buff += len(line)
     if strbuffer != '':
         fhdl_set[curr_file].write(strbuffer)
+    for fh in fhdl_set:
+        fh.close()
+    return fhdl_name 
 
-def split_fastq(in_file, fhdl_set, max_size):
+def split_fastq(in_fh, file_base, max_size):
+    '''Splits fastq file into files of approx max_size bytes.'''
     curr_size = 0
     curr_buff = 0
     curr_file = 0
     strbuffer = ''
-    with open(in_file) as f:
+    fhdl_name = [ "%s.%d"%(file_base, curr_file + 1) ] 
+    fhdl_set  = [ open(fhdl_name[curr_file], "w") ] 
+    f = in_fh
+    if True:
         for lines in itertools.izip_longest(*[f]*4):
             if (curr_size + curr_buff) >= max_size:
                 fhdl_set[curr_file].write(strbuffer)
                 curr_size = 0
                 curr_buff = 0
                 curr_file += 1
+                fhdl_name.append( "%s.%d"%(file_base, curr_file + 1) ) 
+                fhdl_set.append( open(fhdl_name[curr_file], "w") ) 
                 strbuffer = ''
             if curr_buff > BUFFER:
                 fhdl_set[curr_file].write(strbuffer)
@@ -75,23 +91,23 @@ def split_fastq(in_file, fhdl_set, max_size):
             curr_buff += len(rec_str)
     if strbuffer != '':
         fhdl_set[curr_file].write(strbuffer)
+    for fh in fhdl_set:
+        fh.close()
+    return fhdl_name 
 
-def split_seq_file(seq_file, max_size, seq_type, tmpdir):
-    split_num = int(os.path.getsize(seq_file) / max_size) + 1
-    if split_num == 1:
-        return [seq_file]
+def split_seq_file(seq_fh, max_size, seq_type, tmpdir):
+    '''splits sequence file by calling split_fasta or split_fastq.
+    Returns list of filenames resulting from the split.'''
     file_base = os.path.join(tmpdir, "%s.%s"%(random_str(), seq_type))
-    file_set  = map(lambda x: "%s.%d"%(file_base, x+1), range(split_num))
-    fhdl_set  = map(lambda x: open(x, 'w'), file_set)
     if seq_type == 'fasta':
-        split_fasta(seq_file, fhdl_set, max_size)
+        file_set = split_fasta(seq_fh, file_base, max_size)
     elif seq_type == 'fastq':
-        split_fastq(seq_file, fhdl_set, max_size)
-    for h in fhdl_set:
-        h.close()
+        file_set = split_fastq(seq_fh, file_base,  max_size)
     return file_set
 
 def merge_hash_set(hash_set, tmpdir):
+    ''' Runs jellyfish merge on a list of hash files.  Returns a filename
+    containing the merged data.'''
     if len(hash_set) == 1:
         return hash_set[0]
     merge_file = os.path.join(tmpdir, random_str()+'.js')
@@ -132,7 +148,7 @@ def kmer_count(input, procs, length, size, count, tmpdir):
 def main(args):
     usage  = "usage: kmer-tool [options] -i <input file> -o <output file>"
     parser = argparse.ArgumentParser(description=usage)
-    parser.add_argument("-i", "--input", dest="input", default=None, type=str, help="Input file, sequence (fasta/fastq) or binary count hash.")
+    parser.add_argument("-i", "--input", dest="input", default="-", type=argparse.FileType("r"), help="Input file, sequence (fasta/fastq) or binary count hash.")
     parser.add_argument("-o", "--output", dest="output", default=None, type=argparse.FileType('w'), help="Output file.")
     parser.add_argument("-t", "--type", dest="type", default='fasta', help="Input file type, one of: %s [default 'fasta']"%(", ".join(TYPES)))
     parser.add_argument("-m", "--max", dest="max", default=10.0, type=float, help="Maximum size (in Gb) to count, files larger are split [default 10.0].")
@@ -148,8 +164,8 @@ def main(args):
     args = parser.parse_args()
     if args.output == None:
         parser.error("[error] missing output files")
-    if not (args.input and os.path.isfile(args.input) ):
-        parser.error("[error] missing input files")
+#    if not (args.input and os.path.isfile(args.input) ):
+#        parser.error("[error] missing input files")
     if not (args.type and (args.type in TYPES)):
         parser.error("[error] missing input type, use one of: %s"%(", ".join(TYPES)))
     if not (args.format and (args.format in FORMATS)):
@@ -172,7 +188,15 @@ def main(args):
     else:
         # check file size, split if too large
         max_size  = args.max * math.pow(1024, 3)
-        input_set = split_seq_file(args.input, max_size, args.type, args.tmpdir)
+        if args.input is sys.stdin:
+            input_set = split_seq_file(args.input, max_size, args.type, args.tmpdir)
+        else:
+            if  os.fstat(args.input.fileno()).st_size < max_size:   # If file is small enough, bypass splitting
+                args.input.close() 
+                input_set = [ args.input.name ]
+            else:
+                input_set = split_seq_file(args.input, max_size, args.type, args.tmpdir)
+            
         # get hash set
         hash_set = []
         for ifile in input_set:
