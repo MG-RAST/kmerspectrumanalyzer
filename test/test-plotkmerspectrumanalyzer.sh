@@ -1,4 +1,6 @@
 #!/bin/bash
+# Run plot-kmer-spectrum on very simple test cases
+
 rm kmers.log
 
 plot-kmer-spectrum.py -g -1  test0  # only one count, H = H2 = 1
