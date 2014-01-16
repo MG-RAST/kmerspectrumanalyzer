@@ -44,7 +44,7 @@ def cleanlabel(label):
 
 def getmgrkmerspectrum(accessionnumber):
     '''Retrieve kmer spectrum from MG-RAST'''
-    import urllib
+    import urllib2
     import json
     assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format"%accessionnumber)
     some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
@@ -55,11 +55,13 @@ def getmgrkmerspectrum(accessionnumber):
 # Ok, exception handling here is a mess.  So far we've seen GET errors, JSON["ERROR"], 
 # empty JSON objects, and invalid JSON objects
     try: 
-        jsonobject = urllib.urlopen(some_url).read()
-    except: 
+        opener = urllib2.urlopen(some_url)
+    except urllib2.HTTPError, e: 
         sys.stderr.write("Error retrieving %s"%some_url) 
+        sys.stderr.write("Error with HTTP request: %d %s\n%s" % (e.code, e.reason, e.read()))
+        return np.atleast_2d(np.array( [1, 0] ) )
     try: 
-        j = json.loads(jsonobject)
+        j = json.loads(opener.read())
     except ValueError:
         sys.stderr.write("Error parsing %s"%some_url) 
         j = {} 
@@ -242,7 +244,7 @@ def calccumsum(a):
     zd = np.cumsum(c1)                     # cumulative number of distinct kmers (bottom to top)
     zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
     if zo.max() == 0 :
-        raise Exception
+        raise Exception  # There should be data here
     y = zo / zo.max() 
     return(cn, c1, yd, yo, zd, zo, y)
 
