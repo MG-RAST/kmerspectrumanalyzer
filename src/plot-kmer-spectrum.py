@@ -285,13 +285,16 @@ def printstats(a, filename, filehandle=None, n=0):
         consensusfh.close()
 
 def loadfile(filename):
-    '''Loads file'''
+    '''Loads file, returns two-column ndarray or None'''
     try:
         if filename.find("stats.txt") >=0:  # velvet contig stats format
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
         else:
             matrix = np.loadtxt(filename)        # default bare-bones spectrum format
-        return matrix
+        if matrix.shape[0] == 0:                 # return None if the file is empty 
+            return None
+        else:
+            return np.atleast_2d(matrix)
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
@@ -303,9 +306,11 @@ def main(filename, opt=6, label=None, n=0 ):
     if opts.filetype.upper() == "MGM":
         a = getmgrkmerspectrum(filename)
     elif opts.filetype == "file":
-        a = np.atleast_2d(loadfile(filename))
+        a = loadfile(filename)
     else:
-        raise ValueError("%s is invalid type (valid types are mgm and file)"%opts.filetype )
+        raise ValueError("%s is invalid type (valid types are mgm and file)" % opts.filetype )
+    if a == None:   # Abort this trace--but try to graph the others
+        return n 
     if label == None:
         label = filename
     if a.shape[1] > 0 :
@@ -389,6 +394,7 @@ if __name__ == '__main__':
         for f in args :
             filen = f
             graphcount = main(filen, graphtype, n=graphcount)
+    assert graphcount > 0, "ERROR: unable to find any data to graph!"
     if graphtype != -1:
         sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
         plt.savefig(imagefilename)
