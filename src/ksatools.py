@@ -45,7 +45,8 @@ def cleanlabel(label):
 def getmgrkmerspectrum(accessionnumber, mgrkey=None):
     '''Retrieve kmer spectrum from MG-RAST'''
     import urllib2, json, time
-    assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format" % accessionnumber)
+    assert accessionnumber[0:3] == "mgm", sys.exit(
+        "Data error: field %s not in mgm......... accession number format" % accessionnumber)
     some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
     if mgrkey != None:
         some_url = some_url + "&auth=%s" % mgrkey
@@ -95,12 +96,12 @@ def calccumsum(a):
     cn = a[:, 0]                          #   Coverage
     c1 = a[:, 1]                          #   number of distinct kmers.
     cp = cn * c1  # elementwise multiply     observed kmers by abundance
-    yd = np.flipud(np.flipud(c1).cumsum()) # cumulative number of distinct kmers (top to bottom)
-    yo = np.flipud(np.flipud(cp).cumsum()) # cumulative number of observed kmers (top to bottom)
-    zd = np.cumsum(c1)                     # cumulative number of distinct kmers (bottom to top)
-    zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
+    yd = np.flipud(np.flipud(c1).cumsum()) # cumul number of distinct kmers (top to bottom)
+    yo = np.flipud(np.flipud(cp).cumsum()) # cumul number of observed kmers (top to bottom)
+    zd = np.cumsum(c1)                     # cumul number of distinct kmers (bottom to top)
+    zo = np.cumsum(cp)                     # cumul number of observed kmers (bottom to top)
     if zo.max() == 0:
-        raise Exception  # There should be data here
+        raise ValueError  # There should be data here
     return(cn, c1, yd, yo, zd, zo)
 
 def printstats(a, filename, filehandle=None, n=0):
@@ -129,7 +130,8 @@ def printstats(a, filename, filehandle=None, n=0):
     else:
         consensusfh = filehandle
     if filehandle == None or n == 0:
-        consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K\tF1M\tH\tH2\n")
+        consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
+             "\tF1M\tH\tH2\n")
     consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\n" %
                       (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2))
     if filehandle == None:
