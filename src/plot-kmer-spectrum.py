@@ -11,29 +11,29 @@ def getcolor(index):
     colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
             "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
     l = index % len(colorlist)
-    return(colorlist[l])
+    return colorlist[l]
 
 def calcmedian(yd, y, num):
     '''interpolates, returning value of yd corresponding to to num on y'''
-    try :
+    try:
         top = np.max(np.nonzero(y > num))
     except:
         top = None
-    try :
+    try:
         bottom = np.min(np.nonzero(y <= num))
     except:
         bottom = None
     if top != None and bottom != None:
-        cutoff = yd[bottom] + ( ( num - y[bottom] ) / (y[top] - y[bottom]) * (yd[top] -yd[bottom])  )
+        cutoff = yd[bottom] + (num - y[bottom]) / (y[top] - y[bottom]) * (yd[top] -yd[bottom])
     elif top != None and bottom == None:
-        cutoff = ( ( num *1.0 ) / (y[top] ) * (yd[top])  )
+        cutoff = ((num *1.0) / (y[top]) * (yd[top]))
     elif top == None and bottom != None:
         cutoff = yd[bottom]
     else:
         cutoff = 0
     if num <= 1:
         cutoff = np.ceil(cutoff - .001)
-    return(cutoff)
+    return cutoff
 
 def cleanlabel(label):
     '''Sanitizes graph labels of unintersting file extensions'''
@@ -61,7 +61,7 @@ def getmgrkmerspectrum(accessionnumber):
     except urllib2.HTTPError, e:
         sys.stderr.write("Error retrieving %s" % some_url)
         sys.stderr.write("Error with HTTP request: %d %s\n%s" % (e.code, e.reason, e.read()))
-        return np.atleast_2d(np.array( [1, 0] ) )
+        return np.atleast_2d(np.array([1, 0]))
     try:
         j = json.loads(opener.read())
     except ValueError:
@@ -78,13 +78,13 @@ def getmgrkmerspectrum(accessionnumber):
             try:
                 dataarray = dataarray[:, 0:2]
             except IndexError:
-                dataarray = np.atleast_2d(np.array( [1, 0] ) )
+                dataarray = np.atleast_2d(np.array([1, 0]))
         except KeyError:
-            dataarray = np.atleast_2d(np.array( [1, 0] ) )
+            dataarray = np.atleast_2d(np.array([1, 0]))
     return dataarray
 
 def sortbycp(data):
-    CP = np.concatenate( ( data, np.atleast_2d(data[:, 0] * data[:, 1]).T  ), axis=1 )
+    CP = np.concatenate((data, np.atleast_2d(data[:, 0] * data[:, 1]).T), axis=1)
     S = []
     for c in np.argsort(CP[:, 2]):
         S.append(data[c, :])
@@ -109,50 +109,50 @@ def makegraphs(a, filename, option=6, label=None, n=0):
     x = np.arange(len(b[:, 0]))                  # rank
     color = getcolor(n)
     if option == 0:
-        pA = plt.loglog(b_cn, b_c1, "-",  color = color, label=tracelabel)
-        pA = plt.loglog(b_cn, b_c1, ".",  color = color)
+        pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
+        pA = plt.loglog(b_cn, b_c1, ".", color=color)
         plt.xlabel("kmer abundance")
         plt.ylabel("number of kmers")
         plt.legend(loc="upper right")
     if option == 0 or option == -1:
         if opts.dump:
-            c = np.hstack((cn.reshape((len(cn), 1)), (c1.reshape((len(cn), 1))  )  ))
+            c = np.hstack((cn.reshape((len(cn), 1)), (c1.reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s.0.plot.csv\n" % filename)
-            np.savetxt("%s.0.plot.csv" % filename,  c, fmt = ['%d', '%d'] , delimiter="\t" )
+            np.savetxt("%s.0.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 1:
-        pA = plt.loglog(cn, cn*c1, "-", color=color, label=tracelabel )
-        pA = plt.loglog(cn, cn*c1, '.', color=color)
+        pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel)
+        pA = plt.loglog(cn, cn * c1, '.', color=color)
         plt.xlabel("kmer abundance")
         plt.ylabel("kmers observed")
         plt.legend(loc="upper right")
         plt.grid(1)
         if opts.dump:
-            c = np.hstack((cn.reshape((len(cn), 1)), ((cn*c1).reshape((len(cn), 1))  )  ))
+            c = np.hstack((cn.reshape((len(cn), 1)), ((cn * c1).reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s.1.plot.csv\n" % filename)
-            np.savetxt("%s.1.plot.csv" % filename,  c, fmt = ['%d', '%d'] , delimiter="\t" )
+            np.savetxt("%s.1.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 2:
-        pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel )
+        pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
         plt.xlabel("cumulative kmers observed")
         plt.ylabel("kmer abundance")
         plt.legend(loc="lower left")
         plt.grid(1)
     elif option == 3:
-        pA = plt.semilogy(b_zo / b_zo.max(), b_cn, color=color, label=tracelabel )
-        pA = plt.semilogy(b_zo / b_zo.max(), b_cn, '.', color=color )
+        pA = plt.semilogy(b_zo / b_zo.max(), b_cn, color=color, label=tracelabel)
+        pA = plt.semilogy(b_zo / b_zo.max(), b_cn, '.', color=color)
         plt.xlabel("fraction of observed kmers")
         plt.ylabel("kmer abundance ")
         plt.grid(1)
         plt.legend(loc="lower left")
     elif option == 4:     # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
-        pA = plt.semilogy(b_zd / b_zd.max(), b_cn, color=color, label=tracelabel )
-        pA = plt.semilogy(b_zd / b_zd.max(), b_cn, '.', color=color )
+        pA = plt.semilogy(b_zd / b_zd.max(), b_cn, color=color, label=tracelabel)
+        pA = plt.semilogy(b_zd / b_zd.max(), b_cn, '.', color=color)
         plt.xlabel("fraction of distinct kmers")
         plt.ylabel("kmer abundance")
         plt.legend(loc="upper right")
         plt.grid(1)
     elif option == 5:
-        pA = plt.semilogx( yd, zo / zo.max(), '-', color=color )
-        pA = plt.semilogx( yd, zo / zo.max(), '.', color=color, label=tracelabel )
+        pA = plt.semilogx(yd, zo / zo.max(), '-', color=color)
+        pA = plt.semilogx(yd, zo / zo.max(), '.', color=color, label=tracelabel)
         plt.xlabel("kmer rank")
         plt.ylabel("fraction of observed kmers")
         plt.xlim((1, 10**10))
@@ -160,8 +160,8 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.grid(1)
         plt.legend(loc="lower left")
     elif option == 6:
-        pA = plt.loglog( b_zd, b_cn, '-', color=color, label=tracelabel)
-        pA = plt.loglog( b_zd, b_cn, '.', color=color )
+        pA = plt.loglog(b_zd, b_cn, '-', color=color, label=tracelabel)
+        pA = plt.loglog(b_zd, b_cn, '.', color=color)
         plt.xlabel("kmer rank")
         plt.ylabel("kmer abundance")
         plt.xlim((1, 10**10))
@@ -169,71 +169,71 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.grid(1)
         plt.legend(loc="lower left")
         if opts.dump:
-            c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))  )  )
+            c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
             sys.stderr.write("saving output table in %s.6.plot.csv\n" % filename)
-            np.savetxt("%s.6.plot.csv" % filename,  c, fmt = ['%d', '%d'] , delimiter="\t" )
+            np.savetxt("%s.6.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 7:
-        pA = plt.plot( x, c_zd, '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, c_zd, '.-', color=color, label=tracelabel)
         plt.xlabel("contig size rank")
         plt.ylabel("cuml contig size")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 8:
-        pA = plt.plot( x, c_zo / c_zo.max() , '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, c_zo / c_zo.max(), '.-', color=color, label=tracelabel)
         plt.xlabel("contig size rank ")
         plt.ylabel("frac data explained ")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 9:
-        pA = plt.plot( x, d_zo , '-', color=color, label=tracelabel)
+        pA = plt.plot(x, d_zo, '-', color=color, label=tracelabel)
         plt.xlabel("contig explain rank ")
         plt.ylabel("data explained ")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 10:
-        pA = plt.plot( x, b_yo / b_yo.max() , '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, b_yo / b_yo.max(), '.-', color=color, label=tracelabel)
         plt.xlabel("contig cov rank ")
         plt.ylabel("frac data explained ")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 11:
-        pA = plt.plot( x, b_yo , '.-', color=color,  label=tracelabel)
+        pA = plt.plot(x, b_yo, '.-', color=color, label=tracelabel)
         plt.xlabel("contig cov rank ")
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 12:
-        pA = plt.plot( c_zd , c_zo , '.-', color=color, label=tracelabel)
+        pA = plt.plot(c_zd, c_zo, '.-', color=color, label=tracelabel)
         plt.xlabel("cumulative contig size")
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 13:
-        pA = plt.plot( x , b_cn , '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, b_cn, '.-', color=color, label=tracelabel)
         plt.xlabel("contig cov rank ")
         plt.ylabel("kmer abundance")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 14:
-        pA = plt.plot( x , d_cn*d_c1 , '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
         plt.xlabel("contig expl rank ")
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 15:
-        pA = plt.plot( x , c_c1 , '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, c_c1, '.-', color=color, label=tracelabel)
         plt.xlabel("contig size rank")
         plt.ylabel("contig size")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 16:
-        pA = plt.plot( x , c_yd , '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, c_yd, '.-', color=color, label=tracelabel)
         plt.xlabel("contig expl rank ")
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 17:
-        pA = plt.plot( x , d_cn*d_c1 , '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
         plt.xlabel("contig expl rank ")
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
@@ -248,7 +248,7 @@ def calccumsum(a):
     yo = np.flipud(np.flipud(cp).cumsum()) # cumulative number of observed kmers (top to bottom)
     zd = np.cumsum(c1)                     # cumulative number of distinct kmers (bottom to top)
     zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
-    if zo.max() == 0 :
+    if zo.max() == 0:
         raise Exception  # There should be data here
     y = zo / zo.max()
     return(cn, c1, yd, yo, zd, zo, y)
@@ -256,15 +256,15 @@ def calccumsum(a):
 def printstats(a, filename, filehandle=None, n=0):
     '''Prints summary statistics to filename'''
     cn, c1, yd, yo, zd, zo, y = calccumsum(a)
-    T  = zo.max()
-    j  = cn / T
+    T = zo.max()
+    j = cn / T
     intermediate = - c1 * j * np.log(j)
     intermediate[np.isnan(intermediate)] = 0     # allows calculation with 0 counts in some rows
     H = np.exp(sum(intermediate))                # Entropy
-    if T == 0 :
+    if T == 0:
         H = np.NaN
-    H2 = 1 / sum( c1*j*j )                    # Reyni entropy
-    w  = yo / yo.max()
+    H2 = 1 / sum(c1 * j * j)                    # Reyni entropy
+    w = yo / yo.max()
     wd = yd
     M90 = calcmedian(wd, w, .9)    # 90th percentile by observations
     M50 = calcmedian(wd, w, .5)    # 50th percentile by observations
@@ -272,14 +272,14 @@ def printstats(a, filename, filehandle=None, n=0):
     M100 = calcmedian(wd, w, 1.0)  # should be the same as wd.max()
     F100 = calcmedian(w, wd, 100)    # fraction of data in top 100 kmers
     F10K = calcmedian(w, wd, 10000)  # in 10K kmers
-    F1M =  calcmedian(w, wd, 1000000) # in 1M kmers
+    F1M = calcmedian(w, wd, 1000000) # in 1M kmers
     if filehandle == None:
         consensusfh = open(filename, "w")
-    else :
+    else:
         consensusfh = filehandle
-    if filehandle == None or n == 0 :
-        consensusfh.write( "#filename\tM10\tM50\tM90\tM100\tF100\tF10K\tF1M\tH\tH2\n")
-    consensusfh.write( "%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\n" %
+    if filehandle == None or n == 0:
+        consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K\tF1M\tH\tH2\n")
+    consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\n" %
                       (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2))
     if filehandle == None:
         consensusfh.close()
@@ -287,7 +287,7 @@ def printstats(a, filename, filehandle=None, n=0):
 def loadfile(filename):
     '''Loads file, returns two-column ndarray or None'''
     try:
-        if filename.find("stats.txt") >=0:  # velvet contig stats format
+        if filename.find("stats.txt") >= 0:  # velvet contig stats format
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
         else:
             matrix = np.loadtxt(filename)        # default bare-bones spectrum format
@@ -299,7 +299,7 @@ def loadfile(filename):
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
 
-def main(filename, opt=6, label=None, n=0 ):
+def main(filename, opt=6, label=None, n=0):
     '''Main driver; loads file and invokes makegraphs and printstats
     to append graphics from each file onto the figure'''
     logfh = open(opts.logfile, "a")
@@ -308,18 +308,18 @@ def main(filename, opt=6, label=None, n=0 ):
     elif opts.filetype == "file":
         a = loadfile(filename)
     else:
-        raise ValueError("%s is invalid type (valid types are mgm and file)" % opts.filetype )
+        raise ValueError("%s is invalid type (valid types are mgm and file)" % opts.filetype)
     if a == None:   # Abort this trace--but try to graph the others
         return n 
     if label == None:
         label = filename
-    if a.shape[1] > 0 :
+    if a.shape[1] > 0:
         a = (a[np.lexsort((a[:, 1], a[:, 0]))])
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
-            makegraphs(a, filename, opt, label, n=n )
+            makegraphs(a, filename, opt, label, n=n)
             sys.stderr.write("Printing stats in logfile %s %d\n" % (opts.logfile, n))
-            printstats(a, filename, filehandle=logfh, n=n )
+            printstats(a, filename, filehandle=logfh, n=n)
             printstats(a, filename, filehandle=sys.stdout, n=n)
             n += 1
         except:
@@ -330,16 +330,16 @@ def main(filename, opt=6, label=None, n=0 ):
     return n
 
 if __name__ == '__main__':
-    usage  = '''usage: plot-kmer-spectrum.py [options] <datafile> [<datafile2> <datafile3>...]
+    usage = '''usage: plot-kmer-spectrum.py [options] <datafile> [<datafile2> <datafile3>...]
        plot-kmer-spectrum.py [options] -l <list of targets, labels> '''
     parser = OptionParser(usage)
-    parser.add_option("-d", "--dump",   dest="dump",   action="store_true",
+    parser.add_option("-d", "--dump", dest="dump", action="store_true",
          default=False, help="dump table with outputs ")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
          default=False, help="verbose")
     parser.add_option("-o", "--outfile", dest="outfile", action="store",
          default=None, help="dump table with outputs ")
-    parser.add_option("-g", "--graph",  dest="option", action="store", type="int",
+    parser.add_option("-g", "--graph", dest="option", action="store", type="int",
          default="6", help="Graph number ")
     parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
          default=False, help="interactive mode--draw window")
@@ -364,7 +364,7 @@ if __name__ == '__main__':
         imagefilename = "%s.%d.%s" % (opts.outfile, graphtype, writetype)
     elif opts.filelist:
         imagefilename = "%s.%d.%s" % (opts.filelist, graphtype, writetype)
-    else :
+    else:
         imagefilename = "%s.%d.%s" % (args[0], graphtype, writetype)
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
     if not opts.interactive:
@@ -388,10 +388,10 @@ if __name__ == '__main__':
                 if len(a[0]) > 0:
                     if len(a) == 1:
                         a.append(a[0])
-                    sys.stderr.write( "%s  %s \n" % (a[0], a[1]) )
+                    sys.stderr.write("%s  %s \n" % (a[0], a[1]))
                     graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
     else:
-        for f in args :
+        for f in args:
             filen = f
             graphcount = main(filen, graphtype, n=graphcount)
     assert graphcount > 0, "ERROR: unable to find any data to graph!"
@@ -401,6 +401,6 @@ if __name__ == '__main__':
     if opts.interactive:
         plt.show()
     else:
-        sys.stderr.write( "Use -i to open widow with graph\n")
-    if graphcount == 0 :
+        sys.stderr.write("Use -i to open widow with graph\n")
+    if graphcount == 0:
         sys.stderr.write("ERROR:  no data found!\n")
