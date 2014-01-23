@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 '''Tool to generate graphs of kmer spectra'''
 
-import sys, os
+import sys
 import numpy as np
-import matplotlib as mpl
-from optparse import OptionParser
 
 def getcolor(index):
+    '''returns a string that cycles through more colors than default'''
     colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
             "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
     l = index % len(colorlist)
@@ -43,7 +42,7 @@ def cleanlabel(label):
             label = label[0:(label.find(suffix))]
     return label
 
-def getmgrkmerspectrum(accessionnumber):
+def getmgrkmerspectrum(accessionnumber, MGRKEY=None):
     '''Retrieve kmer spectrum from MG-RAST'''
     import urllib2, json, time
     assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format" % accessionnumber)
@@ -90,7 +89,8 @@ def sortbycp(data):
     return A
 
 def calccumsum(a):
-    '''Calcaulates the cumulative-sum vectors from a 2d numpy array of [cov, num].  Note depends on upstream sort '''
+    '''Calcaulates the cumulative-sum vectors from a 2d numpy array
+    of [cov, num].  Note depends on upstream sort '''
     cn = a[:, 0]                          #   Coverage
     c1 = a[:, 1]                          #   number of distinct kmers.
     cp = cn * c1  # elementwise multiply     observed kmers by abundance

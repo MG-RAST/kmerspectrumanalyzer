@@ -6,23 +6,28 @@ import numpy as np
 import matplotlib as mpl
 from optparse import OptionParser
 
-from ksatools import getcolor, calcmedian, cleanlabel, getmgrkmerspectrum, sortbycp, calccumsum, printstats, loadfile
+from ksatools import getcolor, cleanlabel, getmgrkmerspectrum, sortbycp, calccumsum, printstats, loadfile
 
-def makegraphs(a, filename, option=6, label=None, n=0):
+def makegraphs(spectrum, filename, option=6, label=None, n=0):
     '''Draw graphs, one at a time, and add them to the current plot'''
-    (cn, c1, yd, yo, zd, zo, y) = calccumsum(a)
+    (cn, c1, yd, yo, zd, zo, y) = calccumsum(spectrum)
     if label == None:
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
-    b = np.flipud(np.sort(a.view('float,float'), order=['f0'],
-           axis=0).view(np.float))  # sorted by abundance/coverage
-    c = np.flipud(np.sort(a.view('float,float'), order=['f1'],
-           axis=0).view(np.float))  # sorted by size
-    d = sortbycp(a)
-    (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo, b_y) = calccumsum(b)
-    (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo, c_y) = calccumsum(c)
-    (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo, d_y) = calccumsum(d)
+    # sorted by abundance/coverage
+    b = np.flipud(np.sort(spectrum.view('float,float'), order=['f0'],
+           axis=0).view(np.float))
+    # sorted by size (for contigs)
+    c = np.flipud(np.sort(spectrum.view('float,float'), order=['f1'],
+           axis=0).view(np.float))
+    # sorted by abundance-size product (explained)
+    d = sortbycp(spectrum)
+    (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo, b_y) = calccumsum(b) # abundance
+    (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo, c_y) = calccumsum(c) # size
+    (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo, d_y) = calccumsum(d) # explained
+    No = b_zo.max()
+    Nd = b_zd.max()
     x = np.arange(len(b[:, 0]))                  # rank
     color = getcolor(n)
     if option == 0:
@@ -33,9 +38,12 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.legend(loc="upper right")
     if option == 0 or option == -1:
         if opts.dump:
-            c = np.hstack((cn.reshape((len(cn), 1)), (c1.reshape((len(cn), 1)))))
-            sys.stderr.write("saving output table in %s.0.plot.csv\n" % filename)
-            np.savetxt("%s.0.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
+            c = np.hstack((cn.reshape((len(cn), 1)),
+                (c1.reshape((len(cn), 1)))))
+            sys.stderr.write("saving output table in %s.0.plot.csv\n" %
+                filename)
+            np.savetxt("%s.0.plot.csv" % filename, c, fmt=['%d', '%d'],
+                delimiter="\t")
     elif option == 1:
         pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel)
         pA = plt.loglog(cn, cn * c1, '.', color=color)
@@ -44,9 +52,12 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.legend(loc="upper right")
         plt.grid(1)
         if opts.dump:
-            c = np.hstack((cn.reshape((len(cn), 1)), ((cn * c1).reshape((len(cn), 1)))))
-            sys.stderr.write("saving output table in %s.1.plot.csv\n" % filename)
-            np.savetxt("%s.1.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
+            c = np.hstack((cn.reshape((len(cn), 1)),
+                ((cn * c1).reshape((len(cn), 1)))))
+            sys.stderr.write("saving output table in %s.1.plot.csv\n" %
+                filename)
+            np.savetxt("%s.1.plot.csv" % filename, c, fmt=['%d', '%d'],
+                delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
         plt.xlabel("cumulative kmers observed")
@@ -54,22 +65,22 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.legend(loc="lower left")
         plt.grid(1)
     elif option == 3:
-        pA = plt.semilogy(b_zo / b_zo.max(), b_cn, color=color, label=tracelabel)
-        pA = plt.semilogy(b_zo / b_zo.max(), b_cn, '.', color=color)
+        pA = plt.semilogy(b_zo / No, b_cn, color=color, label=tracelabel)
+        pA = plt.semilogy(b_zo / No, b_cn, '.', color=color)
         plt.xlabel("fraction of observed kmers")
         plt.ylabel("kmer abundance ")
         plt.grid(1)
         plt.legend(loc="lower left")
-    elif option == 4:     # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
-        pA = plt.semilogy(b_zd / b_zd.max(), b_cn, color=color, label=tracelabel)
-        pA = plt.semilogy(b_zd / b_zd.max(), b_cn, '.', color=color)
+    elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
+        pA = plt.semilogy(b_zd / Nd, b_cn, color=color, label=tracelabel)
+        pA = plt.semilogy(b_zd / Nd, b_cn, '.', color=color)
         plt.xlabel("fraction of distinct kmers")
         plt.ylabel("kmer abundance")
         plt.legend(loc="upper right")
         plt.grid(1)
     elif option == 5:
-        pA = plt.semilogx(yd, zo / zo.max(), '-', color=color)
-        pA = plt.semilogx(yd, zo / zo.max(), '.', color=color, label=tracelabel)
+        pA = plt.semilogx(yd, zo / No, '-', color=color)
+        pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
         plt.xlabel("kmer rank")
         plt.ylabel("fraction of observed kmers")
         plt.xlim((1, 10**10))
@@ -96,7 +107,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 8:
-        pA = plt.plot(x, c_zo / c_zo.max(), '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, c_zo / No, '.-', color=color, label=tracelabel)
         plt.xlabel("contig size rank ")
         plt.ylabel("frac data explained ")
         plt.grid(1)
@@ -108,7 +119,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.grid(1)
         plt.legend(loc="upper right")
     elif option == 10:
-        pA = plt.plot(x, b_yo / b_yo.max(), '.-', color=color, label=tracelabel)
+        pA = plt.plot(x, b_yo / No, '.-', color=color, label=tracelabel)
         plt.xlabel("contig cov rank ")
         plt.ylabel("frac data explained ")
         plt.grid(1)
@@ -163,23 +174,25 @@ def main(filename, opt=6, label=None, n=0):
     n is the serial number of successful traces.'''
     logfh = open(opts.logfile, "a")
     if opts.filetype.upper() == "MGM":
-        a = getmgrkmerspectrum(filename)
+        spectrum = getmgrkmerspectrum(filename, MGRKEY=MGRKEY)
     elif opts.filetype == "file":
-        a = loadfile(filename)
+        spectrum = loadfile(filename)
     else:
-        raise ValueError("%s is invalid type (valid types are mgm and file)" % opts.filetype)
-    if a == None:   # Abort this trace--but try to graph the others
+        raise ValueError("%s is invalid type (valid types are mgm and file)"
+            % opts.filetype)
+    if spectrum == None:   # Abort this trace--but try to graph the others
         return n
     if label == None:
         label = filename
-    if a.shape[1] > 0:
-        a = (a[np.lexsort((a[:, 1], a[:, 0]))])
+    if spectrum.shape[1] > 0:
+        spectrum = spectrum[np.lexsort((spectrum[:, 1], spectrum[:, 0]))]
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
-            makegraphs(a, filename, opt, label, n=n)
-            sys.stderr.write("Printing stats in logfile %s %d\n" % (opts.logfile, n))
-            printstats(a, filename, filehandle=logfh, n=n)
-            printstats(a, filename, filehandle=sys.stdout, n=n)
+            makegraphs(spectrum, filename, opt, label, n=n)
+            sys.stderr.write("Printing stats in logfile %s %d\n" %
+                (opts.logfile, n))
+            printstats(spectrum, filename, filehandle=logfh, n=n)
+            printstats(spectrum, filename, filehandle=sys.stdout, n=n)
             n += 1
         except:
             sys.stderr.write("Error printing stats for %s\n" % filename)
