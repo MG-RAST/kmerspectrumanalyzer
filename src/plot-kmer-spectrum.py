@@ -48,27 +48,27 @@ def getmgrkmerspectrum(accessionnumber):
     '''Retrieve kmer spectrum from MG-RAST'''
     import urllib2
     import json
-    assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format"%accessionnumber)
+    assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format" % accessionnumber)
     some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
-    if key != None:
-        some_url = some_url+"&auth=%s" % key
-    sys.stderr.write("Sending request for "+some_url+"\n")
+    if MGRKEY != None:
+        some_url = some_url + "&auth=%s" % MGRKEY
+    sys.stderr.write("Sending request for " + some_url + "\n")
     time.sleep(1)
 # Ok, exception handling here is a important.  HTTP errors and
 # malformed JSON are likely failure modes.
     try:
         opener = urllib2.urlopen(some_url)
     except urllib2.HTTPError, e:
-        sys.stderr.write("Error retrieving %s"%some_url)
+        sys.stderr.write("Error retrieving %s" % some_url)
         sys.stderr.write("Error with HTTP request: %d %s\n%s" % (e.code, e.reason, e.read()))
         return np.atleast_2d(np.array( [1, 0] ) )
     try:
         j = json.loads(opener.read())
     except ValueError:
-        sys.stderr.write("Error parsing %s"%some_url)
+        sys.stderr.write("Error parsing %s" % some_url)
         j = {}
     try:
-        sys.stderr.write("Error with %s\nERROR : %s\n"%(some_url, j["ERROR"]))
+        sys.stderr.write("Error with %s\nERROR : %s\n" % (some_url, j["ERROR"]))
         dataarray = None
     except KeyError:
         try:
@@ -285,13 +285,16 @@ def printstats(a, filename, filehandle=None, n=0):
         consensusfh.close()
 
 def loadfile(filename):
-    '''Loads file'''
+    '''Loads file, returns two-column ndarray or None'''
     try:
         if filename.find("stats.txt") >=0:  # velvet contig stats format
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
         else:
             matrix = np.loadtxt(filename)        # default bare-bones spectrum format
-        return matrix
+        if matrix.shape[0] == 0:                 # return None if the file is empty 
+            return None
+        else:
+            return np.atleast_2d(matrix)
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
@@ -303,9 +306,11 @@ def main(filename, opt=6, label=None, n=0 ):
     if opts.filetype.upper() == "MGM":
         a = getmgrkmerspectrum(filename)
     elif opts.filetype == "file":
-        a = np.atleast_2d(loadfile(filename))
+        a = loadfile(filename)
     else:
-        raise ValueError("%s is invalid type (valid types are mgm and file)"%opts.filetype )
+        raise ValueError("%s is invalid type (valid types are mgm and file)" % opts.filetype )
+    if a == None:   # Abort this trace--but try to graph the others
+        return n 
     if label == None:
         label = filename
     if a.shape[1] > 0 :
@@ -369,24 +374,27 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     if opts.filetype == "mgm":
         try:
-            key = os.environ["MGRKEY"]
+            MGRKEY = os.environ["MGRKEY"]
         except KeyError:
-            key = ""
+            MGRKEY = ""
 
     graphcount = 0
     if opts.filelist:
         assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
         IN_FILE = open(opts.filelist, "r")
         for line in IN_FILE:
-            a = line.rstrip().split("\t")
-            if len(a) == 1:
-                a.append(a[0])
-            sys.stderr.write( "%s  %s \n" % (a[0], a[1]) )
-            graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
+            if line[0] != "#":
+                a = line.strip().split("\t")
+                if len(a[0]) > 0:
+                    if len(a) == 1:
+                        a.append(a[0])
+                    sys.stderr.write( "%s  %s \n" % (a[0], a[1]) )
+                    graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
     else:
         for f in args :
             filen = f
             graphcount = main(filen, graphtype, n=graphcount)
+    assert graphcount > 0, "ERROR: unable to find any data to graph!"
     if graphtype != -1:
         sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
         plt.savefig(imagefilename)
