@@ -11,7 +11,7 @@ from ksatools import getcolor, cleanlabel, getmgrkmerspectrum, sortbycp, calccum
 def makegraphs(spectrum, filename, option=6, label=None, n=0):
     '''Draw graphs, one at a time, and add them to the current plot'''
     # note, calccumsum will raise an exception here if data is invalid
-    (cn, c1, yd, yo, zd, zo, y) = calccumsum(spectrum)
+    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     if label == None:
         tracelabel = cleanlabel(filename)
     else:
@@ -24,9 +24,9 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0):
            axis=0).view(np.float))
     # sorted by abundance-size product (explained)
     d = sortbycp(spectrum)
-    (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo, b_y) = calccumsum(b) # abundance
-    (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo, c_y) = calccumsum(c) # size
-    (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo, d_y) = calccumsum(d) # explained
+    (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo) = calccumsum(b) # abundance
+    (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo) = calccumsum(c) # size
+    (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo) = calccumsum(d) # explained
     No = b_zo.max()
     Nd = b_zd.max()
     x = np.arange(len(b[:, 0]))                  # rank
@@ -175,7 +175,7 @@ def main(filename, opt=6, label=None, n=0):
     n is the serial number of successful traces.'''
     logfh = open(opts.logfile, "a")
     if opts.filetype.upper() == "MGM":
-        spectrum = getmgrkmerspectrum(filename, MGRKEY=MGRKEY)
+        spectrum = getmgrkmerspectrum(filename, mgrkey=MGRKEY)
     elif opts.filetype == "file":
         spectrum = loadfile(filename)
     else:

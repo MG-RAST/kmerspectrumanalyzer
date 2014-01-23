@@ -42,13 +42,13 @@ def cleanlabel(label):
             label = label[0:(label.find(suffix))]
     return label
 
-def getmgrkmerspectrum(accessionnumber, MGRKEY=None):
+def getmgrkmerspectrum(accessionnumber, mgrkey=None):
     '''Retrieve kmer spectrum from MG-RAST'''
     import urllib2, json, time
     assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format" % accessionnumber)
     some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
-    if MGRKEY != None:
-        some_url = some_url + "&auth=%s" % MGRKEY
+    if mgrkey != None:
+        some_url = some_url + "&auth=%s" % mgrkey
     sys.stderr.write("Sending request for " + some_url + "\n")
     time.sleep(1)
 # Ok, exception handling here is a important.  HTTP errors and
@@ -81,6 +81,7 @@ def getmgrkmerspectrum(accessionnumber, MGRKEY=None):
     return dataarray
 
 def sortbycp(data):
+    ''' returns array sorted by the product of columns 0 and 1'''
     CP = np.concatenate((data, np.atleast_2d(data[:, 0] * data[:, 1]).T), axis=1)
     S = []
     for c in np.argsort(CP[:, 2]):
@@ -100,12 +101,11 @@ def calccumsum(a):
     zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
     if zo.max() == 0:
         raise Exception  # There should be data here
-    y = zo / zo.max()
-    return(cn, c1, yd, yo, zd, zo, y)
+    return(cn, c1, yd, yo, zd, zo)
 
 def printstats(a, filename, filehandle=None, n=0):
     '''Prints summary statistics to filename'''
-    cn, c1, yd, yo, zd, zo, y = calccumsum(a)
+    cn, c1, yd, yo, zd, zo = calccumsum(a)
     T = zo.max()
     j = cn / T
     intermediate = - c1 * j * np.log(j)
