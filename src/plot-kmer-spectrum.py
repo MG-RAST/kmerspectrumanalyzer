@@ -98,9 +98,9 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
-    b = np.flipud(np.sort(a.view('float,float'), order=['f0'], 
+    b = np.flipud(np.sort(a.view('float,float'), order=['f0'],
            axis=0).view(np.float))  # sorted by abundance/coverage
-    c = np.flipud(np.sort(a.view('float,float'), order=['f1'], 
+    c = np.flipud(np.sort(a.view('float,float'), order=['f1'],
            axis=0).view(np.float))  # sorted by size
     d = sortbycp(a)
     (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo, b_y) = calccumsum(b)
@@ -259,17 +259,18 @@ def printstats(a, filename, filehandle=None, n=0):
     T = zo.max()
     j = cn / T
     intermediate = - c1 * j * np.log(j)
-    intermediate[np.isnan(intermediate)] = 0     # allows calculation with 0 counts in some rows
-    H = np.exp(sum(intermediate))                # Entropy
+    # allow calculation with 0 counts in some rows
+    intermediate[np.isnan(intermediate)] = 0
+    H = np.exp(sum(intermediate))   # antilog Shannon entropy
     if T == 0:
         H = np.NaN
-    H2 = 1 / sum(c1 * j * j)                    # Reyni entropy
+    H2 = 1 / sum(c1 * j * j)        # antilog Reyni entropy / Simpson index
     w = yo / yo.max()
     wd = yd
-    M90 = calcmedian(wd, w, .9)    # 90th percentile by observations
-    M50 = calcmedian(wd, w, .5)    # 50th percentile by observations
-    M10 = calcmedian(wd, w, .1)    # 10th percentile by observations
-    M100 = calcmedian(wd, w, 1.0)  # should be the same as wd.max()
+    M90 = calcmedian(wd, w, .9)      # 90th percentile by observations
+    M50 = calcmedian(wd, w, .5)      # 50th percentile by observations
+    M10 = calcmedian(wd, w, .1)      # 10th percentile by observations
+    M100 = calcmedian(wd, w, 1.0)    # should be the same as wd.max()
     F100 = calcmedian(w, wd, 100)    # fraction of data in top 100 kmers
     F10K = calcmedian(w, wd, 10000)  # in 10K kmers
     F1M = calcmedian(w, wd, 1000000) # in 1M kmers
@@ -287,11 +288,13 @@ def printstats(a, filename, filehandle=None, n=0):
 def loadfile(filename):
     '''Loads file, returns two-column ndarray or None'''
     try:
-        if filename.find("stats.txt") >= 0:  # velvet contig stats format
+        # parse velvet contig stats format
+        if filename.find("stats.txt") >= 0:
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
-        else:
-            matrix = np.loadtxt(filename)        # default bare-bones spectrum format
-        if matrix.shape[0] == 0:                 # return None if the file is empty 
+        else: # default bare-bones spectrum format
+            matrix = np.loadtxt(filename)
+        # return None if the file is empty
+        if matrix.shape[0] == 0:
             return None
         else:
             return np.atleast_2d(matrix)
@@ -300,8 +303,10 @@ def loadfile(filename):
         return None
 
 def main(filename, opt=6, label=None, n=0):
-    '''Main driver; loads file and invokes makegraphs and printstats
-    to append graphics from each file onto the figure'''
+    '''loads file and invokes makegraphs and printstats.
+    Appends graphics from each file onto the figure.
+    opt is a symbol for the graph type;
+    n is the serial number of successful traces.'''
     logfh = open(opts.logfile, "a")
     if opts.filetype.upper() == "MGM":
         a = getmgrkmerspectrum(filename)
@@ -310,7 +315,7 @@ def main(filename, opt=6, label=None, n=0):
     else:
         raise ValueError("%s is invalid type (valid types are mgm and file)" % opts.filetype)
     if a == None:   # Abort this trace--but try to graph the others
-        return n 
+        return n
     if label == None:
         label = filename
     if a.shape[1] > 0:
@@ -367,10 +372,12 @@ if __name__ == '__main__':
     else:
         imagefilename = "%s.%d.%s" % (args[0], graphtype, writetype)
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
+    # only invoke interactive backend if requested with -i
+    # this stabilizes behavior on non-interactive terminals
     if not opts.interactive:
         mpl.use("Agg")
     else:
-        mpl.use('TkAgg')   # only invoke interactive backend if requested with -i
+        mpl.use('TkAgg')
     import matplotlib.pyplot as plt
     if opts.filetype == "mgm":
         try:
@@ -379,6 +386,8 @@ if __name__ == '__main__':
             MGRKEY = ""
 
     graphcount = 0
+    # Loop over input identifiers, and skip if main()
+    # fails to produce some traces
     if opts.filelist:
         assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
         IN_FILE = open(opts.filelist, "r")
@@ -394,6 +403,7 @@ if __name__ == '__main__':
         for f in args:
             filen = f
             graphcount = main(filen, graphtype, n=graphcount)
+    # don't continue if all inputs fail
     assert graphcount > 0, "ERROR: unable to find any data to graph!"
     if graphtype != -1:
         sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
