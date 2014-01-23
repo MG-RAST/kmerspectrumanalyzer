@@ -12,3 +12,4 @@ plot-kmer-spectrum.py -l testlist5
 plot-kmer-spectrum.py -l testlist6
 plot-kmer-spectrum.py .boguswc*
 plot-kmer-spectrum.py emptyfile 
+plot-kmer-spectrum.py -l mgrlist -t mgm
