@@ -15,11 +15,11 @@ def calcmedian(yd, y, num):
     '''interpolates, returning value of yd corresponding to to num on y'''
     try:
         top = np.max(np.nonzero(y > num))
-    except:
+    except ValueError:
         top = None
     try:
         bottom = np.min(np.nonzero(y <= num))
-    except:
+    except ValueError:
         bottom = None
     if top != None and bottom != None:
         cutoff = yd[bottom] + (num - y[bottom]) / (y[top] - y[bottom]) * (yd[top] -yd[bottom])
