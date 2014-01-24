@@ -1,6 +1,6 @@
 # Makefile to download some data, count some kmers, and produce some visualizations
 
-test: SRR016860A.fastq.21.fit.csv NC_017625.fna.21 SRR016860A.fastq.21
+test: SRR016860A.fastq.21.fit.csv NC_017625.fna.21 SRR016860A.fastq.21 NC_017625.fna.6.pdf
 	echo
 
 # retrieve 454 DH1 sequencing run, in three parts
@@ -30,9 +30,10 @@ NC_017625.fna:
 %.21.6.png: %.21
 	kmerdriver.sh $^
 
-# fit 454 data for genome size
-NC_017625.6.pdf: 
-	plot-kmer-spectrum.py NC_017625.fna.21  SRR016860A.fastq.21 -o NC_017625
+# display some data
+%.6.pdf: %.21
+	$(eval STEM=$(subst .21,,$<))
+	for i in $$(seq -1 17); do plot-kmer-spectrum.py $< -o $(STEM) -g $$i; done 
 
 clean:
 	rm *.fit.csv *.fit.detail.csv *.fit.png *.pdf
