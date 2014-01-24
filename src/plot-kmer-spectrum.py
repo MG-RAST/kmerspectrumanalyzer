@@ -9,7 +9,10 @@ from optparse import OptionParser
 from ksatools import getcolor, cleanlabel, getmgrkmerspectrum, sortbycp, calccumsum, printstats, loadfile
 
 def makegraphs(spectrum, filename, option=6, label=None, n=0):
-    '''Draw graphs, one at a time, and add them to the current plot'''
+    '''Draw graphs, one at a time, and add them to the current plot.
+    spectrum contains the data; filename is the file stem for saving
+    option determines the type of graph; label labels each trace;
+    n counts the (successful) traces.  Returns n.'''
     # note, calccumsum will raise an exception here if data is invalid
     (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     if label == None:
@@ -37,6 +40,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0):
         plt.xlabel("kmer abundance")
         plt.ylabel("number of kmers")
         plt.legend(loc="upper right")
+        plt.grid(1)
     if option == 0 or option == -1:
         if opts.dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
