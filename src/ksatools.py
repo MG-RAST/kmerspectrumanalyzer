@@ -4,6 +4,19 @@
 import sys
 import numpy as np
 
+def pad(xvalues, yvalues):
+    '''Adds missing integer values to x and corresponding zeros to y.'''
+    yout = []
+    xout = []
+    for i in range(int(1.5*(max(xvalues)))):
+        try:
+            xout.append(xvalues[xvalues.index(i+1)])
+            yout.append(yvalues[xvalues.index(i+1)])
+        except ValueError:
+            xout.append(i+1)
+            yout.append(0)
+    return(xout, yout)
+
 def getcolor(index):
     '''returns a string that cycles through more colors than default'''
     colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
@@ -138,7 +151,8 @@ def printstats(a, filename, filehandle=None, n=0):
         consensusfh.close()
 
 def loadfile(filename):
-    '''Loads file, returns two-column ndarray or None'''
+    '''Loads file, returns two-column ndarray or None on 
+    failure.  Uses filename to guess format.'''
     try:
         # parse velvet contig stats format
         if filename.find("stats.txt") >= 0:
