@@ -8,17 +8,19 @@ from optparse import OptionParser
 
 from ksatools import getcolor, cleanlabel, getmgrkmerspectrum, sortbycp, calccumsum, printstats, loadfile
 
-def makegraphs(spectrum, filename, option=6, label=None, n=0):
+def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
     option determines the type of graph; label labels each trace;
     n counts the (successful) traces.  Returns n.'''
+    import matplotlib.pyplot as plt
     # note, calccumsum will raise an exception here if data is invalid
     (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     if label == None:
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
+    assert spectrum.dtype == "float"
     # sorted by abundance/coverage
     b = np.flipud(np.sort(spectrum.view('float,float'), order=['f0'],
            axis=0).view(np.float))
@@ -42,7 +44,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0):
         plt.legend(loc="upper right")
         plt.grid(1)
     if option == 0 or option == -1:
-        if opts.dump:
+        if dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
                 (c1.reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s.0.plot.csv\n" %
@@ -56,7 +58,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0):
         plt.ylabel("kmers observed")
         plt.legend(loc="upper right")
         plt.grid(1)
-        if opts.dump:
+        if dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
                 ((cn * c1).reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s.1.plot.csv\n" %
@@ -101,7 +103,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0):
         plt.ylim(1, 10**7)
         plt.grid(1)
         plt.legend(loc="lower left")
-        if opts.dump:
+        if dump:
             c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
             sys.stderr.write("saving output table in %s.6.plot.csv\n" % filename)
             np.savetxt("%s.6.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
@@ -193,7 +195,7 @@ def main(filename, opt=6, label=None, n=0):
         spectrum = spectrum[np.lexsort((spectrum[:, 1], spectrum[:, 0]))]
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
-            makegraphs(spectrum, filename, opt, label, n=n)
+            makegraphs(spectrum, filename, opt, label, n=n, dump=opts.dump)
             sys.stderr.write("Printing stats in logfile %s %d\n" %
                 (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
