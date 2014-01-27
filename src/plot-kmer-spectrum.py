@@ -22,13 +22,12 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         tracelabel = cleanlabel(label)
     assert spectrum.dtype == "float"
     # sorted by abundance/coverage
-    b = np.flipud(np.sort(spectrum.view('float,float'), order=['f0'],
-           axis=0).view(np.float))
+    b = np.flipud(spectrum[np.argsort(spectrum[:,0]), :])
     # sorted by size (for contigs)
-    c = np.flipud(np.sort(spectrum.view('float,float'), order=['f1'],
-           axis=0).view(np.float))
+    c = np.flipud(spectrum[np.argsort(spectrum[:,1]), :])
     # sorted by abundance-size product (explained)
     d = sortbycp(spectrum)
+    d = np.flipud(spectrum[np.argsort(spectrum[:,1] * spectrum[:,0]), :])
     (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo) = calccumsum(b) # abundance
     (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo) = calccumsum(c) # size
     (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo) = calccumsum(d) # explained
