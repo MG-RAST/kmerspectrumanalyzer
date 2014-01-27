@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib as mpl
 from optparse import OptionParser
 
-from ksatools import getcolor, cleanlabel, getmgrkmerspectrum, sortbycp, calccumsum, printstats, loadfile
+from ksatools import getcolor, cleanlabel, getmgrkmerspectrum, calccumsum, printstats, loadfile
 
 def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     '''Draw graphs, one at a time, and add them to the current plot.
@@ -26,7 +26,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     # sorted by size (for contigs)
     c = np.flipud(spectrum[np.argsort(spectrum[:,1]), :])
     # sorted by abundance-size product (explained)
-    d = sortbycp(spectrum)
     d = np.flipud(spectrum[np.argsort(spectrum[:,1] * spectrum[:,0]), :])
     (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo) = calccumsum(b) # abundance
     (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo) = calccumsum(c) # size

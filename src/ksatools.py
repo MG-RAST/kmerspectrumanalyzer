@@ -94,15 +94,6 @@ def getmgrkmerspectrum(accessionnumber, mgrkey=None):
             dataarray = np.atleast_2d(np.array([1, 0]))
     return dataarray
 
-def sortbycp(data):
-    ''' returns array sorted by the product of columns 0 and 1'''
-    CP = np.concatenate((data, np.atleast_2d(data[:, 0] * data[:, 1]).T), axis=1)
-    S = []
-    for c in np.argsort(CP[:, 2]):
-        S.append(data[c, :])
-    A = (np.flipud(np.array(S)))
-    return A
-
 def calccumsum(a):
     '''Calcaulates the cumulative-sum vectors from a 2d numpy array
     of [cov, num].  Note depends on upstream sort '''
