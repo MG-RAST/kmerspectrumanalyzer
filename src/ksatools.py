@@ -216,14 +216,14 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
                 delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
-        plt.xlabel("cumulative kmers observed")
+        plt.xlabel("fraction of data")  # cumulative kmers observed
         plt.ylabel("kmer abundance")
         legendloc = "lower left"
         plt.grid(1)
     elif option == 3:
         pA = plt.semilogy(b_zo / No, b_cn, color=color, label=tracelabel)
         pA = plt.semilogy(b_zo / No, b_cn, '.', color=color)
-        plt.xlabel("fraction of observed kmers")
+        plt.xlabel("fraction of data")  # formerly "fraction of observed kmers"
         plt.ylabel("kmer abundance ")
         plt.grid(1)
         legendloc = "lower left"
