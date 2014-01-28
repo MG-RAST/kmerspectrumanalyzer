@@ -142,7 +142,7 @@ def printstats(a, filename, filehandle=None, n=0):
         consensusfh.close()
 
 def loadfile(filename):
-    '''Loads file, returns two-column ndarray or None on 
+    '''Loads file, returns two-column ndarray or None on
     failure.  Uses filename to guess format.'''
     try:
         # parse velvet contig stats format
@@ -173,11 +173,11 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         tracelabel = cleanlabel(label)
     assert spectrum.dtype == "float"
     # sorted by abundance/coverage
-    b = np.flipud(spectrum[np.argsort(spectrum[:,0]), :])
+    b = np.flipud(spectrum[np.argsort(spectrum[:, 0]), :])
     # sorted by size (for contigs)
-    c = np.flipud(spectrum[np.argsort(spectrum[:,1]), :])
+    c = np.flipud(spectrum[np.argsort(spectrum[:, 1]), :])
     # sorted by abundance-size product (explained)
-    d = np.flipud(spectrum[np.argsort(spectrum[:,1] * spectrum[:,0]), :])
+    d = np.flipud(spectrum[np.argsort(spectrum[:, 1] * spectrum[:, 0]), :])
     (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo) = calccumsum(b) # abundance
     (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo) = calccumsum(c) # size
     (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo) = calccumsum(d) # explained

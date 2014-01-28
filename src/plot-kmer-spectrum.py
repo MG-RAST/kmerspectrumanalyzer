@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib as mpl
 from optparse import OptionParser
 
-from ksatools import getcolor, cleanlabel, getmgrkmerspectrum, calccumsum, printstats, loadfile, makegraphs
+from ksatools import getmgrkmerspectrum, printstats, loadfile, makegraphs
 
 def main(filename, opt=6, label=None, n=0):
     '''loads file and invokes makegraphs and printstats.
