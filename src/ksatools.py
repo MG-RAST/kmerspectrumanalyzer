@@ -237,8 +237,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     elif option == 5:
         pA = plt.semilogx(yd, zo / No, '-', color=color)
         pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
-        plt.xlabel("kmer rank")
-        plt.ylabel("fraction of observed kmers")
+        plt.xlabel("kmer rank (bp)")
+        plt.ylabel("fraction of data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         plt.grid(1)
