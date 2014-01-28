@@ -64,6 +64,8 @@ if __name__ == '__main__':
          default="pdf", help="file type for output (pdf,png)")
     parser.add_option("-a", "--appendlogfile", dest="logfile",
          default="kmers.log", help="logfile for summary statistics")
+    parser.add_option("-s", "--suppresslegend", dest="suppress",
+         default=False, help="supress display of legend")
 
     (opts, args) = parser.parse_args()
     graphtype = opts.option
