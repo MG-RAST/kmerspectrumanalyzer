@@ -159,3 +159,168 @@ def loadfile(filename):
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
 
+def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
+    '''Draw graphs, one at a time, and add them to the current plot.
+    spectrum contains the data; filename is the file stem for saving
+    option determines the type of graph; label labels each trace;
+    n counts the (successful) traces.  Returns n.'''
+    import matplotlib.pyplot as plt
+    # note, calccumsum will raise an exception here if data is invalid
+    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
+    if label == None:
+        tracelabel = cleanlabel(filename)
+    else:
+        tracelabel = cleanlabel(label)
+    assert spectrum.dtype == "float"
+    # sorted by abundance/coverage
+    b = np.flipud(spectrum[np.argsort(spectrum[:,0]), :])
+    # sorted by size (for contigs)
+    c = np.flipud(spectrum[np.argsort(spectrum[:,1]), :])
+    # sorted by abundance-size product (explained)
+    d = np.flipud(spectrum[np.argsort(spectrum[:,1] * spectrum[:,0]), :])
+    (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo) = calccumsum(b) # abundance
+    (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo) = calccumsum(c) # size
+    (d_cn, d_c1, d_yd, d_yo, d_zd, d_zo) = calccumsum(d) # explained
+    No = b_zo.max()
+    Nd = b_zd.max()
+    x = np.arange(len(b[:, 0]))                  # rank
+    color = getcolor(n)
+    if option == 0:
+        pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
+        pA = plt.loglog(b_cn, b_c1, ".", color=color)
+        plt.xlabel("kmer abundance")
+        plt.ylabel("number of kmers")
+        plt.legend(loc="upper right")
+        plt.grid(1)
+    if option == 0 or option == -1:
+        if dump:
+            c = np.hstack((cn.reshape((len(cn), 1)),
+                (c1.reshape((len(cn), 1)))))
+            sys.stderr.write("saving output table in %s.0.plot.csv\n" %
+                filename)
+            np.savetxt("%s.0.plot.csv" % filename, c, fmt=['%d', '%d'],
+                delimiter="\t")
+    elif option == 1:
+        pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel)
+        pA = plt.loglog(cn, cn * c1, '.', color=color)
+        plt.xlabel("kmer abundance")
+        plt.ylabel("kmers observed")
+        plt.legend(loc="upper right")
+        plt.grid(1)
+        if dump:
+            c = np.hstack((cn.reshape((len(cn), 1)),
+                ((cn * c1).reshape((len(cn), 1)))))
+            sys.stderr.write("saving output table in %s.1.plot.csv\n" %
+                filename)
+            np.savetxt("%s.1.plot.csv" % filename, c, fmt=['%d', '%d'],
+                delimiter="\t")
+    elif option == 2:
+        pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
+        plt.xlabel("cumulative kmers observed")
+        plt.ylabel("kmer abundance")
+        plt.legend(loc="lower left")
+        plt.grid(1)
+    elif option == 3:
+        pA = plt.semilogy(b_zo / No, b_cn, color=color, label=tracelabel)
+        pA = plt.semilogy(b_zo / No, b_cn, '.', color=color)
+        plt.xlabel("fraction of observed kmers")
+        plt.ylabel("kmer abundance ")
+        plt.grid(1)
+        plt.legend(loc="lower left")
+    elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
+        pA = plt.semilogy(b_zd / Nd, b_cn, color=color, label=tracelabel)
+        pA = plt.semilogy(b_zd / Nd, b_cn, '.', color=color)
+        plt.xlabel("fraction of distinct kmers")
+        plt.ylabel("kmer abundance")
+        plt.legend(loc="upper right")
+        plt.grid(1)
+    elif option == 5:
+        pA = plt.semilogx(yd, zo / No, '-', color=color)
+        pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
+        plt.xlabel("kmer rank")
+        plt.ylabel("fraction of observed kmers")
+        plt.xlim((1, 10**10))
+        plt.ylim(0, 1)
+        plt.grid(1)
+        plt.legend(loc="lower left")
+    elif option == 6:
+        pA = plt.loglog(b_zd, b_cn, '-', color=color, label=tracelabel)
+        pA = plt.loglog(b_zd, b_cn, '.', color=color)
+        plt.xlabel("kmer rank")
+        plt.ylabel("kmer abundance")
+        plt.xlim((1, 10**10))
+        plt.ylim(1, 10**7)
+        plt.grid(1)
+        plt.legend(loc="lower left")
+        if dump:
+            c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
+            sys.stderr.write("saving output table in %s.6.plot.csv\n" % filename)
+            np.savetxt("%s.6.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
+
+    elif option == 7:
+        pA = plt.plot(x, c_zd, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig size rank")
+        plt.ylabel("cuml contig size")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 8:
+        pA = plt.plot(x, c_zo / No, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig size rank ")
+        plt.ylabel("frac data explained ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 9:
+        pA = plt.plot(x, d_zo, '-', color=color, label=tracelabel)
+        plt.xlabel("contig explain rank ")
+        plt.ylabel("data explained ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 10:
+        pA = plt.plot(x, b_yo / No, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig cov rank ")
+        plt.ylabel("frac data explained ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 11:
+        pA = plt.plot(x, b_yo, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig cov rank ")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 12:
+        pA = plt.plot(c_zd, c_zo, '.-', color=color, label=tracelabel)
+        plt.xlabel("cumulative contig size")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 13:
+        pA = plt.plot(x, b_cn, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig cov rank ")
+        plt.ylabel("kmer abundance")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 14:
+        pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig expl rank ")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 15:
+        pA = plt.plot(x, c_c1, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig size rank")
+        plt.ylabel("contig size")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 16:
+        pA = plt.plot(x, c_yd, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig expl rank ")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+    elif option == 17:
+        pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
+        plt.xlabel("contig expl rank ")
+        plt.ylabel("data explained (bogo bp) ")
+        plt.grid(1)
+        plt.legend(loc="upper right")
+
