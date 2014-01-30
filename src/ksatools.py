@@ -323,4 +323,5 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
         legendloc = "upper right"
-    plt.legend(loc=legendloc)
+    if option >= 0:
+        plt.legend(loc=legendloc)
