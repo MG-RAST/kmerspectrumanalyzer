@@ -35,4 +35,4 @@ NC_017625.6.pdf:
 	plot-kmer-spectrum.py NC_017625.fna.21  SRR016860A.fastq.21 -o NC_017625
 
 clean:
-	rm *.fit.csv *.fit.detail.csv *.fit.png *.21
+	rm *.fit.csv *.fit.detail.csv *.fit.png *.pdf

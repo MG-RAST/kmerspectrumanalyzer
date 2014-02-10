@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 '''Tool to generate graphs of kmer spectra'''
 
 import sys, os
@@ -8,18 +8,19 @@ from optparse import OptionParser
 import time
 
 def getcolor(index):
-    colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet", "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"] 
+    colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
+            "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
     l = index % len(colorlist)
     return(colorlist[l])
 
 def calcmedian(yd, y, num):
     '''interpolates, returning value of yd corresponding to to num on y'''
     try :
-        top = np.max(np.nonzero(y > num)) 
+        top = np.max(np.nonzero(y > num))
     except:
         top = None
     try :
-        bottom = np.min(np.nonzero(y <= num)) 
+        bottom = np.min(np.nonzero(y <= num))
     except:
         bottom = None
     if top != None and bottom != None:
@@ -28,15 +29,16 @@ def calcmedian(yd, y, num):
         cutoff = ( ( num *1.0 ) / (y[top] ) * (yd[top])  )
     elif top == None and bottom != None:
         cutoff = yd[bottom]
-    else:  
+    else:
         cutoff = 0
-    if num <= 1: 
+    if num <= 1:
         cutoff = np.ceil(cutoff - .001)
     return(cutoff)
 
 def cleanlabel(label):
     '''Sanitizes graph labels of unintersting file extensions'''
-    suffixes = [".histhist", ".fastq", "_info_contigstats.txt", ".stats.txt", ".txt", ".csv", ".037.kmerhistogram"]
+    suffixes = [".histhist", ".fastq", "_info_contigstats.txt",
+                ".stats.txt", ".txt", ".csv", ".037.kmerhistogram"]
     for suffix in suffixes:
         if label.find(suffix) > 0:
             label = label[0:(label.find(suffix))]
@@ -44,30 +46,33 @@ def cleanlabel(label):
 
 def getmgrkmerspectrum(accessionnumber):
     '''Retrieve kmer spectrum from MG-RAST'''
-    import urllib
+    import urllib2
     import json
-    assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format"%accessionnumber)
+    assert accessionnumber[0:3] == "mgm", sys.exit("Data error: field %s not in mgm......... accession number format" % accessionnumber)
     some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
-    if key != None:
-        some_url = some_url+"&auth=%s" % key
-    sys.stderr.write("Sending request for "+some_url+"\n")
+    if MGRKEY != None:
+        some_url = some_url + "&auth=%s" % MGRKEY
+    sys.stderr.write("Sending request for " + some_url + "\n")
     time.sleep(1)
-# Ok, exception handling here is a mess.  So far we've seen GET errors, JSON["ERROR"], 
-# empty JSON objects, and invalid JSON objects
-    try: 
-        jsonobject = urllib.urlopen(some_url).read()
-    except: 
-        sys.stderr.write("Error retrieving %s"%some_url) 
-    try: 
-        j = json.loads(jsonobject)
+# Ok, exception handling here is a important.  HTTP errors and
+# malformed JSON are likely failure modes.
+    try:
+        opener = urllib2.urlopen(some_url)
+    except urllib2.HTTPError, e:
+        sys.stderr.write("Error retrieving %s" % some_url)
+        sys.stderr.write("Error with HTTP request: %d %s\n%s" % (e.code, e.reason, e.read()))
+        return np.atleast_2d(np.array( [1, 0] ) )
+    try:
+        j = json.loads(opener.read())
     except ValueError:
-        sys.stderr.write("Error parsing %s"%some_url) 
-        j = {} 
-    try: 
-        sys.stderr.write("Error with %s\nERROR : %s\n"%(some_url, j["ERROR"]))
+        sys.stderr.write("Error parsing %s" % some_url)
+        j = {}
+    try:
+        sys.stderr.write("Error with %s\nERROR : %s\n" % (some_url, j["ERROR"]))
         dataarray = None
     except KeyError:
         try:
+#        This is the data object containing the 15mer spectrum
             spectrum = j["statistics"]["qc"]["kmer"]["15_mer"]["data"]
             dataarray = np.array(spectrum, dtype="float")
             try:
@@ -91,10 +96,12 @@ def makegraphs(a, filename, option=6, label=None, n=0):
     (cn, c1, yd, yo, zd, zo, y) = calccumsum(a)
     if label == None:
         tracelabel = cleanlabel(filename)
-    else: 
+    else:
         tracelabel = cleanlabel(label)
-    b = np.flipud(np.sort(a.view('float,float'), order=['f0'], axis=0).view(np.float))  # sorted by abundance/coverage
-    c = np.flipud(np.sort(a.view('float,float'), order=['f1'], axis=0).view(np.float))  # sorted by size
+    b = np.flipud(np.sort(a.view('float,float'), order=['f0'], 
+           axis=0).view(np.float))  # sorted by abundance/coverage
+    c = np.flipud(np.sort(a.view('float,float'), order=['f1'], 
+           axis=0).view(np.float))  # sorted by size
     d = sortbycp(a)
     (b_cn, b_c1, b_yd, b_yo, b_zd, b_zo, b_y) = calccumsum(b)
     (c_cn, c_c1, c_yd, c_yo, c_zd, c_zo, c_y) = calccumsum(c)
@@ -110,7 +117,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
     if option == 0 or option == -1:
         if opts.dump:
             c = np.hstack((cn.reshape((len(cn), 1)), (c1.reshape((len(cn), 1))  )  ))
-            sys.stderr.write("saving output table in %s.0.plot.csv\n" % filename) 
+            sys.stderr.write("saving output table in %s.0.plot.csv\n" % filename)
             np.savetxt("%s.0.plot.csv" % filename,  c, fmt = ['%d', '%d'] , delimiter="\t" )
     elif option == 1:
         pA = plt.loglog(cn, cn*c1, "-", color=color, label=tracelabel )
@@ -121,7 +128,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.grid(1)
         if opts.dump:
             c = np.hstack((cn.reshape((len(cn), 1)), ((cn*c1).reshape((len(cn), 1))  )  ))
-            sys.stderr.write("saving output table in %s.1.plot.csv\n" % filename) 
+            sys.stderr.write("saving output table in %s.1.plot.csv\n" % filename)
             np.savetxt("%s.1.plot.csv" % filename,  c, fmt = ['%d', '%d'] , delimiter="\t" )
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel )
@@ -129,7 +136,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.ylabel("kmer abundance")
         plt.legend(loc="lower left")
         plt.grid(1)
-    elif option == 3: 
+    elif option == 3:
         pA = plt.semilogy(b_zo / b_zo.max(), b_cn, color=color, label=tracelabel )
         pA = plt.semilogy(b_zo / b_zo.max(), b_cn, '.', color=color )
         plt.xlabel("fraction of observed kmers")
@@ -143,12 +150,12 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.ylabel("kmer abundance")
         plt.legend(loc="upper right")
         plt.grid(1)
-    elif option == 5: 
+    elif option == 5:
         pA = plt.semilogx( yd, zo / zo.max(), '-', color=color )
         pA = plt.semilogx( yd, zo / zo.max(), '.', color=color, label=tracelabel )
         plt.xlabel("kmer rank")
         plt.ylabel("fraction of observed kmers")
-        plt.xlim((1, 10**9))
+        plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         plt.grid(1)
         plt.legend(loc="lower left")
@@ -157,26 +164,26 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         pA = plt.loglog( b_zd, b_cn, '.', color=color )
         plt.xlabel("kmer rank")
         plt.ylabel("kmer abundance")
-        plt.xlim((1, 10**8))
+        plt.xlim((1, 10**10))
         plt.ylim(1, 10**7)
         plt.grid(1)
         plt.legend(loc="lower left")
         if opts.dump:
             c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))  )  )
-            sys.stderr.write("saving output table in %s.6.plot.csv\n" % filename) 
+            sys.stderr.write("saving output table in %s.6.plot.csv\n" % filename)
             np.savetxt("%s.6.plot.csv" % filename,  c, fmt = ['%d', '%d'] , delimiter="\t" )
     elif option == 7:
         pA = plt.plot( x, c_zd, '.-', color=color, label=tracelabel)
         plt.xlabel("contig size rank")
         plt.ylabel("cuml contig size")
         plt.grid(1)
-        plt.legend(loc="upper right") 
+        plt.legend(loc="upper right")
     elif option == 8:
         pA = plt.plot( x, c_zo / c_zo.max() , '.-', color=color, label=tracelabel)
         plt.xlabel("contig size rank ")
         plt.ylabel("frac data explained ")
         plt.grid(1)
-        plt.legend(loc="upper right") 
+        plt.legend(loc="upper right")
     elif option == 9:
         pA = plt.plot( x, d_zo , '-', color=color, label=tracelabel)
         plt.xlabel("contig explain rank ")
@@ -233,7 +240,7 @@ def makegraphs(a, filename, option=6, label=None, n=0):
         plt.legend(loc="upper right")
 
 def calccumsum(a):
-    '''Calcaulates the cumulative-sum vectors from a 2d numpy array of [cov, num].  Note depends on upstream sort '''  
+    '''Calcaulates the cumulative-sum vectors from a 2d numpy array of [cov, num].  Note depends on upstream sort '''
     cn = a[:, 0]                          #   Coverage
     c1 = a[:, 1]                          #   number of distinct kmers.
     cp = cn * c1  # elementwise multiply     observed kmers by abundance
@@ -242,8 +249,8 @@ def calccumsum(a):
     zd = np.cumsum(c1)                     # cumulative number of distinct kmers (bottom to top)
     zo = np.cumsum(cp)                     # cumulative number of observed kmers (bottom to top)
     if zo.max() == 0 :
-        raise Exception
-    y = zo / zo.max() 
+        raise Exception  # There should be data here
+    y = zo / zo.max()
     return(cn, c1, yd, yo, zd, zo, y)
 
 def printstats(a, filename, filehandle=None, n=0):
@@ -251,13 +258,13 @@ def printstats(a, filename, filehandle=None, n=0):
     cn, c1, yd, yo, zd, zo, y = calccumsum(a)
     T  = zo.max()
     j  = cn / T
-    intermediate = - c1 * j * np.log(j) 
+    intermediate = - c1 * j * np.log(j)
     intermediate[np.isnan(intermediate)] = 0     # allows calculation with 0 counts in some rows
     H = np.exp(sum(intermediate))                # Entropy
     if T == 0 :
         H = np.NaN
     H2 = 1 / sum( c1*j*j )                    # Reyni entropy
-    w  = yo/yo.max()
+    w  = yo / yo.max()
     wd = yd
     M90 = calcmedian(wd, w, .9)    # 90th percentile by observations
     M50 = calcmedian(wd, w, .5)    # 50th percentile by observations
@@ -272,74 +279,79 @@ def printstats(a, filename, filehandle=None, n=0):
         consensusfh = filehandle
     if filehandle == None or n == 0 :
         consensusfh.write( "#filename\tM10\tM50\tM90\tM100\tF100\tF10K\tF1M\tH\tH2\n")
-    consensusfh.write( "%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\n" % 
+    consensusfh.write( "%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\n" %
                       (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2))
     if filehandle == None:
         consensusfh.close()
- 
+
 def loadfile(filename):
-    '''Loads file'''
-    try: 
+    '''Loads file, returns two-column ndarray or None'''
+    try:
         if filename.find("stats.txt") >=0:  # velvet contig stats format
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
         else:
-            matrix = np.loadtxt(filename)        # default bare-bones spectrum format 
-        return matrix 
+            matrix = np.loadtxt(filename)        # default bare-bones spectrum format
+        if matrix.shape[0] == 0:                 # return None if the file is empty 
+            return None
+        else:
+            return np.atleast_2d(matrix)
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
 
 def main(filename, opt=6, label=None, n=0 ):
-    '''Main driver; loads file and invokes makegraphs and printstats 
+    '''Main driver; loads file and invokes makegraphs and printstats
     to append graphics from each file onto the figure'''
     logfh = open(opts.logfile, "a")
     if opts.filetype.upper() == "MGM":
         a = getmgrkmerspectrum(filename)
     elif opts.filetype == "file":
-        a = np.atleast_2d(loadfile(filename))
-    else: 
-        raise ValueError("%s is invalid type (valid types are mgm and file)"%opts.filetype ) 
+        a = loadfile(filename)
+    else:
+        raise ValueError("%s is invalid type (valid types are mgm and file)" % opts.filetype )
+    if a == None:   # Abort this trace--but try to graph the others
+        return n 
     if label == None:
         label = filename
     if a.shape[1] > 0 :
         a = (a[np.lexsort((a[:, 1], a[:, 0]))])
         sys.stderr.write("Making graphs for %s\n" % filename)
-        try: 
+        try:
             makegraphs(a, filename, opt, label, n=n )
             sys.stderr.write("Printing stats in logfile %s %d\n" % (opts.logfile, n))
             printstats(a, filename, filehandle=logfh, n=n )
-            printstats(a, filename, filehandle=sys.stdout, n=n) 
+            printstats(a, filename, filehandle=sys.stdout, n=n)
             n += 1
-        except: 
+        except:
             sys.stderr.write("Error printing stats for %s\n" % filename)
             print "Unexpected error:", sys.exc_info()[0]
     else:
         sys.stderr.write("Error with dataset %s\n" % filename)
-    return n  
+    return n
 
 if __name__ == '__main__':
-    usage  = '''usage: plot-kmer-spectrum.py [options] <datafile> [<datafile2> <datafile3>...] 
+    usage  = '''usage: plot-kmer-spectrum.py [options] <datafile> [<datafile2> <datafile3>...]
        plot-kmer-spectrum.py [options] -l <list of targets, labels> '''
     parser = OptionParser(usage)
-    parser.add_option("-d", "--dump",   dest="dump",   action="store_true", 
+    parser.add_option("-d", "--dump",   dest="dump",   action="store_true",
          default=False, help="dump table with outputs ")
-    parser.add_option("-v", "--verbose", dest="verbose", action="store_true", 
+    parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
          default=False, help="verbose")
-    parser.add_option("-o", "--outfile", dest="outfile", action="store", 
+    parser.add_option("-o", "--outfile", dest="outfile", action="store",
          default=None, help="dump table with outputs ")
-    parser.add_option("-g", "--graph",  dest="option", action="store", type="int", 
+    parser.add_option("-g", "--graph",  dest="option", action="store", type="int",
          default="6", help="Graph number ")
-    parser.add_option("-i", "--interactive", dest="interactive", action="store_true", 
+    parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
          default=False, help="interactive mode--draw window")
-    parser.add_option("-l", "--list", dest="filelist",  
+    parser.add_option("-l", "--list", dest="filelist",
          default=None, help="file containing list of targets and labels")
-    parser.add_option("-t", "--type", dest="filetype", 
+    parser.add_option("-t", "--type", dest="filetype",
          default="file", help="type for file list (file,mgm)")
-    parser.add_option("-w", "--writetype", dest="writetype", 
+    parser.add_option("-w", "--writetype", dest="writetype",
          default="pdf", help="file type for output (pdf,png)")
-    parser.add_option("-a", "--appendlogfile", dest="logfile", 
+    parser.add_option("-a", "--appendlogfile", dest="logfile",
          default="kmers.log", help="logfile for summary statistics")
-  
+
     (opts, args) = parser.parse_args()
     graphtype = opts.option
     writetype = opts.writetype
@@ -348,38 +360,41 @@ if __name__ == '__main__':
         sys.exit(usage)
     assert writetype == "png" or writetype == "pdf"
 
-    if opts.outfile: 
+    if opts.outfile:
         imagefilename = "%s.%d.%s" % (opts.outfile, graphtype, writetype)
-    elif opts.filelist: 
+    elif opts.filelist:
         imagefilename = "%s.%d.%s" % (opts.filelist, graphtype, writetype)
-    else : 
+    else :
         imagefilename = "%s.%d.%s" % (args[0], graphtype, writetype)
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
     if not opts.interactive:
         mpl.use("Agg")
     else:
-        mpl.use('TkAgg')   # only invoke interactive backend if requested with -i 
+        mpl.use('TkAgg')   # only invoke interactive backend if requested with -i
     import matplotlib.pyplot as plt
-    if opts.filetype == "mgm":  
+    if opts.filetype == "mgm":
         try:
-            key = os.environ["MGRKEY"]
+            MGRKEY = os.environ["MGRKEY"]
         except KeyError:
-            key = ""
+            MGRKEY = ""
 
     graphcount = 0
-    if opts.filelist: 
+    if opts.filelist:
         assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
-        IN_FILE = open(opts.filelist, "r") 
+        IN_FILE = open(opts.filelist, "r")
         for line in IN_FILE:
-            a = line.rstrip().split("\t")
-            if len(a) == 1: 
-                a.append(a[0])
-            sys.stderr.write( "%s  %s \n" % (a[0], a[1]) ) 
-            graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
+            if line[0] != "#":
+                a = line.strip().split("\t")
+                if len(a[0]) > 0:
+                    if len(a) == 1:
+                        a.append(a[0])
+                    sys.stderr.write( "%s  %s \n" % (a[0], a[1]) )
+                    graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
     else:
         for f in args :
             filen = f
             graphcount = main(filen, graphtype, n=graphcount)
+    assert graphcount > 0, "ERROR: unable to find any data to graph!"
     if graphtype != -1:
         sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
         plt.savefig(imagefilename)
@@ -388,4 +403,4 @@ if __name__ == '__main__':
     else:
         sys.stderr.write( "Use -i to open widow with graph\n")
     if graphcount == 0 :
-        sys.stderr.write("ERROR:  no data found!\n") 
+        sys.stderr.write("ERROR:  no data found!\n")
