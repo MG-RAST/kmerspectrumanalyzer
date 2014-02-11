@@ -1,0 +1,23 @@
+Behavior of kmertool2
+
+First creates
+
+BCHQNi.fastq.1
+BCHQNi.fastq.2
+BCHQNi.fastq.3
+
+Then creates
+
+fPCX9K.js.part_0
+hbJoTS.js.part_0
+K6ILz7.js.part_0
+
+then creates a much larger 
+zjshpK.js     # for k=21, pretty rough, this is about twice input size
+
+Then deletes the part_0's
+
+Then deletes the .fastq.?'s
+
+Then runs both jellyfish and python for a while..
+

@@ -1,0 +1,20 @@
+SRR000333		SRA000062	SRX000091	SRR000333	454 sequencing of Treponema paraluiscuniculi A genomic fragment library
+SRR006330		SRA003611	SRX001813	SRR006330	454 sequencing of Acinetobacter sp. ADP1 genomic fragment library
+SRR006331		SRA003611	SRX001815	SRR006331	Illumina sequencing of Mycoplasma agalactiae PG2 MaPG2 genomic fragment library
+SRR006332		SRA003611	SRX001814	SRR006332	Illumina sequencing of Acinetobacter sp. ADP1 genomic fragment library
+SRR029227		SRA009983	SRX012308	SRR029227	Illumina sequencing of Treponema paraluiscuniculi Fragment
+SRR031266		SRA010200	SRX014085	SRR031266	454 sequencing of Burkholderia sp. CCGE1002 random whole genome shotgun library.
+SRR039966		SRA012494	SRX019256	SRR039966	454 sequencing of Candidatus Sulcia muelleri DMIN random whole genome shotgun library.
+SRR059236		SRA020821	SRX022824	SRR059236	454 sequencing of Escherichia coli KO11 random whole genome shotgun library.
+SRR059789		SRA020810	SRX023194	SRR059788,SRR059789	Niastella koreensis GR20-10 library
+SRR060960		SRA021075	SRX023929	SRR060959,SRR060960	Thermovirga lienii DSM 17291 library
+SRR071425		SRA026030	SRX030293	SRR071425	Mycobacterium smegmatis JS623 library
+SRR089544		SRA026535	SRX031496	SRR089544	Whole Genome Sequencing of Rothia dentocariosa
+SRR090599		SRA028879	SRX037710	SRR090599	Planctomyces brasiliensis DSM 5305 library
+SRR090709		SRA026383	SRX030908	SRR072318,SRR090709	Burkholderia sp. CCGE1002 library
+SRR190843		SRA035943	SRX059299	SRR190843	Owenweeksia hongkongensis DSM 17368 library
+SRR387449		SRA048196	SRX110172	SRR387449	PhiX_v2
+SRR396651		SRA049054	SRX114610	SRR396647,SRR396649,SRR396650,SRR396651,SRR396653	Listeria monocytogenes J0161
+SRR610299		SRA060971	SRX202156	SRR610299	Cylindrospermum stagnale PCC 7417 library
+SRR610309		SRA060980	SRX202164	SRR610309	Nostoc sp. PCC 7524 library
+SRR610309		SRA060980	SRX202164	SRR610309	Nostoc sp. PCC 7524 library
