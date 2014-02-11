@@ -43,8 +43,8 @@ def main(filename, opt=6, label=None, n=0):
     return n
 
 if __name__ == '__main__':
-    usage = '''usage: plot-kmer-spectrum.py [options] <datafile> [<datafile2> <datafile3>...]
-       plot-kmer-spectrum.py [options] -l <list of targets, labels> '''
+    usage = '''usage: plotkmerspectrum.py [options] <datafile> [<datafile2> <datafile3>...]
+       plotkmerspectrum.py [options] -l <list of targets, labels> '''
     parser = OptionParser(usage)
     parser.add_option("-d", "--dump", dest="dump", action="store_true",
          default=False, help="dump table with outputs ")

@@ -10,7 +10,7 @@ sequence datasets.
 This tool counts the numbers of occurrences of long kmers
 in a short-read dataset, which must be provided as a single 
 fasta or fastq file, producing a small kmer repeat histogram.
-The kmerspectrumanalyzer and plot-kmer-spectrum scripts 
+The `kmerspectrumanalyzer.py` and `plotkmerspectrum.py` scripts 
 prodvide visualizations and fits of this kmer spectrum. 
 
 ## Prerequisites

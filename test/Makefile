@@ -33,7 +33,7 @@ NC_017625.fna:
 # display some data
 %.6.pdf: %.21
 	$(eval STEM=$(subst .21,,$<))
-	for i in $$(seq -1 17); do plot-kmer-spectrum.py $< -o $(STEM) -g $$i; done 
+	for i in $$(seq -1 17); do plotkmerspectrum.py $< -o $(STEM) -g $$i; done 
 
 clean:
 	rm *.fit.csv *.fit.detail.csv *.fit.png *.pdf

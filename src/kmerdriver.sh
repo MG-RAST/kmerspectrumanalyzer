@@ -3,11 +3,11 @@ target=$1
 
 if [ -e $target ] 
 then
-plot-kmer-spectrum.py -g 1  $target -w png -o $target
-plot-kmer-spectrum.py -g 5  $target -w png -o $target
-plot-kmer-spectrum.py -g 6  $target -w png -o $target
-plot-kmer-spectrum.py -g 3  $target -w png -o $target
-plot-kmer-spectrum.py -g 4  $target -w png -o $target
+plotkmerspectrum.py -g 1  $target -w png -o $target
+plotkmerspectrum.py -g 5  $target -w png -o $target
+plotkmerspectrum.py -g 6  $target -w png -o $target
+plotkmerspectrum.py -g 3  $target -w png -o $target
+plotkmerspectrum.py -g 4  $target -w png -o $target
 if [ ! -e $target.10.fit.png ] 
 then
 kmerspectrumanalyzer.py $target -n 10 -o $target.10
