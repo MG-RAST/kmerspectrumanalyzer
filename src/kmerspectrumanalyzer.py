@@ -8,19 +8,7 @@ from optparse import OptionParser
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-
-def pad(xvalues, yvalues):
-    '''Adds missing integer values to x and corresponding zeros to y.'''
-    yout = []
-    xout = []
-    for i in range(int(1.5*(max(xvalues)))):
-        try:
-            xout.append(xvalues[xvalues.index(i+1)])
-            yout.append(yvalues[xvalues.index(i+1)])
-        except ValueError:
-            xout.append(i+1)
-            yout.append(0)
-    return(xout, yout)
+from ksatools import pad
 
 def weightedleastsquares(parameters, yvalues, xvalues, order=None):
     '''Returns vector of weighted residuals.  Used for initial fits.'''
@@ -155,7 +143,6 @@ def plotfit():
     plt.savefig("%s.fit.png" % os.path.basename(OUTFILE))
     if(OPTS.interactive):
         plt.show()
-
 
 if __name__ == '__main__':
     USAGE  = "usage: kmerspectrumanalyzer.py [options] <input table filename> "

@@ -10,7 +10,7 @@ sequence datasets.
 This tool counts the numbers of occurrences of long kmers
 in a short-read dataset, which must be provided as a single 
 fasta or fastq file, producing a small kmer repeat histogram.
-The kmerspectrumanalyzer and plot-kmer-spectrum scripts 
+The `kmerspectrumanalyzer.py` and `plotkmerspectrum.py` scripts 
 prodvide visualizations and fits of this kmer spectrum. 
 
 ## Prerequisites
@@ -20,7 +20,8 @@ the University of Maryland's Jellyfish kmer counting library.
 *   numpy http://www.numpy.org/
 *   scipy http://www.scipy.org/
 *   matplotlib http://www.matplotlib.org/
-*   jellyfish http://www.cbcb.umd.edu/software/jellyfish/
+*   jellyfish 1.1.6  http://www.cbcb.umd.edu/software/jellyfish/ 
+(Untested with jellyfish 2.0)
 
 ## License
 kmerspectrumanalyzer is under the BSD license; see LICENSE.
