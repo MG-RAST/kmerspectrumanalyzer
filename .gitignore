@@ -1,0 +1,4 @@
+*.pdf
+*.pyc
+*.png
+tifffile.py
