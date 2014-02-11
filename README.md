@@ -50,6 +50,9 @@ The manuscript can be found in repeatresolutionpaper/manuscript.
  
 ## Visualization gallery
 
+Kmer spectrum visualization for selected genome sequencing runs
 ![Kmer spectrum visualization for selected genome sequencing runs](img/filelistcv.1.png "Kmer spectrum visualization for selected genome sequencing runs")
-![Cumulative kmer spectrum showing genome size and solid fraction](img/filelistsz.5.png "Cumulative kmer spectrum showing genome size nad solid fraction")
-![Cumulative kmer spectrum showing genome size and coverage]"(img/filelistsz.6.png "Cumulative kmer spectrum showing genome size and coverage")
+Cumulative kmer spectrum showing genome size and solid fraction
+![Cumulative kmer spectrum showing genome size and solid fraction](img/filelistsz.5.png "Cumulative kmer spectrum showing genome size and solid fraction")
+Cumulative kmer spectrum showing genome size and coverage
+![Cumulative kmer spectrum showing genome size and coverage](img/filelistsz.6.png "Cumulative kmer spectrum showing genome size and coverage")
