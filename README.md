@@ -20,7 +20,7 @@ the University of Maryland's Jellyfish kmer counting library.
 *   numpy http://www.numpy.org/
 *   scipy http://www.scipy.org/
 *   matplotlib http://www.matplotlib.org/
-*   jellyfish 1.1.6  http://www.cbcb.umd.edu/software/jellyfish/ 
+*   jellyfish 1.1.5 or 1.1.6  http://www.cbcb.umd.edu/software/jellyfish/ 
 (Untested with jellyfish 2.0)
 
 ## License
@@ -35,13 +35,21 @@ into other software, and pretty much everything else is allowed.
 *   test -- example invokations and testing scripts
 
 ## Paper
-A paper describing interpreting the results of kmercounting has
-been published August 2013 in BMC Genomics. 2013 14(1):537
-"Rapid quantification of sequence repeats to resolve the size, structure and contents of bacterial genomes."
-Williams D, Trimble WL, Shilts M, Meyer F, and Ochman H. PMID: 23924250
+A paper describing kmerspectrumanalyzer was
+published August 2013 in *BMC Genomics. 2013 14(1):537*
+* "[Rapid quantification of sequence repeats to resolve the size, 
+structure and contents of bacterial genomes](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3751351/)."
+Williams D, Trimble WL, Shilts M, Meyer F, and Ochman H. 
+[PMID: 23924250](http://www.ncbi.nlm.nih.gov/pubmed/20634954)
 The manuscript can be found in repeatresolutionpaper/manuscript.
 
 ## Authors
 *   Will Trimble (Argonne National Laboratory)
 *   Travis Harrison (Argonne National Laboratory)
 *   David Williams (Yale University)
+ 
+## Visualization gallery
+
+![Kmer spectrum visualization for selected genome sequencing runs](img/filelistcv.1.png Kmer spectrum visualization for selected genome sequencing runs)
+![Cumulative kmer spectrum showing genome size and solid fraction](img/filelistsz.5.png Cumulative kmer spectrum showing genome size nad solid fraction)
+![Cumulative kmer spectrum showing genome size and coverage](img/filelistsz.6.png Cumulative kmer spectrum showing genome size and coverage)
