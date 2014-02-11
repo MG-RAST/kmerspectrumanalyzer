@@ -34,6 +34,21 @@ into other software, and pretty much everything else is allowed.
 *   repeatresolutionpaper  -- contains data supporting the paper
 *   test -- example invokations and testing scripts
 
+## Input/output
+
+This package contains a wrapper script (`kmer-tool2`) to count 
+long (k=21 default) kmers in fasta or fastq files using `jellyfish`.  
+The resulting summaries, known as "kmer spectra" or "kmer histograms" 
+are compact tables of number that summarize the redundancy of the 
+sequence data.  The following scripts process the kmer histograms:
+
+* `plotkmerspectrum.py` produces graphs of one or more kmer spectra 
+with a variety of transformations to facilitate interpretation
+* `kmerspectrumanalyzer.py` implements maximum-likelihood fitting to 
+a mixed-poisson model; if you have a single, well-behaved genome with
+more than 30x coverage, this will estimate genome size and kmer
+abundance.
+
 ## Paper
 A paper describing kmerspectrumanalyzer was
 published August 2013 in *BMC Genomics. 2013 14(1):537*
