@@ -1,0 +1,7 @@
+Kmerspectrumanalyzer 
+2013-02-14	Switched to git
+2013-03-08	moved to MG-RAST/kmerspectrumanalyzer
+2013-07-30	Manuscript in final form
+2013-08-12	Manuscript published
+2014-01-22  	Added tests, error handling
+2014-02-11	Added kmer rarefaction
