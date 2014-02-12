@@ -129,6 +129,7 @@ def printstats(a, filename, filehandle=None, n=0):
     F100 = calcmedian(w, wd, 100)    # fraction of data in top 100 kmers
     F10K = calcmedian(w, wd, 10000)  # in 10K kmers
     F1M = calcmedian(w, wd, 1000000) # in 1M kmers
+    C50 = calcmedian(cn, w, .5)      # 50th percentile by observations
     AVONE = np.sum(cn * c1) / T
     assert (AVONE - 1.)  < 1E-7
     AVCOV = np.sum(cn * c1 * cn) / T
@@ -139,9 +140,9 @@ def printstats(a, filename, filehandle=None, n=0):
         consensusfh = filehandle
     if filehandle == None or n == 0:
         consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
-             "\tF1M\tH\tH2\tAVC\tAVG\n")
-    consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\n" %
-                      (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN))
+             "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
+    consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\n" %
+                      (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
     if filehandle == None:
         consensusfh.close()
 
