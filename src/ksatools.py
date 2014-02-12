@@ -221,15 +221,15 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
                 delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
-        plt.xlabel("fraction of data")  # cumulative kmers observed
+        plt.xlabel("basepairs observed")  # cumulative kmers observed
         plt.ylabel("kmer abundance")
         legendloc = "lower left"
         plt.grid(1)
     elif option == 3:
         pA = plt.semilogy(b_zo / No, b_cn, color=color, label=tracelabel)
         pA = plt.semilogy(b_zo / No, b_cn, '.', color=color)
-        plt.xlabel("fraction of data")  # formerly "fraction of observed kmers"
-        plt.ylabel("kmer abundance ")
+        plt.xlabel("fraction of observed data")  # formerly "fraction of observed kmers"
+        plt.ylabel("kmer abundance")
         plt.grid(1)
         legendloc = "lower left"
     elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
@@ -243,7 +243,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         pA = plt.semilogx(yd, zo / No, '-', color=color)
         pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
         plt.xlabel("kmer rank (bp)")
-        plt.ylabel("fraction of data")
+        plt.ylabel("fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         plt.grid(1)
@@ -251,7 +251,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     elif option == 6:
         pA = plt.loglog(b_zd, b_cn, '-', color=color, label=tracelabel)
         pA = plt.loglog(b_zd, b_cn, '.', color=color)
-        plt.xlabel("kmer rank")
+        plt.xlabel("kmer rank (bp)")
         plt.ylabel("kmer abundance")
         plt.xlim((1, 10**10))
         plt.ylim(1, 10**7)
