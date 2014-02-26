@@ -44,7 +44,7 @@ def main(filename, opt=6, label=None, n=0):
 
 if __name__ == '__main__':
     usage = '''usage: plotkmerspectrum.py [options] <datafile> [<datafile2> <datafile3>...]
-       plotkmerspectrum.py [options] -l <list of targets, labels> '''
+       plotkmerspectrum.py [options] -l <file containing targets, labels> '''
     parser = OptionParser(usage)
     parser.add_option("-d", "--dump", dest="dump", action="store_true",
          default=False, help="dump table with outputs ")
@@ -64,7 +64,7 @@ if __name__ == '__main__':
          default="pdf", help="file type for output (pdf,png)")
     parser.add_option("-a", "--appendlogfile", dest="logfile",
          default="kmers.log", help="logfile for summary statistics")
-    parser.add_option("-s", "--suppresslegend", dest="suppress",
+    parser.add_option("-s", "--suppresslegend", dest="suppress", action="store_true",
          default=False, help="supress display of legend")
 
     (opts, args) = parser.parse_args()
