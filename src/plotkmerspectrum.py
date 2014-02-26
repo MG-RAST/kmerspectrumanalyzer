@@ -106,7 +106,7 @@ if __name__ == '__main__':
                 if len(a[0]) > 0:
                     if len(a) == 1:
                         a.append(a[0])
-                    sys.stderr.write("%s  %s \n" % (a[0], a[1]))
+                    sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
                     graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
     else:
         for f in args:

@@ -55,6 +55,30 @@ def cleanlabel(label):
             label = label[0:(label.find(suffix))]
     return label
 
+def drawboxes(breaks, axis, boxcolor=1):
+    '''Draws boxes on the current plot.'''
+    from matplotlib.patches import Polygon
+    from matplotlib.collections import PatchCollection
+    import matplotlib.pyplot as plt
+    ax = plt.gca()
+    x1, x2 = plt.xlim()
+    y1, y2 = plt.ylim()
+    patches = []
+    if axis == 0:
+      for i in range(len(breaks)-1):
+          y1, y2 = (breaks[i+1], breaks[i])
+          patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
+    else:
+      for i in range(len(breaks)-1):
+          x1, x2 = (breaks[i+1], breaks[i])
+          patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
+    if boxcolor == 1:
+        p = PatchCollection(patches, cmap=plt.cm.jet, alpha=0.4)
+    else:
+        p = PatchCollection(patches, cmap=plt.cm.Greys, alpha=0.2)
+    p.set_array(np.array([0, 0.2, 0.4, 0.5, 0.7, 0.9, 1]))
+    ax.add_collection(p)
+
 def getmgrkmerspectrum(accessionnumber, mgrkey=None):
     '''Retrieve kmer spectrum from MG-RAST'''
     import urllib2, json, time
@@ -165,18 +189,18 @@ def loadfile(filename):
         return None
 
 def plotstratify(spectrum, bands=None):
-    if bands == None:
-        bands = [1, 10, 100, 1000, 10000, 100000]
     bands, frac, size = stratify(spectrum, bands)
     for i in range(len(bands)):
         if i != len(bands)-1:
             print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
                 size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
 
-def stratify(spectrum, bands):
+def stratify(spectrum, bands=None):
     '''Breaks spectrum up into defined abundance-buckets,
     reporting data fraction and number of kmers=basepairs
     contained in each bucket.'''
+    if bands == None:
+        bands = [1, 10, 100, 1000, 10000, 100000]
     n = spectrum[:, 0]
     y = spectrum[:, 1]
     p = n * y
@@ -187,7 +211,7 @@ def stratify(spectrum, bands):
         frac.append(np.sum(p[n >= b]) / T)
         size.append(np.sum(y[n >= b]))
     frac.append(0)
-    size.append(0)
+    size.append(1)
     bands.append(bands[-1] * 10)
     return bands, frac, size
 
@@ -254,14 +278,14 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         pA = plt.semilogy(b_zd / Nd, b_cn, '.', color=color)
         xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
-    elif option == 5:
+    elif option == 5 or option == 25:
         pA = plt.semilogx(yd, zo / No, '-', color=color)
         pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
         xlabel, ylabel = ("kmer rank (bp)", "fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         legendloc = "lower left"
-    elif option == 6:
+    elif option == 6 or option == 26:
         pA = plt.loglog(b_zd, b_cn, '-', color=color, label=tracelabel)
         pA = plt.loglog(b_zd, b_cn, '.', color=color)
         xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
@@ -316,11 +340,22 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
-    elif option == -2:
+    if option == -2 or option == 26 or option == 25:
         if dump:
             plotstratify(spectrum)
         else:
             plotstratify(spectrum)
+    # For these two graphs, draw rainbow bands
+    if option == 26:
+        bands, frac, size = stratify(spectrum)
+        drawboxes(bands, 0)
+    elif option == 25:
+        bands, frac, size = stratify(spectrum)
+        fracboundaries = 1 - np.array(frac)
+        sizeboundaries= np.flipud(np.cumsum(np.flipud(size)))
+        drawboxes(sizeboundaries, 1)
+        drawboxes(fracboundaries, 0, boxcolor=0)
+    # Draw graphs if option >= 0
     if option >= 0:
         plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
