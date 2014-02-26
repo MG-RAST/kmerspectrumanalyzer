@@ -30,10 +30,10 @@ def main(filename, opt=6, label=None, n=0):
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
             makegraphs(spectrum, filename, opt, label, n=n, dump=opts.dump)
-            sys.stderr.write("Printing stats in logfile %s %d\n" %
-                (opts.logfile, n))
+#            sys.stderr.write("Printing stats in logfile %s %d\n" %
+#                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
-            printstats(spectrum, filename, filehandle=sys.stdout, n=n)
+#            printstats(spectrum, filename, filehandle=sys.stdout, n=n)
             n += 1
         except ValueError:   # This catches no data or defective data
             sys.stderr.write("Error printing stats for %s\n" % filename)
@@ -71,8 +71,7 @@ if __name__ == '__main__':
     graphtype = opts.option
     writetype = opts.writetype
     if len(args) == 0 and not opts.filelist:
-        print "Missing input file argument!"
-        sys.exit(usage)
+        sys.exit("Missing input file argument!\n" + usage)
     assert writetype == "png" or writetype == "pdf"
 
     if opts.outfile:
