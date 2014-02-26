@@ -209,9 +209,10 @@ def stratify(spectrum, bands=None):
     size = []
     for b in bands:
         frac.append(np.sum(p[n >= b]) / T)
-        size.append(np.sum(y[n >= b]))
+        size.append(np.sum(y[n >= b]) + 1)
+    # +1 adds an artificial count in the largest bin
     frac.append(0)
-    size.append(1)
+    size.append(0)
     bands.append(bands[-1] * 10)
     return bands, frac, size
 
@@ -352,7 +353,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     elif option == 25:
         bands, frac, size = stratify(spectrum)
         fracboundaries = 1 - np.array(frac)
-        sizeboundaries= np.flipud(np.cumsum(np.flipud(size)))
+        sizeboundaries = size
         drawboxes(sizeboundaries, 1)
         drawboxes(fracboundaries, 0, boxcolor=0)
     # Draw graphs if option >= 0
