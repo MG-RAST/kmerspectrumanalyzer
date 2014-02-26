@@ -131,7 +131,7 @@ def printstats(a, filename, filehandle=None, n=0):
     F1M = calcmedian(w, wd, 1000000) # in 1M kmers
     C50 = calcmedian(cn, w, .5)      # 50th percentile by observations
     AVONE = np.sum(cn * c1) / T
-    assert (AVONE - 1.)  < 1E-7
+    assert (AVONE - 1.) < 1E-7
     AVCOV = np.sum(cn * c1 * cn) / T
     AVGEN = np.sum(cn * c1 * c1) / T
     if filehandle == None:
@@ -163,6 +163,24 @@ def loadfile(filename):
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
+
+def stratify(spectrum, bands=[1,10,100,1000,10000,100000]):
+    n = spectrum[:, 0]
+    y = spectrum[:, 1]
+    p = n * y
+    T = sum(p)
+    frac = []
+    size = []
+    for b in bands:
+        frac.append(np.sum(p[n >= b]) / T)
+        size.append(np.sum(y[n >= b ]))
+    frac.append(0)
+    bands.append(bands[-1] * 10)
+    size.append(0)
+    for i in range(len(bands)):
+        if i != len(bands)-1:
+            print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"%(size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+    return 0
 
 def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     '''Draw graphs, one at a time, and add them to the current plot.
@@ -328,5 +346,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         plt.ylabel("data explained (bogo bp) ")
         plt.grid(1)
         legendloc = "upper right"
+    elif option == -2:
+        stratify(spectrum)
     if option >= 0:
         plt.legend(loc=legendloc)
