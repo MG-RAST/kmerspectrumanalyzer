@@ -114,7 +114,7 @@ if __name__ == '__main__':
             graphcount = main(filen, graphtype, n=graphcount)
     # don't continue if all inputs fail
     assert graphcount > 0, "ERROR: unable to find any data to graph!"
-    if graphtype != -1:
+    if graphtype >= 0:
         sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
         plt.savefig(imagefilename)
     if opts.interactive:

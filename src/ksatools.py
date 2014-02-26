@@ -166,7 +166,7 @@ def loadfile(filename):
 
 def plotstratify(spectrum, bands=None):
     if bands == None:
-        bands=[1,10,100,1000,10000,100000]
+        bands = [1, 10, 100, 1000, 10000, 100000]
     bands, frac, size = stratify(spectrum, bands)
     for i in range(len(bands)):
         if i != len(bands)-1:
@@ -185,7 +185,7 @@ def stratify(spectrum, bands):
     size = []
     for b in bands:
         frac.append(np.sum(p[n >= b]) / T)
-        size.append(np.sum(y[n >= b ]))
+        size.append(np.sum(y[n >= b]))
     frac.append(0)
     size.append(0)
     bands.append(bands[-1] * 10)
@@ -217,6 +217,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     Nd = b_zd.max()
     x = np.arange(len(b[:, 0]))                  # rank
     color = getcolor(n)
+    outfile = "%s.%d.plot.csv" % (filename, option)
     if option == 0:
         pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
         pA = plt.loglog(b_cn, b_c1, ".", color=color)
@@ -228,10 +229,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         if dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
                 (c1.reshape((len(cn), 1)))))
-            sys.stderr.write("saving output table in %s.0.plot.csv\n" %
-                filename)
-            np.savetxt("%s.0.plot.csv" % filename, c, fmt=['%d', '%d'],
-                delimiter="\t")
+            sys.stderr.write("saving output table in %s\n" % outfile)
+            np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 1:
         pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel)
         pA = plt.loglog(cn, cn * c1, '.', color=color)
@@ -242,9 +241,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         if dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
                 ((cn * c1).reshape((len(cn), 1)))))
-            sys.stderr.write("saving output table in %s.1.plot.csv\n" %
-                filename)
-            np.savetxt("%s.1.plot.csv" % filename, c, fmt=['%d', '%d'],
+            sys.stderr.write("saving output table in %s\n" % outfile)
+            np.savetxt(outfile, c, fmt=['%d', '%d'],
                 delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
@@ -286,9 +284,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         legendloc = "lower left"
         if dump:
             c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
-            sys.stderr.write("saving output table in %s.6.plot.csv\n" % filename)
-            np.savetxt("%s.6.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
-
+            sys.stderr.write("saving output table in %s\n" % outfile)
+            np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 7:
         pA = plt.plot(x, c_zd, '.-', color=color, label=tracelabel)
         plt.xlabel("contig size rank")
@@ -356,6 +353,9 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         plt.grid(1)
         legendloc = "upper right"
     elif option == -2:
-        plotstratify(spectrum)
+        if dump:
+            plotstratify(spectrum)
+        else:
+            plotstratify(spectrum)
     if option >= 0:
         plt.legend(loc=legendloc)
