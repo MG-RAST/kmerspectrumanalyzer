@@ -164,7 +164,19 @@ def loadfile(filename):
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
 
-def stratify(spectrum, bands=[1,10,100,1000,10000,100000]):
+def plotstratify(spectrum, bands=None):
+    if bands == None:
+        bands=[1,10,100,1000,10000,100000]
+    bands, frac, size = stratify(spectrum, bands)
+    for i in range(len(bands)):
+        if i != len(bands)-1:
+            print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
+                size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+
+def stratify(spectrum, bands):
+    '''Breaks spectrum up into defined abundance-buckets,
+    reporting data fraction and number of kmers=basepairs
+    contained in each bucket.'''
     n = spectrum[:, 0]
     y = spectrum[:, 1]
     p = n * y
@@ -175,12 +187,9 @@ def stratify(spectrum, bands=[1,10,100,1000,10000,100000]):
         frac.append(np.sum(p[n >= b]) / T)
         size.append(np.sum(y[n >= b ]))
     frac.append(0)
-    bands.append(bands[-1] * 10)
     size.append(0)
-    for i in range(len(bands)):
-        if i != len(bands)-1:
-            print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"%(size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
-    return 0
+    bands.append(bands[-1] * 10)
+    return bands, frac, size
 
 def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     '''Draw graphs, one at a time, and add them to the current plot.
@@ -347,6 +356,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         plt.grid(1)
         legendloc = "upper right"
     elif option == -2:
-        stratify(spectrum)
+        plotstratify(spectrum)
     if option >= 0:
         plt.legend(loc=legendloc)
