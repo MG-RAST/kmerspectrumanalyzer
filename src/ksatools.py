@@ -65,13 +65,13 @@ def drawboxes(breaks, axis, boxcolor=1):
     y1, y2 = plt.ylim()
     patches = []
     if axis == 0:
-      for i in range(len(breaks)-1):
-          y1, y2 = (breaks[i+1], breaks[i])
-          patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
+        for i in range(len(breaks)-1):
+            y1, y2 = (breaks[i+1], breaks[i])
+            patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
     else:
-      for i in range(len(breaks)-1):
-          x1, x2 = (breaks[i+1], breaks[i])
-          patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
+        for i in range(len(breaks)-1):
+            x1, x2 = (breaks[i+1], breaks[i])
+            patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
     if boxcolor == 1:
         p = PatchCollection(patches, cmap=plt.cm.jet, alpha=0.4)
     else:
