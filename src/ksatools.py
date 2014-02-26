@@ -221,8 +221,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     if option == 0:
         pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
         pA = plt.loglog(b_cn, b_c1, ".", color=color)
-        plt.xlabel("kmer abundance")
-        plt.ylabel("number of kmers")
+        xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
         plt.grid(1)
     if option == 0 or option == -1:
@@ -234,8 +233,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     elif option == 1:
         pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel)
         pA = plt.loglog(cn, cn * c1, '.', color=color)
-        plt.xlabel("kmer abundance")
-        plt.ylabel("kmers observed")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
         plt.grid(1)
         if dump:
@@ -246,29 +244,25 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
                 delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
-        plt.xlabel("basepairs observed")  # cumulative kmers observed
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("basepairs observed", "kmer abundance")
         legendloc = "lower left"
         plt.grid(1)
     elif option == 3:
         pA = plt.semilogy(b_zo / No, b_cn, color=color, label=tracelabel)
         pA = plt.semilogy(b_zo / No, b_cn, '.', color=color)
-        plt.xlabel("fraction of observed data")  # formerly "fraction of observed kmers"
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("fraction of observed data", "kmer abundance")
         plt.grid(1)
         legendloc = "lower left"
     elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
         pA = plt.semilogy(b_zd / Nd, b_cn, color=color, label=tracelabel)
         pA = plt.semilogy(b_zd / Nd, b_cn, '.', color=color)
-        plt.xlabel("fraction of distinct kmers")
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
         plt.grid(1)
     elif option == 5:
         pA = plt.semilogx(yd, zo / No, '-', color=color)
         pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
-        plt.xlabel("kmer rank (bp)")
-        plt.ylabel("fraction of observed data")
+        xlabel, ylabel = ("kmer rank (bp)", "fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         plt.grid(1)
@@ -276,8 +270,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     elif option == 6:
         pA = plt.loglog(b_zd, b_cn, '-', color=color, label=tracelabel)
         pA = plt.loglog(b_zd, b_cn, '.', color=color)
-        plt.xlabel("kmer rank (bp)")
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
         plt.xlim((1, 10**10))
         plt.ylim(1, 10**7)
         plt.grid(1)
@@ -288,68 +281,57 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
             np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 7:
         pA = plt.plot(x, c_zd, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig size rank")
-        plt.ylabel("cuml contig size")
+        xlabel, ylabel = ("contig size rank", "cuml contig size")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 8:
         pA = plt.plot(x, c_zo / No, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig size rank ")
-        plt.ylabel("frac data explained ")
+        xlabel, ylabel = ("contig size rank", "frac data explained")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 9:
         pA = plt.plot(x, d_zo, '-', color=color, label=tracelabel)
-        plt.xlabel("contig explain rank ")
-        plt.ylabel("data explained ")
+        xlabel, ylabel = ("contig explain rank", "data explained")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 10:
         pA = plt.plot(x, b_yo / No, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig cov rank ")
-        plt.ylabel("frac data explained ")
+        xlabel, ylabel = ("contig cov rank", "frac data explained")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 11:
         pA = plt.plot(x, b_yo, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig cov rank ")
-        plt.ylabel("data explained (bogo bp) ")
+        xlabel, ylabel = ("contig cov rank", "data explained (bogo bp)")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 12:
         pA = plt.plot(c_zd, c_zo, '.-', color=color, label=tracelabel)
-        plt.xlabel("cumulative contig size")
-        plt.ylabel("data explained (bogo bp) ")
+        xlabel, ylabel = ("cumulative contig size", "data explained (bogo bp)")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 13:
         pA = plt.plot(x, b_cn, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig cov rank ")
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("contig cov rank", "kmer abundance")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 14:
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig expl rank ")
-        plt.ylabel("data explained (bogo bp) ")
+        xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 15:
         pA = plt.plot(x, c_c1, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig size rank")
-        plt.ylabel("contig size")
+        xlabel, ylabel = ("contig size rank", "contig size")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 16:
         pA = plt.plot(x, c_yd, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig expl rank ")
-        plt.ylabel("data explained (bogo bp) ")
+        xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         plt.grid(1)
         legendloc = "upper right"
     elif option == 17:
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig expl rank ")
-        plt.ylabel("data explained (bogo bp) ")
+        xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         plt.grid(1)
         legendloc = "upper right"
     elif option == -2:
@@ -359,3 +341,5 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
             plotstratify(spectrum)
     if option >= 0:
         plt.legend(loc=legendloc)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
