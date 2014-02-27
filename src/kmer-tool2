@@ -40,9 +40,13 @@ def split_fasta(in_fh, file_base, max_size):
     curr_buff = 0
     curr_file = 0
     strbuffer = ''
+    firstline = 1
     fhdl_name = ["%s.%d" % (file_base, curr_file + 1)]
     fhdl_set = [open(fhdl_name[curr_file], "w")]
     for line in in_fh:
+        if firstline:
+            assert line[0] == ">", "Wrong data type! Error splitting FASTA"
+            firstline = 0
         head = line[0] == ">"
         if head and ((curr_size + curr_buff) >= max_size):
             fhdl_set[curr_file].write(strbuffer)
@@ -71,11 +75,15 @@ def split_fastq(in_fh, file_base, max_size):
     curr_buff = 0
     curr_file = 0
     strbuffer = ''
+    firstline = 1
     fhdl_name = ["%s.%d" % (file_base, curr_file + 1)]
     fhdl_set = [open(fhdl_name[curr_file], "w")]
     f = in_fh
     if True:
         for lines in itertools.izip_longest(*[f]*4):
+            if firstline == 1:
+                assert lines[0][0] == "@", "Wrong data type!  Error splitting FASTQ!"
+                firstline = 0
             if (curr_size + curr_buff) >= max_size:
                 fhdl_set[curr_file].write(strbuffer)
                 curr_size = 0
