@@ -72,7 +72,7 @@ if __name__ == '__main__':
     writetype = opts.writetype
     if len(args) == 0 and not opts.filelist:
         sys.exit("Missing input file argument!\n" + usage)
-    assert writetype == "png" or writetype == "pdf"
+    assert writetype == "png" or writetype == "pdf" or writetype == "eps"
 
     if opts.outfile:
         imagefilename = "%s.%d.%s" % (opts.outfile, graphtype, writetype)
