@@ -1,23 +1,37 @@
 #!/bin/bash
 filename=$1
 k=21
-filetype=fastq
-USAGE="Usage: countkmer${k}.sh <fastq filename>"
+# Files are auto-detected, but format is needed in advance
+# when streaming data from standard in.  
+
+FILETYPE=fastq   
+USAGE1="Usage: countkmer${k}.sh one.fastq
+Usage: countkmer${k}.sh one.fasta
+       countkmer${k}.sh one.fastq [two.fastq ...]
+       countkmer${k}.sh one.fasta [two.fasta ...]
+       cat one.fastq two.fastq | countkmer${k}.sh > onetwo.21"
+
 if [ $# -lt 1 ]
     then
-    echo "Error: fastq filename is required"
-    echo $USAGE 
-    exit
-elif [ $# -gt 1 ]
-    then 
-    echo "Error: only one argument is required"
-    echo $USAGE 
-    exit
-elif [[ ! -e $filename ]] 
-    then 
-    echo "Error: Input filename $filename does not exist."
-    echo $USAGE 
-    exit
-fi 
-echo "Counting ${k}mers in $filename, creating $filename.${k} with counts."
-kmer-tool2  -t $filetype -l $k -f histo -i $filename -o $filename.${k}
+    if [ -t 0 ]   # Test STDIN is interactive
+        then
+        echo "Error: with no arguments, expects FASTQ data from stdin"
+        echo "$USAGE1"
+        exit
+        fi
+#        echo "Standard in to default.${k}"
+        kmer-tool2  -t $FILETYPE -l $k -f histo -i - -o default.${k}
+        cat default.${k}
+else  # one or more argument
+    for filename in $@ 
+        do
+        if [[ ! -e $filename ]] 
+            then 
+            echo "Error: Input filename $filename does not exist."
+            echo $USAGE 
+            exit
+            fi 
+        echo "Counting ${k}mers in $filename, creating $filename.${k}"
+        kmer-tool2  -t $FILETYPE -l $k -f histo -i $filename -o $filename.${k}
+        done
+fi

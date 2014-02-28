@@ -55,6 +55,30 @@ def cleanlabel(label):
             label = label[0:(label.find(suffix))]
     return label
 
+def drawboxes(breaks, axis, boxcolor=1):
+    '''Draws boxes on the current plot.'''
+    from matplotlib.patches import Polygon
+    from matplotlib.collections import PatchCollection
+    import matplotlib.pyplot as plt
+    ax = plt.gca()
+    x1, x2 = plt.xlim()
+    y1, y2 = plt.ylim()
+    patches = []
+    if axis == 0:
+        for i in range(len(breaks)-1):
+            y1, y2 = (breaks[i+1], breaks[i])
+            patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
+    else:
+        for i in range(len(breaks)-1):
+            x1, x2 = (breaks[i+1], breaks[i])
+            patches.append(Polygon([[x1, y2], [x1, y1], [x2, y1], [x2, y2]], True))
+    if boxcolor == 1:
+        p = PatchCollection(patches, cmap=plt.cm.jet, alpha=0.4)
+    else:
+        p = PatchCollection(patches, cmap=plt.cm.Greys, alpha=0.2)
+    p.set_array(np.array([0, 0.2, 0.4, 0.5, 0.7, 0.9, 1]))
+    ax.add_collection(p)
+
 def getmgrkmerspectrum(accessionnumber, mgrkey=None):
     '''Retrieve kmer spectrum from MG-RAST'''
     import urllib2, json, time
@@ -129,15 +153,20 @@ def printstats(a, filename, filehandle=None, n=0):
     F100 = calcmedian(w, wd, 100)    # fraction of data in top 100 kmers
     F10K = calcmedian(w, wd, 10000)  # in 10K kmers
     F1M = calcmedian(w, wd, 1000000) # in 1M kmers
+    C50 = calcmedian(cn, w, .5)      # 50th percentile by observations
+    AVONE = np.sum(cn * c1) / T
+    assert (AVONE - 1.) < 1E-7
+    AVCOV = np.sum(cn * c1 * cn) / T
+    AVGEN = np.sum(cn * c1 * c1) / T
     if filehandle == None:
         consensusfh = open(filename, "w")
     else:
         consensusfh = filehandle
     if filehandle == None or n == 0:
         consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
-             "\tF1M\tH\tH2\n")
-    consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\n" %
-                      (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2))
+             "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
+    consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\n" %
+                      (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
     if filehandle == None:
         consensusfh.close()
 
@@ -158,6 +187,34 @@ def loadfile(filename):
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return None
+
+def plotstratify(spectrum, bands=None):
+    bands, frac, size = stratify(spectrum, bands)
+    for i in range(len(bands)):
+        if i != len(bands)-1:
+            print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
+                size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+
+def stratify(spectrum, bands=None):
+    '''Breaks spectrum up into defined abundance-buckets,
+    reporting data fraction and number of kmers=basepairs
+    contained in each bucket.'''
+    if bands == None:
+        bands = [1, 10, 100, 1000, 10000, 100000]
+    n = spectrum[:, 0]
+    y = spectrum[:, 1]
+    p = n * y
+    T = sum(p)
+    frac = []
+    size = []
+    for b in bands:
+        frac.append(np.sum(p[n >= b]) / T)
+        size.append(np.sum(y[n >= b]) + 1)
+    # +1 adds an artificial count in the largest bin
+    frac.append(0)
+    size.append(0)
+    bands.append(bands[-1] * 10)
+    return bands, frac, size
 
 def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     '''Draw graphs, one at a time, and add them to the current plot.
@@ -185,143 +242,123 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
     Nd = b_zd.max()
     x = np.arange(len(b[:, 0]))                  # rank
     color = getcolor(n)
+    outfile = "%s.%d.plot.csv" % (filename, option)
     if option == 0:
         pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
         pA = plt.loglog(b_cn, b_c1, ".", color=color)
-        plt.xlabel("kmer abundance")
-        plt.ylabel("number of kmers")
+        xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
-        plt.grid(1)
     if option == 0 or option == -1:
         if dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
                 (c1.reshape((len(cn), 1)))))
-            sys.stderr.write("saving output table in %s.0.plot.csv\n" %
-                filename)
-            np.savetxt("%s.0.plot.csv" % filename, c, fmt=['%d', '%d'],
-                delimiter="\t")
+            sys.stderr.write("saving output table in %s\n" % outfile)
+            np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 1:
         pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel)
         pA = plt.loglog(cn, cn * c1, '.', color=color)
-        plt.xlabel("kmer abundance")
-        plt.ylabel("kmers observed")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
-        plt.grid(1)
         if dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
                 ((cn * c1).reshape((len(cn), 1)))))
-            sys.stderr.write("saving output table in %s.1.plot.csv\n" %
-                filename)
-            np.savetxt("%s.1.plot.csv" % filename, c, fmt=['%d', '%d'],
+            sys.stderr.write("saving output table in %s\n" % outfile)
+            np.savetxt(outfile, c, fmt=['%d', '%d'],
                 delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
-        plt.xlabel("fraction of data")  # cumulative kmers observed
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("basepairs observed", "kmer abundance")
         legendloc = "lower left"
-        plt.grid(1)
     elif option == 3:
         pA = plt.semilogy(b_zo / No, b_cn, color=color, label=tracelabel)
         pA = plt.semilogy(b_zo / No, b_cn, '.', color=color)
-        plt.xlabel("fraction of data")  # formerly "fraction of observed kmers"
-        plt.ylabel("kmer abundance ")
-        plt.grid(1)
+        xlabel, ylabel = ("fraction of observed data", "kmer abundance")
         legendloc = "lower left"
     elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
         pA = plt.semilogy(b_zd / Nd, b_cn, color=color, label=tracelabel)
         pA = plt.semilogy(b_zd / Nd, b_cn, '.', color=color)
-        plt.xlabel("fraction of distinct kmers")
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
-        plt.grid(1)
-    elif option == 5:
+    elif option == 5 or option == 25:
         pA = plt.semilogx(yd, zo / No, '-', color=color)
         pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
-        plt.xlabel("kmer rank (bp)")
-        plt.ylabel("fraction of data")
+        xlabel, ylabel = ("kmer rank (bp)", "fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
-        plt.grid(1)
         legendloc = "lower left"
-    elif option == 6:
+    elif option == 6 or option == 26:
         pA = plt.loglog(b_zd, b_cn, '-', color=color, label=tracelabel)
         pA = plt.loglog(b_zd, b_cn, '.', color=color)
-        plt.xlabel("kmer rank")
-        plt.ylabel("kmer abundance")
+        xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
         plt.xlim((1, 10**10))
         plt.ylim(1, 10**7)
-        plt.grid(1)
         legendloc = "lower left"
         if dump:
             c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
-            sys.stderr.write("saving output table in %s.6.plot.csv\n" % filename)
-            np.savetxt("%s.6.plot.csv" % filename, c, fmt=['%d', '%d'], delimiter="\t")
-
+            sys.stderr.write("saving output table in %s\n" % outfile)
+            np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 7:
         pA = plt.plot(x, c_zd, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig size rank")
-        plt.ylabel("cuml contig size")
-        plt.grid(1)
+        xlabel, ylabel = ("contig size rank", "cuml contig size")
         legendloc = "upper right"
     elif option == 8:
         pA = plt.plot(x, c_zo / No, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig size rank ")
-        plt.ylabel("frac data explained ")
-        plt.grid(1)
+        xlabel, ylabel = ("contig size rank", "frac data explained")
         legendloc = "upper right"
     elif option == 9:
         pA = plt.plot(x, d_zo, '-', color=color, label=tracelabel)
-        plt.xlabel("contig explain rank ")
-        plt.ylabel("data explained ")
-        plt.grid(1)
+        xlabel, ylabel = ("contig explain rank", "data explained")
         legendloc = "upper right"
     elif option == 10:
         pA = plt.plot(x, b_yo / No, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig cov rank ")
-        plt.ylabel("frac data explained ")
-        plt.grid(1)
+        xlabel, ylabel = ("contig cov rank", "frac data explained")
         legendloc = "upper right"
     elif option == 11:
         pA = plt.plot(x, b_yo, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig cov rank ")
-        plt.ylabel("data explained (bogo bp) ")
-        plt.grid(1)
+        xlabel, ylabel = ("contig cov rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 12:
         pA = plt.plot(c_zd, c_zo, '.-', color=color, label=tracelabel)
-        plt.xlabel("cumulative contig size")
-        plt.ylabel("data explained (bogo bp) ")
-        plt.grid(1)
+        xlabel, ylabel = ("cumulative contig size", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 13:
         pA = plt.plot(x, b_cn, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig cov rank ")
-        plt.ylabel("kmer abundance")
-        plt.grid(1)
+        xlabel, ylabel = ("contig cov rank", "kmer abundance")
         legendloc = "upper right"
     elif option == 14:
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig expl rank ")
-        plt.ylabel("data explained (bogo bp) ")
-        plt.grid(1)
+        xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 15:
         pA = plt.plot(x, c_c1, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig size rank")
-        plt.ylabel("contig size")
-        plt.grid(1)
+        xlabel, ylabel = ("contig size rank", "contig size")
         legendloc = "upper right"
     elif option == 16:
         pA = plt.plot(x, c_yd, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig expl rank ")
-        plt.ylabel("data explained (bogo bp) ")
-        plt.grid(1)
+        xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 17:
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
-        plt.xlabel("contig expl rank ")
-        plt.ylabel("data explained (bogo bp) ")
-        plt.grid(1)
+        xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
+    if option == -2 or option == 26 or option == 25:
+        if dump:
+            plotstratify(spectrum)
+        else:
+            plotstratify(spectrum)
+    # For these two graphs, draw rainbow bands
+    if option == 26:
+        bands, frac, size = stratify(spectrum)
+        drawboxes(bands, 0)
+    elif option == 25:
+        bands, frac, size = stratify(spectrum)
+        fracboundaries = 1 - np.array(frac)
+        sizeboundaries = size
+        drawboxes(sizeboundaries, 1)
+        drawboxes(fracboundaries, 0, boxcolor=0)
+    # Draw graphs if option >= 0
     if option >= 0:
         plt.legend(loc=legendloc)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.grid(1)

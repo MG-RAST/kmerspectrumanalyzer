@@ -5,3 +5,5 @@ Kmerspectrumanalyzer
 2013-08-12	Manuscript published
 2014-01-22  	Added tests, error handling
 2014-02-11	Added kmer rarefaction
+2014-02-26	Added rainbow visualizations
+2014-02-28 	Usability fixes, added user guide 0.8

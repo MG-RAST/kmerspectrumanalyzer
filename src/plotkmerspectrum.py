@@ -30,10 +30,10 @@ def main(filename, opt=6, label=None, n=0):
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
             makegraphs(spectrum, filename, opt, label, n=n, dump=opts.dump)
-            sys.stderr.write("Printing stats in logfile %s %d\n" %
-                (opts.logfile, n))
+#            sys.stderr.write("Printing stats in logfile %s %d\n" %
+#                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
-            printstats(spectrum, filename, filehandle=sys.stdout, n=n)
+#            printstats(spectrum, filename, filehandle=sys.stdout, n=n)
             n += 1
         except ValueError:   # This catches no data or defective data
             sys.stderr.write("Error printing stats for %s\n" % filename)
@@ -44,7 +44,7 @@ def main(filename, opt=6, label=None, n=0):
 
 if __name__ == '__main__':
     usage = '''usage: plotkmerspectrum.py [options] <datafile> [<datafile2> <datafile3>...]
-       plotkmerspectrum.py [options] -l <list of targets, labels> '''
+       plotkmerspectrum.py [options] -l <file containing targets, labels> '''
     parser = OptionParser(usage)
     parser.add_option("-d", "--dump", dest="dump", action="store_true",
          default=False, help="dump table with outputs ")
@@ -64,16 +64,15 @@ if __name__ == '__main__':
          default="pdf", help="file type for output (pdf,png)")
     parser.add_option("-a", "--appendlogfile", dest="logfile",
          default="kmers.log", help="logfile for summary statistics")
-    parser.add_option("-s", "--suppresslegend", dest="suppress",
+    parser.add_option("-s", "--suppresslegend", dest="suppress", action="store_true",
          default=False, help="supress display of legend")
 
     (opts, args) = parser.parse_args()
     graphtype = opts.option
     writetype = opts.writetype
     if len(args) == 0 and not opts.filelist:
-        print "Missing input file argument!"
-        sys.exit(usage)
-    assert writetype == "png" or writetype == "pdf"
+        sys.exit("Missing input file argument!\n" + usage)
+    assert writetype == "png" or writetype == "pdf" or writetype == "eps"
 
     if opts.outfile:
         imagefilename = "%s.%d.%s" % (opts.outfile, graphtype, writetype)
@@ -107,7 +106,7 @@ if __name__ == '__main__':
                 if len(a[0]) > 0:
                     if len(a) == 1:
                         a.append(a[0])
-                    sys.stderr.write("%s  %s \n" % (a[0], a[1]))
+                    sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
                     graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
     else:
         for f in args:
@@ -115,7 +114,7 @@ if __name__ == '__main__':
             graphcount = main(filen, graphtype, n=graphcount)
     # don't continue if all inputs fail
     assert graphcount > 0, "ERROR: unable to find any data to graph!"
-    if graphtype != -1:
+    if graphtype >= 0:
         sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
         plt.savefig(imagefilename)
     if opts.interactive:

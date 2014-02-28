@@ -2,3 +2,5 @@
 *.pyc
 *.png
 tifffile.py
+*.log
+*.aux
