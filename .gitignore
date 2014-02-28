@@ -3,3 +3,4 @@
 *.png
 tifffile.py
 *.log
+*.aux
