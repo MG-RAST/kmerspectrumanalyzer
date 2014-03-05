@@ -45,7 +45,8 @@ def calc_resampled_fraction(aa, samplefracs, thresholds):
             matrix[i][j] = dummy
     return matrix
 
-def plotme(b, label, color=None, thresholdlist=None, numplots=4):
+def plotme(b, label, color=None, thresholdlist=None, numplots=4,
+     suppress=False):
     '''performs calculations and calls graphing routines,
     given spectra'''
 # define range of subsamples
@@ -65,8 +66,13 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4):
     for i in range(matrix.shape[1]):
         aug2 = np.hstack((0, matrix[:, i], 0))
         aug = matrix[:, i]
-        lab = label + " " + str(thresholdlist[i])
+#        lab = label + " " + str(thresholdlist[i])
+        lab = str(thresholdlist[i]) + "x"
         if SHADED == 0:
+            plt.title(label)
+            plt.semilogx(pex, aug, "-o", label=lab)
+        elif SHADED == 2:
+            lab = label + str(thresholdlist[i]) + "x"
             plt.semilogx(pex, aug, "-", label=lab, color=color)
         else:
             plt.subplot(numplots, 1, n + 1)
@@ -79,7 +85,8 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4):
     plt.xlim((1E4, 1E11))
     if SHADED == 0 or n == 3:
         plt.xlabel("Sequencing effort (bp)")
-        plt.legend(loc="upper left")
+        if suppress == 0:
+            plt.legend(loc="upper left")
     else:
         frame1 = plt.gca()
         frame1.axes.get_xaxis().set_ticks([])
@@ -95,8 +102,12 @@ if __name__ == "__main__":
          help="interactive mode--draw window")
     PARSER.add_option("-l", "--list", dest="filelist", default=None,
          help="file containing list of targets and labels")
+    PARSER.add_option("-g", "--graphtype", dest="graphtype", default=1,
+         help="graph type 1: shaded 2: non-shaded 3: kmer richness")
+    PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=True,
+         action="store_true", help="suppress legend")
     (OPTS, ARGS) = PARSER.parse_args()
-    SHADED = 1
+    SHADED = int(OPTS.graphtype)
     n = 0
     COLORS = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
             "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
@@ -122,7 +133,7 @@ if __name__ == "__main__":
                     filename = a[0]
                     spectrum = np.loadtxt(filename)
                     plotme(spectrum, label=a[1], color=COLORS[n],
-                        thresholdlist=listofthresholds)
+                        thresholdlist=listofthresholds, suppress=OPTS.suppresslegend)
                     n = n + 1
 #        plt.legend(loc="upper left")
         plt.savefig(listfile + ".rare.png")
@@ -132,7 +143,7 @@ if __name__ == "__main__":
             filename = v
             spectrum = np.loadtxt(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
-               color=COLORS[n])
+               color=COLORS[n], suppress=OPTS.suppresslegend)
             n = n + 1
 #        plt.legend(loc="upper left")
         print "Warning! printing graphs in test.png!"
