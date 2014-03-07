@@ -12,7 +12,7 @@ def fract(aa, epsilon, threshold):
     above a specified threshold.  Dataset abundance is attenuated by
     the factor epsilon.  Returns a float.  aa is a two-column abudnance
     table, epsilon and threshold are floats.'''
-    print "E", epsilon, "T", threshold
+    sys.stderr.write("E %f T %f\n" % (epsilon, threshold))
     xr = aa[:, 0]
     xn = aa[:, 1]
     NO = np.sum(xn * xr)
@@ -60,7 +60,8 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 
     matrix = calc_resampled_fraction(b, samplefractions, thresholdlist)
     effort = N * samplefractions
-
+    data = np.hstack([ np.atleast_2d(effort).T , matrix])
+    np.savetxt(sys.stdout, data, fmt="%.3f")
     pex2 = np.hstack((effort[0], effort, effort[-1]))
     pex = effort
     for i in range(matrix.shape[1]):
@@ -85,11 +86,11 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     plt.xlim((1E4, 1E11))
     if SHADED == 0 or n == 3:
         plt.xlabel("Sequencing effort (bp)")
-        if suppress == 0:
-            plt.legend(loc="upper left")
     else:
         frame1 = plt.gca()
         frame1.axes.get_xaxis().set_ticks([])
+    if suppress != 0:
+         plt.legend(loc="upper left")
     if SHADED == 0 or n == 2 or 1:
         plt.ylabel("Fraction of data")
     plt.tight_layout()
@@ -115,9 +116,10 @@ if __name__ == "__main__":
 # not lightning fast but should be
     listofthresholds = [1, 3.3, 10, 33, 100, 330, 1000, 3300, 10000]
     listofthresholds = 10**np.arange(0, 4.5, 0.5)
-    listofthresholds = [1]
-    listofthresholds = [1, 3, 10, 30]
-
+    if SHADED == 2:
+        listofthresholds = [1]
+    else:
+        listofthresholds = [1, 3, 10, 30]
     if OPTS.filelist:
         listfile = OPTS.filelist
         assert os.path.isfile(listfile), "File {} does not exist".format(
@@ -146,5 +148,5 @@ if __name__ == "__main__":
                color=COLORS[n], suppress=OPTS.suppresslegend)
             n = n + 1
 #        plt.legend(loc="upper left")
-        print "Warning! printing graphs in test.png!"
+        sys.stderr.write("Warning! printing graphs in test.png!\n")
         plt.savefig("test.png")
