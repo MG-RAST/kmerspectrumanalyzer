@@ -74,6 +74,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
             plt.semilogx(pex, aug, "-o", label=lab)
         elif SHADED == 2:
             lab = label + str(thresholdlist[i]) + "x"
+            lab = label 
             plt.semilogx(pex, aug, "-", label=lab, color=color)
         else:
             plt.subplot(numplots, 1, n + 1)
@@ -107,10 +108,15 @@ if __name__ == "__main__":
          help="graph type 1: shaded 2: non-shaded 3: kmer richness")
     PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=True,
          action="store_true", help="suppress legend")
+    PARSER.add_option("-c", "--colors", dest="colors", 
+         help="comma-separated color list")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
     n = 0
-    COLORS = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
+    if OPTS.colors:
+        COLORS = OPTS.colors.split(",")
+    else:
+        COLORS = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
             "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
 # construct range of thresholds, calculate threshold fraction curves
 # not lightning fast but should be
