@@ -85,13 +85,13 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 #        plt.fill(pex, aug, "k", alpha=0.2)
     plt.ylim((0, 1))
     plt.xlim((1E4, 1E11))
-    if SHADED == 0 or n == 3:
+    if SHADED == 0 or n+1 == numplots:
         plt.xlabel("Sequencing effort (bp)")
-    else:
+    else:    # suppress drawing of x-axis labels for all but last plot
         frame1 = plt.gca()
         frame1.axes.get_xaxis().set_ticks([])
-    if suppress != 0:
-         plt.legend(loc="upper left")
+#    if suppress != 0:
+#         plt.legend(loc="upper left")
     if SHADED == 0 or n == 2 or 1:
         plt.ylabel("Fraction of data")
     plt.tight_layout()
@@ -130,7 +130,8 @@ if __name__ == "__main__":
         listfile = OPTS.filelist
         assert os.path.isfile(listfile), "File {} does not exist".format(
              listfile)
-        IN_FILE = open(listfile, "r")
+        IN_FILE = open(listfile, "r").readlines()
+        numplots = len(IN_FILE)
         for line in IN_FILE:
             if line[0] != "#":
                 a = line.strip().split("\t")
@@ -141,9 +142,11 @@ if __name__ == "__main__":
                     filename = a[0]
                     spectrum = np.loadtxt(filename)
                     plotme(spectrum, label=a[1], color=COLORS[n],
-                        thresholdlist=listofthresholds, suppress=OPTS.suppresslegend)
+                        thresholdlist=listofthresholds, suppress=OPTS.suppresslegend, numplots=numplots)
+#                    plt.legend()
                     n = n + 1
-#        plt.legend(loc="upper left")
+        if OPTS.suppresslegend != 0:
+            plt.legend() # loc="upper left")
         plt.savefig(listfile + ".rare.png")
     else:
         for v in ARGS:
