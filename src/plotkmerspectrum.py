@@ -8,7 +8,7 @@ from optparse import OptionParser
 
 from ksatools import getmgrkmerspectrum, printstats, loadfile, makegraphs
 
-def main(filename, opt=6, label=None, n=0):
+def main(filename, opt=6, label=None, n=0, opts=None):
     '''loads file and invokes makegraphs and printstats.
     Appends graphics from each file onto the figure.
     opt is a symbol for the graph type;
@@ -29,7 +29,7 @@ def main(filename, opt=6, label=None, n=0):
         spectrum = spectrum[np.lexsort((spectrum[:, 1], spectrum[:, 0]))]
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
-            makegraphs(spectrum, filename, opt, label, n=n, dump=opts.dump)
+            makegraphs(spectrum, filename, opt, label, n=n, dump=opts.dump, opts=opts)
 #            sys.stderr.write("Printing stats in logfile %s %d\n" %
 #                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
@@ -66,6 +66,8 @@ if __name__ == '__main__':
          default="kmers.log", help="logfile for summary statistics")
     parser.add_option("-s", "--suppresslegend", dest="suppress", action="store_true",
          default=False, help="supress display of legend")
+    parser.add_option("-n", "--name", dest="title",
+         default=None, help="Name for graph, graph title")
 
     (opts, args) = parser.parse_args()
     graphtype = opts.option
@@ -107,11 +109,11 @@ if __name__ == '__main__':
                     if len(a) == 1:
                         a.append(a[0])
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
-                    graphcount = main(a[0], graphtype, label=a[1], n=graphcount)
+                    graphcount = main(a[0], graphtype, label=a[1], n=graphcount, opts=opts)
     else:
         for f in args:
             filen = f
-            graphcount = main(filen, graphtype, n=graphcount)
+            graphcount = main(filen, graphtype, n=graphcount, opts=opts)
     # don't continue if all inputs fail
     assert graphcount > 0, "ERROR: unable to find any data to graph!"
     if graphtype >= 0:

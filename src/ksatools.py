@@ -216,7 +216,7 @@ def stratify(spectrum, bands=None):
     bands.append(bands[-1] * 10)
     return bands, frac, size
 
-def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
+def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=None):
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
     option determines the type of graph; label labels each trace;
@@ -364,7 +364,10 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
 
     # Draw graphs if option >= 0
     if option >= 0:
-        plt.legend(loc=legendloc)
+        if not opts.suppress:
+            plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
+        if hasattr(opts, "title") and not opts.title == None and n==0:
+            plt.title(opts.title)
         plt.grid(1)
