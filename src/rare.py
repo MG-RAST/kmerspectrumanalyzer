@@ -60,7 +60,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 
     matrix = calc_resampled_fraction(b, samplefractions, thresholdlist)
     effort = N * samplefractions
-    data = np.hstack([ np.atleast_2d(effort).T , matrix])
+    data = np.hstack([np.atleast_2d(effort).T, matrix])
     np.savetxt(sys.stdout, data, fmt="%.3f")
     pex2 = np.hstack((effort[0], effort, effort[-1]))
     pex = effort
@@ -74,11 +74,15 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
             plt.semilogx(pex, aug, "-o", label=lab)
         elif SHADED == 2:
             lab = label + str(thresholdlist[i]) + "x"
-            lab = label 
+            lab = label
             plt.semilogx(pex, aug, "-", label=lab, color=color)
-        else:
+        elif SHADED == 1:
             plt.subplot(numplots, 1, n + 1)
             plt.semilogx(pex, aug, "-", label=lab, color=color)
+            plt.fill(pex2, aug2, "k", alpha=0.2)
+            plt.title(label)
+        else:
+            plt.semilogx(pex, aug, "-", label=lab)
             plt.fill(pex2, aug2, "k", alpha=0.2)
             plt.title(label)
 #            label=str(thresholdlist[i]))
@@ -90,8 +94,6 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     else:    # suppress drawing of x-axis labels for all but last plot
         frame1 = plt.gca()
         frame1.axes.get_xaxis().set_ticks([])
-#    if suppress != 0:
-#         plt.legend(loc="upper left")
     if SHADED == 0 or n == 2 or 1:
         plt.ylabel("Fraction of data")
     plt.tight_layout()
@@ -108,7 +110,7 @@ if __name__ == "__main__":
          help="graph type 1: shaded 2: non-shaded 3: kmer richness")
     PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=True,
          action="store_true", help="suppress legend")
-    PARSER.add_option("-c", "--colors", dest="colors", 
+    PARSER.add_option("-c", "--colors", dest="colors",
          help="comma-separated color list")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
@@ -143,10 +145,9 @@ if __name__ == "__main__":
                     spectrum = np.loadtxt(filename)
                     plotme(spectrum, label=a[1], color=COLORS[n],
                         thresholdlist=listofthresholds, suppress=OPTS.suppresslegend, numplots=numplots)
-#                    plt.legend()
                     n = n + 1
         if OPTS.suppresslegend != 0:
-            plt.legend() # loc="upper left")
+            plt.legend(loc="upper left")
         plt.savefig(listfile + ".rare.png")
     else:
         for v in ARGS:
