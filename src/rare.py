@@ -60,7 +60,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 
     matrix = calc_resampled_fraction(b, samplefractions, thresholdlist)
     effort = N * samplefractions
-    data = np.hstack([ np.atleast_2d(effort).T , matrix])
+    data = np.hstack([np.atleast_2d(effort).T, matrix])
     np.savetxt(sys.stdout, data, fmt="%.3f")
     pex2 = np.hstack((effort[0], effort, effort[-1]))
     pex = effort
@@ -74,24 +74,26 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
             plt.semilogx(pex, aug, "-o", label=lab)
         elif SHADED == 2:
             lab = label + str(thresholdlist[i]) + "x"
-            lab = label 
+            lab = label
             plt.semilogx(pex, aug, "-", label=lab, color=color)
-        else:
+        elif SHADED == 1:
             plt.subplot(numplots, 1, n + 1)
             plt.semilogx(pex, aug, "-", label=lab, color=color)
+            plt.fill(pex2, aug2, "k", alpha=0.2)
+            plt.title(label)
+        else:
+            plt.semilogx(pex, aug, "-", label=lab)
             plt.fill(pex2, aug2, "k", alpha=0.2)
             plt.title(label)
 #            label=str(thresholdlist[i]))
 #        plt.fill(pex, aug, "k", alpha=0.2)
     plt.ylim((0, 1))
     plt.xlim((1E4, 1E11))
-    if SHADED == 0 or n == 3:
+    if SHADED == 0 or n+1 == numplots:
         plt.xlabel("Sequencing effort (bp)")
-    else:
+    else:    # suppress drawing of x-axis labels for all but last plot
         frame1 = plt.gca()
         frame1.axes.get_xaxis().set_ticks([])
-    if suppress != 0:
-         plt.legend(loc="upper left")
     if SHADED == 0 or n == 2 or 1:
         plt.ylabel("Fraction of data")
     plt.tight_layout()
@@ -108,7 +110,7 @@ if __name__ == "__main__":
          help="graph type 1: shaded 2: non-shaded 3: kmer richness")
     PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=True,
          action="store_true", help="suppress legend")
-    PARSER.add_option("-c", "--colors", dest="colors", 
+    PARSER.add_option("-c", "--colors", dest="colors",
          help="comma-separated color list")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
@@ -130,7 +132,8 @@ if __name__ == "__main__":
         listfile = OPTS.filelist
         assert os.path.isfile(listfile), "File {} does not exist".format(
              listfile)
-        IN_FILE = open(listfile, "r")
+        IN_FILE = open(listfile, "r").readlines()
+        numplots = len(IN_FILE)
         for line in IN_FILE:
             if line[0] != "#":
                 a = line.strip().split("\t")
@@ -141,9 +144,10 @@ if __name__ == "__main__":
                     filename = a[0]
                     spectrum = np.loadtxt(filename)
                     plotme(spectrum, label=a[1], color=COLORS[n],
-                        thresholdlist=listofthresholds, suppress=OPTS.suppresslegend)
+                        thresholdlist=listofthresholds, suppress=OPTS.suppresslegend, numplots=numplots)
                     n = n + 1
-#        plt.legend(loc="upper left")
+        if OPTS.suppresslegend != 0:
+            plt.legend(loc="upper left")
         plt.savefig(listfile + ".rare.png")
     else:
         for v in ARGS:

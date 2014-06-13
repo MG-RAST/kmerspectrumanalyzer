@@ -4,6 +4,17 @@
 import sys
 import numpy as np
 
+def renyispectrum(x, spectrum):
+    n = spectrum[:, 0]
+    y = spectrum[:, 1]
+    N = np.sum(n*y)
+    p = n / N
+    R = np.zeros(x.shape)
+    for i, l in enumerate(x):
+        G = np.log10(np.sum(y * np.power(p, l)))/(1-l)
+        R[i] = G
+    return R
+
 def pad(xvalues, yvalues):
     '''Adds missing integer values to x and corresponding zeros to y.'''
     yout = []
@@ -216,7 +227,7 @@ def stratify(spectrum, bands=None):
     bands.append(bands[-1] * 10)
     return bands, frac, size
 
-def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
+def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=None):
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
     option determines the type of graph; label labels each trace;
@@ -341,6 +352,13 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
+    elif option == 30:
+        lam = np.arange(.01, 10, .01)
+        entropyspectrum = np.power(10,renyispectrum(lam, spectrum))
+        pA = plt.semilogy(lam, entropyspectrum, '.-', color=color, label=tracelabel)
+        xlabel, ylabel = ("lambda", "Renyientropy")
+        legendloc = "upper right"
+
     if option == -2 or option == 26 or option == 25:
         if dump:
             plotstratify(spectrum)
@@ -364,7 +382,10 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
 
     # Draw graphs if option >= 0
     if option >= 0:
-        plt.legend(loc=legendloc)
+        if not opts.suppress:
+            plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
+        if hasattr(opts, "title") and not opts.title == None and n == 0:
+            plt.title(opts.title)
         plt.grid(1)
