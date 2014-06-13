@@ -279,7 +279,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         pA = plt.semilogy(b_zd / Nd, b_cn, '.', color=color)
         xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
-    elif option == 5 or option == 25:
+    elif option == 5 or option == 25 or option == 24:
         pA = plt.semilogx(yd, zo / No, '-', color=color)
         pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
         xlabel, ylabel = ("kmer rank (bp)", "fraction of observed data")
@@ -356,6 +356,12 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False):
         sizeboundaries = size
         drawboxes(sizeboundaries, 1)
         drawboxes(fracboundaries, 0, boxcolor=0)
+    elif option == 24:
+        bands, frac, size = stratify(spectrum)
+        fracboundaries = 1 - np.array(frac)
+        sizeboundaries = size
+        drawboxes(fracboundaries, 0)
+
     # Draw graphs if option >= 0
     if option >= 0:
         plt.legend(loc=legendloc)
