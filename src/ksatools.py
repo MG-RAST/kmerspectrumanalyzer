@@ -302,7 +302,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         pA = plt.loglog(b_zd, b_cn, '.', color=color)
         xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
         plt.xlim((1, 10**10))
-        plt.ylim(1, 10**7)
+        if max(b_cn) < 10**8:
+            plt.ylim(1, 10**7)
         legendloc = "lower left"
         if dump:
             c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
