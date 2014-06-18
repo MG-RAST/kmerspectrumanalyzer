@@ -20,8 +20,9 @@ if [ $# -lt 1 ]
         exit
         fi
 #        echo "Standard in to default.${k}"
-        kmer-tool2  -t $FILETYPE -l $k -f histo -i - -o default.${k}
-        cat default.${k}
+        kmer-tool2  -t $FILETYPE -l $k -f histo -i - -o .default.${k}
+        cat .default.${k}
+        rm .default.${k}
 else  # one or more argument
     for filename in $@ 
         do
@@ -30,8 +31,15 @@ else  # one or more argument
             echo "Error: Input filename $filename does not exist."
             echo $USAGE 
             exit
-            fi 
-        echo "Counting ${k}mers in $filename, creating $filename.${k}"
-        kmer-tool2  -t $FILETYPE -l $k -f histo -i $filename -o $filename.${k}
-        done
+#        elif [[ "$filename" =~ ".*.gz" ]]   # doesn't work on some machines?
+        elif [[ $( echo $filename | grep .gz$ ) ]] 
+                then 
+                filestem=${filename/.gz/}
+                echo "Counting ${k}mers in $filename, creating $filestem.${k}"
+                zcat $filename | kmer-tool2  -t $FILETYPE -l $k -f histo -i - -o $filestem.${k}
+        else 
+                echo "Counting ${k}mers in $filename, creating $filename.${k}"
+                kmer-tool2  -t $FILETYPE -l $k -f histo -i $filename -o $filename.${k}
+        fi 
+    done
 fi
