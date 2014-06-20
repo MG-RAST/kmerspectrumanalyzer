@@ -53,8 +53,6 @@ def calcmedian(yd, y, num):
         cutoff = yd[bottom]
     else:
         cutoff = 0
-    if num <= 1:
-        cutoff = np.ceil(cutoff - .001)
     return cutoff
 
 def cleanlabel(label):
@@ -155,7 +153,7 @@ def printstats(a, filename, filehandle=None, n=0):
     if T == 0:
         H = np.NaN
     H2 = 1 / sum(c1 * j * j)        # antilog Reyni entropy / Simpson index
-    w = yo / yo.max()
+    w = np.array(yo, dtype="float") / yo.max()
     wd = yd
     M90 = calcmedian(wd, w, .9)      # 90th percentile by observations
     M50 = calcmedian(wd, w, .5)      # 50th percentile by observations
@@ -176,7 +174,7 @@ def printstats(a, filename, filehandle=None, n=0):
     if filehandle == None or n == 0:
         consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
              "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
-    consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\n" %
+    consensusfh.write("%s\t%.1f\t%.1f\t%.1f\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.2f\n" %
                       (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
     if filehandle == None:
         consensusfh.close()
