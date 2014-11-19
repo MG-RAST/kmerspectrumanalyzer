@@ -70,6 +70,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
         aug = matrix[:, i]
 #        lab = label + " " + str(thresholdlist[i])
         lab = str(thresholdlist[i]) + "x"
+        plt.grid(1)
         if SHADED == 0:
             plt.title(label)
             plt.semilogx(pex, aug, "-o", label=lab)
@@ -143,8 +144,12 @@ if __name__ == "__main__":
                         a.append(a[0])
                     sys.stderr.write("%s  %s \n" % (a[0], a[1]))
                     filename = a[0]
+                    if len(a) == 3:
+                        selectedcolor = a[2]
+                    else: 
+                        selectedcolor = COLORS[n]
                     spectrum = ksatools.loadfile(filename)
-                    plotme(spectrum, label=a[1], color=COLORS[n],
+                    plotme(spectrum, label=a[1], color=selectedcolor,
                         thresholdlist=listofthresholds, suppress=OPTS.suppresslegend, numplots=numplots)
                     n = n + 1
         if OPTS.suppresslegend != 0:
