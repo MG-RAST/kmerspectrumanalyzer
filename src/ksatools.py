@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 '''Tool to generate graphs of kmer spectra'''
 
+COLORLIST = ["b", "g", "r", "c", "y",
+    "m", "k", "BlueViolet", "Coral", "Chartreuse",
+    "DarkGrey", "DeepPink", "LightPink"]
+
 import sys
 import numpy as np
 
@@ -28,10 +32,9 @@ def pad(xvalues, yvalues):
             yout.append(0)
     return(xout, yout)
 
-def getcolor(index):
-    '''returns a string that cycles through more colors than default'''
-    colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
-            "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
+def getcolor(index, colorlist) : 
+    if colorlist == []:
+        colorlist=COLORLIST
     l = index % len(colorlist)
     return colorlist[l]
 
@@ -227,7 +230,7 @@ def stratify(spectrum, bands=None):
     bands.append(bands[-1] * 10)
     return bands, frac, size
 
-def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=None):
+def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=None, colorlist=COLORLIST):
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
     option determines the type of graph; label labels each trace;
@@ -252,7 +255,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
     No = b_zo.max()
     Nd = b_zd.max()
     x = np.arange(len(b[:, 0]))                  # rank
-    color = getcolor(n)
+    color = getcolor(n, colorlist)
     outfile = "%s.%d.plot.csv" % (filename, option)
     if option == 0:
         pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
