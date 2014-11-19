@@ -182,6 +182,11 @@ def printstats(a, filename, filehandle=None, n=0):
     if filehandle == None:
         consensusfh.close()
 
+def getlength(filename):
+    for line in open(filename):
+       if line[0:5] == "# @L:":
+           return float(line[6:])
+     
 def loadfile(filename):
     '''Loads file, returns two-column ndarray or None on
     failure.  Uses filename to guess format.'''
@@ -191,6 +196,8 @@ def loadfile(filename):
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
         if filename.find(".npo") >= 0:
             matrix = np.loadtxt(filename, usecols=(0, 1), skiprows=6)
+            L=getlength(filename)
+            matrix[:,0] = matrix[:,0] * L
         else: # default bare-bones spectrum format
             matrix = np.loadtxt(filename)
         # return None if the file is empty
@@ -358,7 +365,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         legendloc = "upper right"
     elif option == 18:  # semilog version of 1
         pA = plt.semilogx(b_cn, b_c1, '.-', color=color, label=tracelabel)
-        xlabel, ylabel = ("number of reads sampled", "fraction nonunique")
+        xlabel, ylabel = ("number of bases sampled", "nonunique fraction")
         plt.ylim(0, 1)
         legendloc = "lower left"
     elif option == 30:
