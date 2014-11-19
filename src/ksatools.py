@@ -359,7 +359,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
     elif option == 18:  # semilog version of 1
         pA = plt.semilogx(b_cn, b_c1, '.-', color=color, label=tracelabel)
         xlabel, ylabel = ("number of reads sampled", "fraction nonunique")
-        legendloc = "lower right"
+        plt.ylim(0, 1)
+        legendloc = "lower left"
     elif option == 30:
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10,renyispectrum(lam, spectrum))
