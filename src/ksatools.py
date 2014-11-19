@@ -186,6 +186,8 @@ def loadfile(filename):
         # parse velvet contig stats format
         if filename.find("stats.txt") >= 0:
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
+        if filename.find(".npo") >= 0:
+            matrix = np.loadtxt(filename, usecols=(0, 1), skiprows=6)
         else: # default bare-bones spectrum format
             matrix = np.loadtxt(filename)
         # return None if the file is empty
@@ -351,6 +353,10 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
+    elif option == 18:  # semilog version of 1
+        pA = plt.semilogx(b_cn, b_c1, '.-', color=color, label=tracelabel)
+        xlabel, ylabel = ("number of reads sampled", "fraction nonunique")
+        legendloc = "lower right"
     elif option == 30:
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10,renyispectrum(lam, spectrum))
