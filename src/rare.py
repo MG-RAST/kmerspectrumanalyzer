@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys, os
 import scipy.stats
+import ksatools
 from optparse import OptionParser
 
 def fract(aa, epsilon, threshold):
@@ -142,21 +143,21 @@ if __name__ == "__main__":
                         a.append(a[0])
                     sys.stderr.write("%s  %s \n" % (a[0], a[1]))
                     filename = a[0]
-                    spectrum = np.loadtxt(filename)
+                    spectrum = ksatools.loadfile(filename)
                     plotme(spectrum, label=a[1], color=COLORS[n],
                         thresholdlist=listofthresholds, suppress=OPTS.suppresslegend, numplots=numplots)
                     n = n + 1
         if OPTS.suppresslegend != 0:
             plt.legend(loc="upper left")
-        plt.savefig(listfile + ".rare.png")
+        plt.savefig(listfile + ".rare."+str(SHADED)+".png")
     else:
         for v in ARGS:
             print v
             filename = v
-            spectrum = np.loadtxt(filename)
+            spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
                color=COLORS[n], suppress=OPTS.suppresslegend)
             n = n + 1
 #        plt.legend(loc="upper left")
-        sys.stderr.write("Warning! printing graphs in test.png!\n")
-        plt.savefig("test.png")
+        sys.stderr.write("Warning! printing graphs in test."+str(SHADED)+".png!\n")
+        plt.savefig("test."+str(SHADED)+".png")
