@@ -294,9 +294,9 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
     elif option == 5 or option == 25 or option == 24:
-        pA = plt.semilogx(yd, zo / No, '-', color=color)
-        pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
-        xlabel, ylabel = ("kmer rank (bp)", "fraction of observed data")
+        pA = plt.semilogx(yd, 1-zo / No, '-', color=color)
+        pA = plt.semilogx(yd, 1-zo / No, '.', color=color, label=tracelabel)
+        xlabel, ylabel = ("kmer rank (bp)", "cumulative fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         legendloc = "lower left"
