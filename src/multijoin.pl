@@ -52,7 +52,7 @@ foreach my $file (@filenames)
 			{$sep = " ";}             # change the separator
 		my @a = split(/$sep/);
 
-                if ( $#a + 1 < 2 ) { die "Can't find fields in file $file!"; } 
+                if ( $#a + 1 < 1 ) { die "Can't find fields in file $file!"; } 
 	my $key;
 	if($binomial) {my @w = split(/ /,$a[$index]); $key = "$w[0] $w[1]";}
 	else { $key =$a[$index]; }
