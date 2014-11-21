@@ -152,7 +152,7 @@ if __name__ == "__main__":
                     plotme(spectrum, label=a[1], color=selectedcolor,
                         thresholdlist=listofthresholds, suppress=OPTS.suppresslegend, numplots=numplots)
                     n = n + 1
-        if OPTS.suppresslegend != 0:
+        if OPTS.suppresslegend == 0:
             plt.legend(loc="upper left")
         plt.savefig(listfile + ".rare."+str(SHADED)+".png")
     else:
