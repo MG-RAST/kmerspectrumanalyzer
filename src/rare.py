@@ -52,8 +52,8 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     given spectra'''
 # define range of subsamples
     N = np.sum(b[:, 0] * b[:, 1])
-    samplefractions = 10**np.arange(2, 11, .5)  / N  # CHEAP
-    samplefractions = 10**np.arange(2, 11, .1)  / N
+    samplefractions = 10**np.arange(2, 11, .5) / N  # CHEAP
+    samplefractions = 10**np.arange(2, 11, .1) / N
 # Throw away unecessary samples
     samplefractions = np.hstack((samplefractions[samplefractions < 1], 1))
     if thresholdlist == None:
@@ -65,7 +65,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     np.savetxt(sys.stdout, data, fmt="%.3f")
     if dump:
         headertext = "subsetsize\t"+"\t".join(map(str, thresholdlist))
-        np.savetxt(label+".rare.csv",data, header=headertext, delimiter="\t")
+        np.savetxt(label+".rare.csv", data, header=headertext, delimiter="\t")
     pex2 = np.hstack((effort[0], effort, effort[-1]))
     pex = effort
     for i in range(matrix.shape[1]):
@@ -151,12 +151,12 @@ if __name__ == "__main__":
                     filename = a[0]
                     if len(a) == 3:
                         selectedcolor = a[2]
-                    else: 
+                    else:
                         selectedcolor = COLORS[n]
                     spectrum = ksatools.loadfile(filename)
                     plotme(spectrum, label=a[1], color=selectedcolor,
-                        thresholdlist=listofthresholds, 
-                        suppress=OPTS.suppresslegend, numplots=numplots, 
+                        thresholdlist=listofthresholds,
+                        suppress=OPTS.suppresslegend, numplots=numplots,
                         dump=OPTS.dump)
                     n = n + 1
         if OPTS.suppresslegend == 0:
@@ -171,5 +171,6 @@ if __name__ == "__main__":
                color=COLORS[n], suppress=OPTS.suppresslegend, dump=OPTS.dump)
             n = n + 1
 #        plt.legend(loc="upper left")
-        sys.stderr.write("Warning! printing graphs in test."+str(SHADED)+".png!\n")
+        sys.stderr.write("Warning! printing graphs in test."
+                         + str(SHADED)+".png!\n")
         plt.savefig("test."+str(SHADED)+".png")
