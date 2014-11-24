@@ -47,7 +47,7 @@ def calc_resampled_fraction(aa, samplefracs, thresholds):
     return matrix
 
 def plotme(b, label, color=None, thresholdlist=None, numplots=4,
-     suppress=False):
+     suppress=False, dump=False):
     '''performs calculations and calls graphing routines,
     given spectra'''
 # define range of subsamples
@@ -63,6 +63,9 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     effort = N * samplefractions
     data = np.hstack([np.atleast_2d(effort).T, matrix])
     np.savetxt(sys.stdout, data, fmt="%.3f")
+    if dump:
+        headertext = "subsetsize\t"+"\t".join(map(str, thresholdlist))
+        np.savetxt(label+".rare.csv",data, header=headertext, delimiter="\t")
     pex2 = np.hstack((effort[0], effort, effort[-1]))
     pex = effort
     for i in range(matrix.shape[1]):
@@ -114,6 +117,8 @@ if __name__ == "__main__":
          action="store_true", help="suppress legend")
     PARSER.add_option("-c", "--colors", dest="colors",
          help="comma-separated color list")
+    PARSER.add_option("-d", "--dump", dest="dump",
+         action="store_true", help="output table .rare.csv")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
     n = 0
@@ -150,7 +155,9 @@ if __name__ == "__main__":
                         selectedcolor = COLORS[n]
                     spectrum = ksatools.loadfile(filename)
                     plotme(spectrum, label=a[1], color=selectedcolor,
-                        thresholdlist=listofthresholds, suppress=OPTS.suppresslegend, numplots=numplots)
+                        thresholdlist=listofthresholds, 
+                        suppress=OPTS.suppresslegend, numplots=numplots, 
+                        dump=OPTS.dump)
                     n = n + 1
         if OPTS.suppresslegend == 0:
             plt.legend(loc="upper left")
@@ -161,7 +168,7 @@ if __name__ == "__main__":
             filename = v
             spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
-               color=COLORS[n], suppress=OPTS.suppresslegend)
+               color=COLORS[n], suppress=OPTS.suppresslegend, dump=OPTS.dump)
             n = n + 1
 #        plt.legend(loc="upper left")
         sys.stderr.write("Warning! printing graphs in test."+str(SHADED)+".png!\n")
