@@ -125,8 +125,10 @@ if __name__ == "__main__":
     if OPTS.colors:
         COLORS = OPTS.colors.split(",")
     else:
-        COLORS = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
-            "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
+        COLORS = [
+                  "b", "g", "r", "c", "y", "m", "k", "BlueViolet",
+                  "Coral", "Chartreuse", "DarkGrey", "DeepPink", 
+                  "LightPink" ]
 # construct range of thresholds, calculate threshold fraction curves
 # not lightning fast but should be
     listofthresholds = [1, 3.3, 10, 33, 100, 330, 1000, 3300, 10000]
@@ -156,8 +158,7 @@ if __name__ == "__main__":
                     spectrum = ksatools.loadfile(filename)
                     plotme(spectrum, label=a[1], color=selectedcolor,
                         thresholdlist=listofthresholds,
-                        suppress=OPTS.suppresslegend, numplots=numplots,
-                        dump=OPTS.dump)
+                        numplots=numplots, dump=OPTS.dump)
                     n = n + 1
         if OPTS.suppresslegend == 0:
             plt.legend(loc="upper left")
@@ -168,7 +169,7 @@ if __name__ == "__main__":
             filename = v
             spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
-               color=COLORS[n], suppress=OPTS.suppresslegend, dump=OPTS.dump)
+               color=COLORS[n], dump=OPTS.dump)
             n = n + 1
 #        plt.legend(loc="upper left")
         sys.stderr.write("Warning! printing graphs in test."
