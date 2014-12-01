@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 '''Tool to generate graphs of kmer spectra'''
 
-COLORLIST = ["b", "g", "r", "c", "y",
+COLORLIST = [
+    "b", "g", "r", "c", "y",
     "m", "k", "BlueViolet", "Coral", "Chartreuse",
     "DarkGrey", "DeepPink", "LightPink"]
 
@@ -32,9 +33,9 @@ def pad(xvalues, yvalues):
             yout.append(0)
     return(xout, yout)
 
-def getcolor(index, colorlist) : 
+def getcolor(index, colorlist): 
     if colorlist == []:
-        colorlist=COLORLIST
+        colorlist = COLORLIST
     l = index % len(colorlist)
     return colorlist[l]
 
@@ -175,10 +176,12 @@ def printstats(a, filename, filehandle=None, n=0):
     else:
         consensusfh = filehandle
     if filehandle == None or n == 0:
-        consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
-             "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
-    consensusfh.write("%s\t%.1f\t%.1f\t%.1f\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.2f\n" %
-                      (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
+        consensusfh.write(
+            "#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
+            "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
+    consensusfh.write(
+        "%s\t%.1f\t%.1f\t%.1f\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.2f\n" %
+        (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
     if filehandle == None:
         consensusfh.close()
 
@@ -196,8 +199,8 @@ def loadfile(filename):
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
 	if filename.find(".npo") == len(filename)-4:
             matrix = np.loadtxt(filename, usecols=(0, 1), skiprows=6)
-            L=getlength(filename)
-            matrix[:,0] = matrix[:,0] * L
+            L = getlength(filename)
+            matrix[:, 0] = matrix[:, 0] * L
         else: # default bare-bones spectrum format
             matrix = np.loadtxt(filename, comments="#")
         # return None if the file is empty
@@ -271,8 +274,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         legendloc = "upper right"
     if option == 0 or option == -1:
         if dump:
-            c = np.hstack((cn.reshape((len(cn), 1)),
-                (c1.reshape((len(cn), 1)))))
+            c = np.hstack(
+                cn.reshape((len(cn), 1)), (c1.reshape((len(cn), 1))))
             sys.stderr.write("saving output table in %s\n" % outfile)
             np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 1:
@@ -284,8 +287,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
             c = np.hstack((cn.reshape((len(cn), 1)),
                 ((cn * c1).reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s\n" % outfile)
-            np.savetxt(outfile, c, fmt=['%d', '%d'],
-                delimiter="\t")
+            np.savetxt(
+                outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
         xlabel, ylabel = ("basepairs observed", "kmer abundance")
@@ -370,7 +373,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         legendloc = "lower left"
     elif option == 30:
         lam = np.arange(.01, 10, .01)
-        entropyspectrum = np.power(10,renyispectrum(lam, spectrum))
+        entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
         pA = plt.semilogy(lam, entropyspectrum, '.-', color=color, label=tracelabel)
         xlabel, ylabel = ("lambda", "Renyientropy")
         legendloc = "upper right"

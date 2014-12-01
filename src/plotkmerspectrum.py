@@ -19,7 +19,8 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
     elif opts.filetype == "file":
         spectrum = loadfile(filename)
     else:
-        raise ValueError("%s is invalid type (valid types are mgm and file)"
+        raise ValueError(
+            "%s is invalid type (valid types are mgm and file)"
             % opts.filetype)
     if spectrum == None:   # Abort this trace--but try to graph the others
         return n
@@ -29,7 +30,9 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
         spectrum = spectrum[np.lexsort((spectrum[:, 1], spectrum[:, 0]))]
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
-            makegraphs(spectrum, filename, opt, label, n=n, dump=opts.dump, opts=opts, colorlist=colorlist)
+            makegraphs(
+                spectrum, filename, opt, label, n=n, dump=opts.dump, 
+                opts=opts, colorlist=colorlist)
 #            sys.stderr.write("Printing stats in logfile %s %d\n" %
 #                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
@@ -113,7 +116,7 @@ if __name__ == '__main__':
     graphcount = 0
     # Loop over input identifiers, and skip if main()
     # fails to produce some traces
-    colorlist=[]
+    colorlist = []
     if opts.filelist:
         assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
         IN_FILE = open(opts.filelist, "r")
@@ -124,9 +127,11 @@ if __name__ == '__main__':
                     if len(a) == 1:
                         a.append(a[0])
                     if len(a) == 3:
-                        colorlist.append((a[2])) 
+                        colorlist.append((a[2]))
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
-                    graphcount = main(a[0], graphtype, label=a[1], n=graphcount, opts=opts, colorlist=colorlist)
+                    graphcount = main(
+                        a[0], graphtype, label=a[1], n=graphcount, 
+                        opts=opts, colorlist=colorlist)
     else:
         for f in args:
             filen = f
