@@ -194,12 +194,12 @@ def loadfile(filename):
         # parse velvet contig stats format
         if filename.find("stats.txt") >= 0:
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
-        if filename.find(".npo") >= 0:
+	if filename.find(".npo") == len(filename)-4:
             matrix = np.loadtxt(filename, usecols=(0, 1), skiprows=6)
             L=getlength(filename)
             matrix[:,0] = matrix[:,0] * L
         else: # default bare-bones spectrum format
-            matrix = np.loadtxt(filename)
+            matrix = np.loadtxt(filename, comments="#")
         # return None if the file is empty
         if matrix.shape[0] == 0:
             return None
