@@ -222,7 +222,8 @@ def plotstratify(spectrum, bands=None):
 def stratify(spectrum, bands=None):
     '''Breaks spectrum up into defined abundance-buckets,
     reporting data fraction and number of kmers=basepairs
-    contained in each bucket.'''
+    contained in each bucket.  Returns list of bands, list
+    of fractions, and list of basepairs in each band.'''
     if bands == None:
         bands = [1, 10, 100, 1000, 10000, 100000]
     n = spectrum[:, 0]
