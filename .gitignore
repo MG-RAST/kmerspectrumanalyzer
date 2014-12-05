@@ -6,3 +6,4 @@ tifffile.py
 *.log
 *.aux
 scraps
+.*.swp
