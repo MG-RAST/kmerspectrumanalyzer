@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-'''Tool to generate bar graphs of data-depth fractions and 
+'''Tool to generate bar graphs of data-depth fractions and
 basepair-by-depth distributions from kmer spectra'''
 
 import sys, os
@@ -7,20 +7,18 @@ import numpy as np
 import matplotlib as mpl
 from optparse import OptionParser
 
-import ksatools 
+import ksatools
 
 def plotstratifiedfracs(labels, spectra):
-    colors = ["#CCFFCC" , "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"] 
-    bands=[] ; fracs = []; sizes = [] ; fracc = []
+    colors = ["#CCFFCC", "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"]
+    bands = [] ; fracs = []; sizes = [] ; fracc = []
     plt.grid(linestyle="-", zorder=-10)
-    for i in range(len(labels)) :
+    for i in range(len(labels)):
         label = labels[i]
         spectrum = spectra[i]
         sys.stderr.write("Stratifying "+label+"...\n")
-        BANDS=[1,3,30,300,3000,30000, 30000000]
-        print "before", BANDS
+        BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
         band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
-        print "after", BANDS
 #        print label, band, frac, size
         bands.append(band)
         fracs.append(frac)
@@ -28,30 +26,28 @@ def plotstratifiedfracs(labels, spectra):
     for l in range(len(labels)):
         for i in range(len(bands[0])-1):
             print l, bands[l][i]
-            if l ==0:
-                plt.barh(l, (fracs[l][i]-fracs[l][i+1]), left=(fracs[l][i+1]) , color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), alpha=1.0, zorder=0) 
+            if l == 0:
+                plt.barh(l, (fracs[l][i]-fracs[l][i+1]), left=(fracs[l][i+1]), color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), alpha=1.0, zorder=0)
             else:
-                plt.barh(l, (fracs[l][i]-fracs[l][i+1]), left=(fracs[l][i+1]) , color=colors[i], alpha=1.0, zorder=0)
+                plt.barh(l, (fracs[l][i]-fracs[l][i+1]), left=(fracs[l][i+1]), color=colors[i], alpha=1.0, zorder=0)
     pos = np.arange(len(labels)) + 0.5
     plt.yticks(pos, labels)
     plt.xlabel("Cumulative data fraction")
     plt.tight_layout()
     if not opts.suppresslegend:
-       plt.legend(loc="upper left")
+        plt.legend(loc="upper left")
     plt.show()
 
 def plotstratifiedsizes(labels, spectra):
-    colors = ["#CCFFCC" , "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"] 
+    colors = ["#CCFFCC", "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"]
     plt.grid(linestyle="-", zorder=-10)
-    bands=[] ; fracs = []; sizes = [] ; fracc = []
-    BANDS = [1,3,30,300,3000,30000,30000000]
-    for i in range(len(labels)) :
+    bands = [] ; fracs = []; sizes = [] ; fracc = []
+    BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
+    for i in range(len(labels)):
         label = labels[i]
         spectrum = spectra[i]
         sys.stderr.write("Stratifying "+label+"...\n")
-        print "before", BANDS
-        band, frac, size = ksatools.stratify(spectrum , bands=BANDS) 
-        print "before", BANDS
+        band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
         print label, band, frac, size
         bands.append(band)
         fracs.append(frac)
@@ -61,19 +57,19 @@ def plotstratifiedsizes(labels, spectra):
             print l, bands[l][i]
             sizec = np.flipud(np.cumsum(np.flipud(np.array(sizes[l]))))
             print sizec
-            if l ==1:
-                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]) , color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), log=True) 
+            if l == 1:
+                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), log=True)
             else:
-                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]) , color=colors[i], log=True) 
+                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], log=True)
     pos = np.arange(len(labels)) + 0.5
-    plt.xlim((0,5E7))
+    plt.xlim((0, 5E7))
     plt.yticks(pos, labels)
     plt.xlabel("Distinct kmers (basepairs)")
     plt.tight_layout()
     if not opts.suppresslegend:
-       plt.legend()
+        plt.legend()
     plt.show()
-  
+
 if __name__ == '__main__':
     usage = '''
 '''
@@ -101,9 +97,9 @@ if __name__ == '__main__':
     writetype = opts.writetype
     assert writetype == "png" or writetype == "pdf" or writetype == "eps"
     if opts.outfile:
-        imagefilename = opts.outfile 
+        imagefilename = opts.outfile
     else:
-        imagefilename = opts.filelist + "." + opts.writetype 
+        imagefilename = opts.filelist + "." + opts.writetype
         sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
     # only invoke interactive backend if requested with -i
     # this stabilizes behavior on non-interactive terminals
@@ -129,10 +125,10 @@ if __name__ == '__main__':
                         a.append(a[0])
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
                     spectra.append(ksatools.loadfile(a[0]))
-                    labels.append(a[1]) 
-    if opts.option==0:
+                    labels.append(a[1])
+    if opts.option == 0:
         plotstratifiedfracs(labels, spectra)
-    if opts.option==1:
+    if opts.option == 1:
         plotstratifiedsizes(labels, spectra)
     sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
     if opts.interactive:
