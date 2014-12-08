@@ -234,7 +234,7 @@ def stratify(spectrum, bands=None):
     size = []
     for b in bands:
         frac.append(np.sum(p[n >= b]) / T)
-        size.append(np.sum(y[n >= b]) + 1)
+        size.append(np.sum(y[n >= b])    )
     # +1 adds an artificial count in the largest bin
     frac.append(0)
     size.append(0)
