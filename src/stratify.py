@@ -62,7 +62,7 @@ def plotstratifiedsizes(labels, spectra):
             else:
                 plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], log=True)
     pos = np.arange(len(labels)) + 0.5
-    plt.xlim((0, 5E7))
+    plt.xlim((0, 1E9))
     plt.yticks(pos, labels)
     plt.xlabel("Distinct kmers (basepairs)")
     plt.tight_layout()
