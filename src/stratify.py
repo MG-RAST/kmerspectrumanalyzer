@@ -70,6 +70,17 @@ def plotstratifiedsizes(labels, spectra):
         plt.legend()
     plt.show()
 
+def summarizestrata(labels, spectra):
+    BANDS=[1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000, 100000, 300000, 1000000]
+    for spectrum, label in zip(spectra,labels):
+        band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
+        print len(band), len(frac), len(size)
+        bandsbanner = map(str, BANDS) 
+        print "#name\t" + "\t".join(bandsbanner) + "\t" + "\t".join(bandsbanner)
+        print label+"\t" + "\t".join(map(str,frac)) + "\t",
+        print "" + "\t".join(map(str,size))
+    return
+
 if __name__ == '__main__':
     usage = '''
 '''
@@ -130,6 +141,9 @@ if __name__ == '__main__':
         plotstratifiedfracs(labels, spectra)
     if opts.option == 1:
         plotstratifiedsizes(labels, spectra)
+    if opts.option == -1:
+        summarizestrata(labels, spectra)
+        sys.exit()
     sys.stderr.write("Writing graph into file %s\n" % (imagefilename))
     if opts.interactive:
         plt.show()
