@@ -235,10 +235,6 @@ def stratify(spectrum, bands=None):
     for b in bands:
         frac.append(np.sum(p[n >= b]) / T)
         size.append(np.sum(y[n >= b])    )
-    # +1 adds an artificial count in the largest bin
-    frac.append(0)
-    size.append(0)
-#    bands.append(bands[-1] * 10)  # last bin should be overflow automatically
     return bands, frac, size
 
 def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=None, colorlist=COLORLIST):
