@@ -22,7 +22,7 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
         raise ValueError(
             "%s is invalid type (valid types are mgm and file)"
             % opts.filetype)
-    if spectrum == None:   # Abort this trace--but try to graph the others
+    if spectrum == []:   # Abort this trace--but try to graph the others
         return n
     if label == None:
         label = filename

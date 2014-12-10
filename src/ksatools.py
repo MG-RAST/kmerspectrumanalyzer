@@ -205,12 +205,12 @@ def loadfile(filename):
             matrix = np.loadtxt(filename, comments="#")
         # return None if the file is empty
         if matrix.shape[0] == 0:
-            return None
+            return []
         else:
             return np.atleast_2d(matrix)
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
-        return None
+        return []
 
 def plotstratify(spectrum, bands=None):
     bands, frac, size = stratify(spectrum, bands)
