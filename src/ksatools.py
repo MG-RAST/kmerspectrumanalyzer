@@ -186,6 +186,7 @@ def printstats(a, filename, filehandle=None, n=0):
         consensusfh.close()
 
 def getlength(filename):
+    '''parse nonpareil output npo for length parameter'''
     for line in open(filename):
        if line[0:5] == "# @L:":
            return float(line[6:])
@@ -212,7 +213,10 @@ def loadfile(filename):
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return []
 
-def plotstratify(spectrum, bands=None):
+def printstratify(spectrum, bands=None):
+    '''prints table of sizes and data fracitons for separate
+    bands, inclusive of lower bound, excluding upper band 
+    boundary'''
     bands, frac, size = stratify(spectrum, bands)
     for i in range(len(bands)):
         if i != len(bands)-1:
@@ -221,9 +225,11 @@ def plotstratify(spectrum, bands=None):
 
 def stratify(spectrum, bands=None):
     '''Breaks spectrum up into defined abundance-buckets,
-    reporting data fraction and number of kmers=basepairs
-    contained in each bucket.  Returns list of bands, list
-    of fractions, and list of basepairs in each band.'''
+    reporting cumulative data fraction and number of 
+    kmers=basepairs with kmer-depths greater than or equal
+    to each bucket boundary.  Returns list of bands, list
+    of (cumulative) fractions, and list of (cumulative) 
+    basepairs for each band.'''
     if bands == None:
         bands = [1, 10, 100, 1000, 10000, 100000]
     n = spectrum[:, 0]
@@ -378,9 +384,9 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
 
     if option == -2 or option == 26 or option == 25:
         if dump:
-            plotstratify(spectrum)
+            printstratify(spectrum)
         else:
-            plotstratify(spectrum)
+            printstratify(spectrum)
     # For these two graphs, draw rainbow bands
     if option == 26:
         bands, frac, size = stratify(spectrum)
