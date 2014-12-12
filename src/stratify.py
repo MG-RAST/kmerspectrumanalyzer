@@ -10,6 +10,9 @@ from optparse import OptionParser
 import ksatools
 
 def plotstratifiedfracs(labels, spectra):
+    '''Given list of labels and list of spectra, splits spectra
+    up and produces bar plot of the stratified spectra's usage 
+    fractions'''
     colors = ["#CCFFCC", "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"]
     bands = [] ; fracs = []; sizes = [] ; fracc = []
     plt.grid(linestyle="-", zorder=-10)
@@ -37,6 +40,9 @@ def plotstratifiedfracs(labels, spectra):
     plt.show()
 
 def plotstratifiedsizes(labels, spectra):
+    '''Given list of labels and spectra, produces stacked bar graphs
+    on a log scale of the cumulative number of basepairs above or
+    equal to each depth boundary.'''
     colors = ["#CCFFCC", "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"]
     plt.grid(linestyle="-", zorder=-10)
     bands = [] ; fracs = []; sizes = [] ; fracc = []
@@ -66,37 +72,48 @@ def plotstratifiedsizes(labels, spectra):
     plt.show()
 
 def summarizestrata(labels, spectra):
-    BANDS=[1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000, 100000, 300000, 1000000]
-    for spectrum, label in zip(spectra,labels):
+    '''Prints one-line table-style summary of cumulative fractions and
+    sizes '''
+    BANDS = [1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000, 100000, 300000, 1000000]
+    for spectrum, label in zip(spectra, labels):
         band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
-        bandsbanner = map(str, BANDS) 
+        bandsbanner = map(str, BANDS)
         print "#name\t" + "\t".join(bandsbanner) + "\t" + "\t".join(bandsbanner)
-        print label+"\t" + "\t".join(map(str,frac)) + "\t",
-        print "" + "\t".join(map(str,size))
+        print label+"\t" + "\t".join(map(str, frac)) + "\t",
+        print "" + "\t".join(map(str, size))
     return
 
 if __name__ == '__main__':
-    usage = '''
+    usage = '''spectra.py [options] -l <list of target files, labels>
 '''
     parser = OptionParser(usage)
-    parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
-         default=False, help="verbose")
-    parser.add_option("-o", "--outfile", dest="outfile", action="store",
-         default=None, help="output file name")
-    parser.add_option("-g", "--graph", dest="option", action="store", type="int",
-         default="6", help="graph type 0 = fraction, 1 = basepairs")
-    parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
-         default=False, help="interactive mode--draw window")
-    parser.add_option("-l", "--list", dest="filelist",
-         default=None, help="file containing list of targets and labels")
-    parser.add_option("-t", "--type", dest="filetype",
-         default="file", help="type for file list (file,mgm)")
-    parser.add_option("-w", "--writetype", dest="writetype",
-         default="pdf", help="file type for output (pdf,png)")
-    parser.add_option("-s", "--suppresslegend", dest="suppresslegend", action="store_true",
-         default=False, help="supress display of legend")
-    parser.add_option("-n", "--name", dest="title",
-         default=None, help="Name for graph, graph title")
+    parser.add_option(
+        "-v", "--verbose", dest="verbose", action="store_true",
+        default=False, help="verbose")
+    parser.add_option(
+        "-o", "--outfile", dest="outfile", action="store",
+        default=None, help="output file name")
+    parser.add_option(
+        "-g", "--graph", dest="option", action="store", type="int",
+        default="6", help="graph type 0 = fraction, 1 = basepairs")
+    parser.add_option(
+        "-i", "--interactive", dest="interactive", action="store_true",
+        default=False, help="interactive mode--draw window")
+    parser.add_option(
+        "-l", "--list", dest="filelist",
+        default=None, help="file containing list of targets and labels")
+    parser.add_option(
+        "-t", "--type", dest="filetype",
+        default="file", help="type for file list (file,mgm)")
+    parser.add_option(
+        "-w", "--writetype", dest="writetype",
+        default="pdf", help="file type for output (pdf,png)")
+    parser.add_option(
+        "-s", "--suppresslegend", dest="suppresslegend", action="store_true",
+        default=False, help="supress display of legend")
+    parser.add_option(
+        "-n", "--name", dest="title",
+        default=None, help="Name for graph, graph title")
 
     (opts, args) = parser.parse_args()
     writetype = opts.writetype

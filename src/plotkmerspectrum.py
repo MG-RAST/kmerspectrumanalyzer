@@ -63,28 +63,39 @@ if __name__ == '__main__':
 30: Renyi entropy (transformation, function of lambda)
 '''
     parser = OptionParser(usage)
-    parser.add_option("-d", "--dump", dest="dump", action="store_true",
-         default=False, help="dump table with outputs ")
-    parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
-         default=False, help="verbose")
-    parser.add_option("-o", "--outfile", dest="outfile", action="store",
-         default=None, help="dump table with outputs ")
-    parser.add_option("-g", "--graph", dest="option", action="store", type="int",
-         default="6", help=GRAPHNUMBERDESCRIPTION)
-    parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
-         default=False, help="interactive mode--draw window")
-    parser.add_option("-l", "--list", dest="filelist",
-         default=None, help="file containing list of targets and labels")
-    parser.add_option("-t", "--type", dest="filetype",
-         default="file", help="type for file list (file,mgm)")
-    parser.add_option("-w", "--writetype", dest="writetype",
-         default="pdf", help="file type for output (pdf,png)")
-    parser.add_option("-a", "--appendlogfile", dest="logfile",
-         default="kmers.log", help="logfile for summary statistics")
-    parser.add_option("-s", "--suppresslegend", dest="suppress", action="store_true",
-         default=False, help="supress display of legend")
-    parser.add_option("-n", "--name", dest="title",
-         default=None, help="Name for graph, graph title")
+    parser.add_option(
+        "-d", "--dump", dest="dump", action="store_true",
+        default=False, help="dump table with outputs ")
+    parser.add_option(
+        "-v", "--verbose", dest="verbose", action="store_true",
+        default=False, help="verbose")
+    parser.add_option(
+        "-o", "--outfile", dest="outfile", action="store",
+        default=None, help="dump table with outputs ")
+    parser.add_option(
+        "-g", "--graph", dest="option", action="store", type="int",
+        default="6", help=GRAPHNUMBERDESCRIPTION)
+    parser.add_option(
+        "-i", "--interactive", dest="interactive", action="store_true",
+        default=False, help="interactive mode--draw window")
+    parser.add_option(
+        "-l", "--list", dest="filelist",
+        default=None, help="file containing list of targets and labels")
+    parser.add_option(
+        "-t", "--type", dest="filetype",
+        default="file", help="type for file list (file,mgm)")
+    parser.add_option(
+        "-w", "--writetype", dest="writetype",
+        default="pdf", help="file type for output (pdf,png)")
+    parser.add_option(
+        "-a", "--appendlogfile", dest="logfile",
+        default="kmers.log", help="logfile for summary statistics")
+    parser.add_option(
+        "-s", "--suppresslegend", dest="suppress", action="store_true",
+        default=False, help="supress display of legend")
+    parser.add_option(
+        "-n", "--name", dest="title",
+        default=None, help="Name for graph, graph title")
 
     (opts, args) = parser.parse_args()
     graphtype = opts.option

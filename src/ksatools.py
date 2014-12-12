@@ -281,7 +281,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
         if dump:
-            c = np.hstack((cn.reshape((len(cn), 1)),
+            c = np.hstack(
+                (cn.reshape((len(cn), 1)),
                 ((cn * c1).reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s\n" % outfile)
             np.savetxt(
