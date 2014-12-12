@@ -58,7 +58,7 @@ def plotstratifiedsizes(labels, spectra):
     for l in range(len(labels)):
         for i in range(len(bands[0])-1):
             sizec = np.array(sizes[l])
-            if l == 1:
+            if l == 0:
                 plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), log=True)
             else:
                 plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], log=True)
