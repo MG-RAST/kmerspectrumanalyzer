@@ -19,13 +19,11 @@ def plotstratifiedfracs(labels, spectra):
         sys.stderr.write("Stratifying "+label+"...\n")
         BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
         band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
-#        print label, band, frac, size
         bands.append(band)
         fracs.append(frac)
         sizes.append(size)
     for l in range(len(labels)):
         for i in range(len(bands[0])-1):
-            print l, bands[l][i]
             if l == 0:
                 plt.barh(l, (fracs[l][i]-fracs[l][i+1]), left=(fracs[l][i+1]), color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), alpha=1.0, zorder=0)
             else:
@@ -48,15 +46,12 @@ def plotstratifiedsizes(labels, spectra):
         spectrum = spectra[i]
         sys.stderr.write("Stratifying "+label+"...\n")
         band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
-        print label, band, frac, size
         bands.append(band)
         fracs.append(frac)
         sizes.append(size)
-    for l in range(len(labels)-1, -1, -1):
+    for l in range(len(labels)):
         for i in range(len(bands[0])-1):
-            print l, bands[l][i]
             sizec = np.array(sizes[l])
-            print sizec
             if l == 1:
                 plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), log=True)
             else:
