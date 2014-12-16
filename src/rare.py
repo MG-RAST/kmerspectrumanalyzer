@@ -14,6 +14,7 @@ def fract(aa, epsilon, threshold):
     the factor epsilon.  Returns a float.  aa is a two-column abudnance
     table, epsilon and threshold are floats.'''
     sys.stderr.write("E %f T %f\n" % (epsilon, threshold))
+        
     xr = aa[:, 0]
     xn = aa[:, 1]
     NO = np.sum(xn * xr)
@@ -154,7 +155,7 @@ if __name__ == "__main__":
                     if len(a) == 3:
                         selectedcolor = a[2]
                     else:
-                        selectedcolor = COLORS[n]
+                        selectedcolor = COLORS[n%len(COLORS)]
                     spectrum = ksatools.loadfile(filename)
                     plotme(spectrum, label=a[1], color=selectedcolor,
                         thresholdlist=listofthresholds,
