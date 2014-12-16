@@ -146,8 +146,10 @@ if __name__ == '__main__':
                     if len(a) == 1:
                         a.append(a[0])
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
-                    spectra.append(ksatools.loadfile(a[0]))
-                    labels.append(a[1])
+                    contents = ksatools.loadfile(a[0])
+                    if contents != []:
+                        spectra.append(contents) 
+                        labels.append(a[1])
     if opts.option == 0:
         plotstratifiedfracs(labels, spectra)
     if opts.option == 1:
