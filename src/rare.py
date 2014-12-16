@@ -26,9 +26,9 @@ def fract(aa, epsilon, threshold):
         elif smallr[i] < threshold / 10:
             interim = 0
         else:
-            interim = float(xn[i] * xr[i]) * (1 - scipy.stats.poisson.cdf(
-                threshold + 0.5, smallr[i])) / (1 - scipy.stats.poisson.cdf(
-                    0.5, smallr[i]))
+            interim = float(xn[i] * xr[i]) * (1 - scipy.stats.binom.cdf(
+                threshold + 0.5, xr[i], epsilon)) / (1 - scipy.stats.binom.cdf(
+                    0.5, xr[i], epsilon))
         if not np.isnan(interim):
             p += interim
     return p / NO
