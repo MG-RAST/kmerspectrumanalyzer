@@ -167,10 +167,11 @@ if __name__ == "__main__":
                     else:
                         selectedcolor = COLORS[n%len(COLORS)]
                     spectrum = ksatools.loadfile(filename)
-                    plotme(spectrum, label=a[1], color=selectedcolor,
-                        thresholdlist=listofthresholds,
-                        numplots=numplots, dump=OPTS.dump)
-                    n = n + 1
+                    if spectrum != []:
+                        plotme(spectrum, label=a[1], color=selectedcolor,
+                            thresholdlist=listofthresholds,
+                            numplots=numplots, dump=OPTS.dump)
+                        n = n + 1
         if OPTS.suppresslegend == 0:
             plt.legend(loc="upper left")
         plt.savefig(OUTFILE)
