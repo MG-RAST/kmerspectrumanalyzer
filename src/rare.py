@@ -114,14 +114,17 @@ if __name__ == "__main__":
          help="file containing list of targets and labels")
     PARSER.add_option("-g", "--graphtype", dest="graphtype", default=1,
          help="graph type 1: shaded 2: non-shaded 3: kmer richness")
-    PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=True,
+    PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=False,
          action="store_true", help="suppress legend")
     PARSER.add_option("-c", "--colors", dest="colors",
          help="comma-separated color list")
+    PARSER.add_option("-o", "--output", dest="outfile", default="",
+         help="filename for output")
     PARSER.add_option("-d", "--dump", dest="dump",
          action="store_true", help="output table .rare.csv")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
+
     n = 0
     if OPTS.colors:
         COLORS = OPTS.colors.split(",")
@@ -138,6 +141,13 @@ if __name__ == "__main__":
         listofthresholds = [1]
     else:
         listofthresholds = [1, 3, 10, 30]
+    OUTFILE = OPTS.outfile
+    if OUTFILE == "":
+        if OPTS.filelist:
+            OUTFILE = OPTS.filelist + ".rare."+str(SHADED)+".png"
+        else:
+            OUTFILE = "test" + ".rare."+str(SHADED)+".png"
+
     if OPTS.filelist:
         listfile = OPTS.filelist
         assert os.path.isfile(listfile), "File {} does not exist".format(
@@ -163,7 +173,7 @@ if __name__ == "__main__":
                     n = n + 1
         if OPTS.suppresslegend == 0:
             plt.legend(loc="upper left")
-        plt.savefig(listfile + ".rare."+str(SHADED)+".png")
+        plt.savefig(OUTFILE)
     else:
         for v in ARGS:
             print v
@@ -173,6 +183,5 @@ if __name__ == "__main__":
                color=COLORS[n], dump=OPTS.dump)
             n = n + 1
 #        plt.legend(loc="upper left")
-        sys.stderr.write("Warning! printing graphs in test."
-                         + str(SHADED)+".png!\n")
-        plt.savefig("test."+str(SHADED)+".png")
+        sys.stderr.write("Warning! printing graphs in default" + OUTFILE)
+        plt.savefig(OUTFILE) 
