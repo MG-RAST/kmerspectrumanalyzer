@@ -24,7 +24,7 @@ def pad(xvalues, yvalues):
     '''Adds missing integer values to x and corresponding zeros to y.'''
     yout = []
     xout = []
-    for i in range(int(1.5*(max(xvalues)))):
+    for i in range(1,int(1.5*(max(xvalues)))):
         try:
             xout.append(xvalues[xvalues.index(i+1)])
             yout.append(yvalues[xvalues.index(i+1)])
