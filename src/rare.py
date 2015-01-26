@@ -82,15 +82,18 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
             lab = label + str(thresholdlist[i]) + "x"
             lab = label
             plt.semilogx(pex, aug, "-", label=lab, color=color)
+            plt.ylabel("Nonunique fraction of data")
         elif SHADED == 1:
             plt.subplot(numplots, 1, n + 1)
             plt.semilogx(pex, aug, "-", label=lab, color=color)
             plt.fill(pex2, aug2, "k", alpha=0.2)
             plt.title(label)
+            plt.ylabel("Fraction of data")
         else:
             plt.semilogx(pex, aug, "-", label=lab)
             plt.fill(pex2, aug2, "k", alpha=0.2)
             plt.title(label)
+            plt.ylabel("Fraction of data")
 #            label=str(thresholdlist[i]))
 #        plt.fill(pex, aug, "k", alpha=0.2)
     plt.ylim((0, 1))
@@ -100,8 +103,6 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     else:    # suppress drawing of x-axis labels for all but last plot
         frame1 = plt.gca()
         frame1.axes.get_xaxis().set_ticks([])
-    if SHADED == 0 or n == 2 or 1:
-        plt.ylabel("Fraction of data")
     plt.tight_layout()
     return()
 
