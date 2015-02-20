@@ -64,9 +64,12 @@ In `repeatresolutionpaper/counts-validationgenomedata` there is a
 collection of 21 such kmer spectra.   `list` contains two columns, the
 first three lines of which are:
 ```
-
+SRR039966A.fastq.21     T.paraluiscuniculi 22x
+SRR006331.fastq.21      M.agalactiae 22x
+SRR006330.fastq.21      A.baylyi 23x
 ```
-This list is formatted <spectrum filename>[<TAB><Human-readable-name>]
+This first column contains the filenames of the spectra; the second
+(optional) column contains a human readable name for the datasets.
 
 ### Generate kmer graphs
 These lines will generate graphs comparing the kmer spectra:
