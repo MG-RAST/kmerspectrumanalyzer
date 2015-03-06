@@ -69,7 +69,8 @@ SRR006331.fastq.21      M.agalactiae 22x
 SRR006330.fastq.21      A.baylyi 23x
 ```
 This first column contains the filenames of the spectra; the second
-(optional) column contains a human readable name for the datasets.
+(optional) column contains a human readable name for the datasets;
+the third (optional) column contains the color of the trace.
 
 ### Generate kmer graphs
 These lines will generate graphs comparing the kmer spectra:
