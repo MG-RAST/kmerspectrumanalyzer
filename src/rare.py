@@ -2,10 +2,10 @@
 '''Tool to generate computationally-rarefied graphs kmer spectra'''
 
 import numpy as np
-import matplotlib.pyplot as plt
 import sys, os
 import scipy.stats
 import ksatools
+import matplotlib as mpl
 from optparse import OptionParser
 
 def fract(aa, epsilon, threshold):
@@ -127,6 +127,11 @@ if __name__ == "__main__":
     SHADED = int(OPTS.graphtype)
 
     n = 0
+    if not OPTS.interactive:
+        mpl.use("Agg")
+    else:
+        mpl.use('TkAgg')
+    import matplotlib.pyplot as plt
     if OPTS.colors:
         COLORS = OPTS.colors.split(",")
     else:
