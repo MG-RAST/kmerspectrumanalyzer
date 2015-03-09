@@ -183,7 +183,7 @@ if __name__ == "__main__":
         plt.savefig(OUTFILE)
     else:
         for v in ARGS:
-            print v
+            print "#", v
             filename = v
             spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
