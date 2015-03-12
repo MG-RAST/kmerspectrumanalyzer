@@ -25,7 +25,7 @@ def fract(aa, epsilon, threshold):
             if nonzero > 1E-3:  # For numerical stability, don't bother if term is mostly hopeless
                 gt_thresh = 1.-scipy.stats.hypergeom.cdf( threshold + 0.5, NO, xr[i], epsilon*NO  )
                 interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
-                if (not np.isnan(interim)) and (nonzero > 1E-3):
+                if (not np.isnan(interim)) and (nonzero > 1E-3) and (interim > 0):
                      p += interim
 
     return p / NO
