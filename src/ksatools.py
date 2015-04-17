@@ -213,15 +213,20 @@ def loadfile(filename):
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return []
 
-def printstratify(spectrum, bands=None):
+def printstratify(spectrum, bands=None, flat=False, label=""):
     '''prints table of sizes and data fracitons for separate
     bands, inclusive of lower bound, excluding upper band 
     boundary'''
     bands, frac, size = stratify(spectrum, bands)
-    for i in range(len(bands)):
-        if i != len(bands)-1:
-            print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
-                size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+    if flat == False:
+        for i in range(len(bands)):
+            if i != len(bands)-1:
+                print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
+                    size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+    else:
+         print "#name\t"+"\t".join(map(str,list(bands[:-1]+bands[1:])))
+         print label+"\t"+"\t".join(map(str, list(size)[:-1] + 
+                list(frac)[1:] ))
 
 def stratify(spectrum, bands=None):
     '''Breaks spectrum up into defined abundance-buckets,
@@ -387,6 +392,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
             printstratify(spectrum)
         else:
             printstratify(spectrum)
+    if option == -3 :
+         printstratify(spectrum, flat=True, label=tracelabel)
     # For these two graphs, draw rainbow bands
     if option == 26:
         bands, frac, size = stratify(spectrum)

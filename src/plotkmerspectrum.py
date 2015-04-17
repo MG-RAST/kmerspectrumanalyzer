@@ -48,8 +48,9 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
 if __name__ == '__main__':
     usage = '''usage: plotkmerspectrum.py [options] <datafile> [<datafile2> <datafile3>...]
        plotkmerspectrum.py [options] -l <file containing targets, labels> '''
-    GRAPHNUMBERDESCRIPTION = '''-2: No graphs, but produce stratify table
--1: no graphs
+    GRAPHNUMBERDESCRIPTION = '''-3: No graphs, produce stratify one-line summary
+-2: No graphs, but produce stratify table
+-1: no graphs, only append summary to kmers.log
 0 : number of kmers vs. kmer abundance (basic spectrum)
 1 : kmers observed vs. kmer abundance (scaled spectrum)
 2 : kmer abundance vs. basepairs observed
