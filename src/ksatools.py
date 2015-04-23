@@ -24,7 +24,7 @@ def pad(xvalues, yvalues):
     '''Adds missing integer values to x and corresponding zeros to y.'''
     yout = []
     xout = []
-    for i in range(1,int(1.5*(max(xvalues)))):
+    for i in range(0,int(1.5*(max(xvalues)))):
         try:
             xout.append(xvalues[xvalues.index(i+1)])
             yout.append(yvalues[xvalues.index(i+1)])
@@ -255,12 +255,14 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
     n counts the (successful) traces.  Returns n.'''
     import matplotlib.pyplot as plt
     # note, calccumsum will raise an exception here if data is invalid
-    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     if label == None:
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
+    xclean, yclean = pad(list(spectrum[:,0]), list(spectrum[:,1]))
+    spectrum = np.vstack([xclean, yclean]).T
     assert spectrum.dtype == "float"
+    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     # sorted by abundance/coverage
     b = np.flipud(spectrum[np.argsort(spectrum[:, 0]), :])
     # sorted by size (for contigs)
@@ -380,6 +382,18 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         xlabel, ylabel = ("number of bases sampled", "nonunique fraction")
         plt.ylim(0, 1)
         legendloc = "lower left"
+    elif option == 19:  # stairstep version of 1
+        pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel, drawstyle="steps")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
+        legendloc = "upper right"
+    elif option == 20:  # stairstep version of 18
+        pA = plt.semilogx(cn, cn * c1 * cn, "-", color=color, label=tracelabel, drawstyle="steps-mid")
+        xlabel, ylabel = ("kmer abundance", "data quantity")
+        legendloc = "upper right"
+    elif option == 21:  # stairstep, straight axes version of 1
+        pA = plt.plot(cn, cn * c1, "-", color=color, label=tracelabel, drawstyle="steps-mid")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
+        legendloc = "upper right"
     elif option == 30:
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
