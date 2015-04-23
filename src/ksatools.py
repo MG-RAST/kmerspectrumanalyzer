@@ -20,17 +20,32 @@ def renyispectrum(x, spectrum):
         R[i] = G
     return R
 
-def pad(xvalues, yvalues):
+def pad(xvalues, yvalues, fill=True):
     '''Adds missing integer values to x and corresponding zeros to y.'''
     yout = []
     xout = []
-    for i in range(0,int(1.5*(max(xvalues)))):
-        try:
-            xout.append(xvalues[xvalues.index(i+1)])
-            yout.append(yvalues[xvalues.index(i+1)])
-        except ValueError:
-            xout.append(i+1)
-            yout.append(0)
+    xv = np.arange(1, int(1.5*max(xvalues)))
+    yv = np.zeros(shape = int(1.5*max(xvalues)), dtype=int)
+
+    if fill==True:
+        for i, x in enumerate(xvalues):
+            yv[xvalues.index(x)] = yvalues[i]
+        xout = list(xv)
+        yout = list(yv)
+    else:
+        for i,x in enumerate(xvalues):
+#          print "x,", x
+          if (x-1 not in xvalues) and (x-1) not in xout: 
+              xout.append(x-1) 
+              yout.append(0) 
+#              print "Adding x-1,0", x-1
+          if  yvalues[xvalues.index(x)]>0:
+              xout.append(xvalues[xvalues.index(x)])
+              yout.append(yvalues[xvalues.index(x)])
+          if (x+1 not in xvalues) and (x+1) not in xout:
+              xout.append(x+1) 
+              yout.append(0) 
+#              print "Adding x+1, 0", x+1
     return(xout, yout)
 
 def getcolor(index, colorlist): 
@@ -198,7 +213,7 @@ def loadfile(filename):
         # parse velvet contig stats format
         if filename.find("stats.txt") >= 0:
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
-	if filename.find(".npo") == len(filename)-4:
+	elif filename.find(".npo") == len(filename)-4:
             matrix = np.loadtxt(filename, usecols=(0, 1), skiprows=6)
             L = getlength(filename)
             matrix[:, 0] = matrix[:, 0] * L
@@ -259,8 +274,11 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
-    xclean, yclean = pad(list(spectrum[:,0]), list(spectrum[:,1]))
-    spectrum = np.vstack([xclean, yclean]).T
+    if option == 19 or option == 20 or option==21:
+        xclean, yclean = pad(list(spectrum[:,0]), list(spectrum[:,1]), fill=False)
+        print "len x", len(spectrum[:,0])
+        print "len xclean", len(xclean)
+        spectrum = np.vstack([xclean, yclean]).T
     assert spectrum.dtype == "float"
     (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     # sorted by abundance/coverage
