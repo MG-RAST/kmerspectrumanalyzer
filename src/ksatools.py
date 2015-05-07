@@ -25,11 +25,11 @@ def pad(xvalues, yvalues, fill=True):
     yout = []
     xout = []
     xv = np.arange(1, int(1.5*max(xvalues)))
-    yv = np.zeros(shape = int(1.5*max(xvalues)), dtype=int)
+    yv = np.zeros(shape = int(1.5*max(xvalues)-1), dtype=int)
 
     if fill==True:
         for i, x in enumerate(xvalues):
-            yv[xvalues.index(x)] = yvalues[i]
+            yv[np.where(xv==x)[0][0]] = yvalues[i]
         xout = list(xv)
         yout = list(yv)
     else:
