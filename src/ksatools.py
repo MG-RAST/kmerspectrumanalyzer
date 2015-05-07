@@ -48,6 +48,17 @@ def pad(xvalues, yvalues, fill=True):
 #              print "Adding x+1, 0", x+1
     return(xout, yout)
 
+def smoothspectrum(data):
+    bins = np.hstack((np.arange(1,200), np.exp(np.arange(0,4, .01) * np.log(10)) * 200))
+    x = data[:,0]
+    y = data[:,1]
+    yo = np.zeros((len(bins)))
+    for i in range(0, len(bins)-1):
+        yo[i] = y[np.where((x >= bins[i])* (x < bins[i+1]))].sum()
+    xo = bins[:-1]
+    yo = yo[:-1] / np.diff(bins)
+    return xo, yo
+
 def getcolor(index, colorlist): 
     if colorlist == []:
         colorlist = COLORLIST
@@ -274,7 +285,10 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
-    if option == 19 or option == 20 or option==21:
+    if option == 0 or option == 1 or option ==19 or option==20: 
+        xclean, yclean = smoothspectrum(spectrum)
+        spectrum = np.vstack([xclean, yclean]).T
+    if option==21:
         xclean, yclean = pad(list(spectrum[:,0]), list(spectrum[:,1]), fill=False)
         print "len x", len(spectrum[:,0])
         print "len xclean", len(xclean)
