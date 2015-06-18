@@ -2,10 +2,10 @@
 '''Tool to generate computationally-rarefied graphs kmer spectra'''
 
 import numpy as np
-import matplotlib.pyplot as plt
 import sys, os
 import scipy.stats
 import ksatools
+import matplotlib as mpl
 from optparse import OptionParser
 
 def fract(aa, epsilon, threshold):
@@ -21,16 +21,13 @@ def fract(aa, epsilon, threshold):
     p = 0.0
     smallr = xr * epsilon
     for i in range(len(xr)):
-        if smallr[i] > 10 * threshold:
-            interim = float(xn[i]*xr[i])
-        elif smallr[i] < threshold / 10:
-            interim = 0
-        else:
-            interim = float(xn[i] * xr[i]) * (1 - scipy.stats.binom.cdf(
-                threshold + 0.5, xr[i], epsilon)) / (1 - scipy.stats.binom.cdf(
-                    0.5, xr[i], epsilon))
-        if not np.isnan(interim):
-            p += interim
+            nonzero = (1.-scipy.stats.hypergeom.cdf( 0.5, NO, xr[i] , epsilon*NO ))
+            if nonzero > 1E-3:  # For numerical stability, don't bother if term is mostly hopeless
+                gt_thresh = 1.-scipy.stats.hypergeom.cdf( threshold + 0.5, NO, xr[i], epsilon*NO  )
+                interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
+                if (not np.isnan(interim)) and (nonzero > 1E-3) and (interim > 0):
+                     p += interim
+
     return p / NO
 
 def calc_resampled_fraction(aa, samplefracs, thresholds):
@@ -127,6 +124,11 @@ if __name__ == "__main__":
     SHADED = int(OPTS.graphtype)
 
     n = 0
+    if not OPTS.interactive:
+        mpl.use("Agg")
+    else:
+        mpl.use('TkAgg')
+    import matplotlib.pyplot as plt
     if OPTS.colors:
         COLORS = OPTS.colors.split(",")
     else:
@@ -178,7 +180,7 @@ if __name__ == "__main__":
         plt.savefig(OUTFILE)
     else:
         for v in ARGS:
-            print v
+            print "#", v
             filename = v
             spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,

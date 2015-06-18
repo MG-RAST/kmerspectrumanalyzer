@@ -20,18 +20,44 @@ def renyispectrum(x, spectrum):
         R[i] = G
     return R
 
-def pad(xvalues, yvalues):
+def pad(xvalues, yvalues, fill=True):
     '''Adds missing integer values to x and corresponding zeros to y.'''
     yout = []
     xout = []
-    for i in range(1,int(1.5*(max(xvalues)))):
-        try:
-            xout.append(xvalues[xvalues.index(i+1)])
-            yout.append(yvalues[xvalues.index(i+1)])
-        except ValueError:
-            xout.append(i+1)
-            yout.append(0)
+    xv = np.arange(1, int(1.5*max(xvalues)))
+    yv = np.zeros(shape = int(1.5*max(xvalues)-1), dtype=int)
+
+    if fill==True:
+        for i, x in enumerate(xvalues):
+            yv[np.where(xv==x)[0][0]] = yvalues[i]
+        xout = list(xv)
+        yout = list(yv)
+    else:
+        for i,x in enumerate(xvalues):
+#          print "x,", x
+          if (x-1 not in xvalues) and (x-1) not in xout: 
+              xout.append(x-1) 
+              yout.append(0) 
+#              print "Adding x-1,0", x-1
+          if  yvalues[xvalues.index(x)]>0:
+              xout.append(xvalues[xvalues.index(x)])
+              yout.append(yvalues[xvalues.index(x)])
+          if (x+1 not in xvalues) and (x+1) not in xout:
+              xout.append(x+1) 
+              yout.append(0) 
+#              print "Adding x+1, 0", x+1
     return(xout, yout)
+
+def smoothspectrum(data):
+    bins = np.hstack((np.arange(1,200), np.exp(np.arange(0,4, .01) * np.log(10)) * 200))
+    x = data[:,0]
+    y = data[:,1]
+    yo = np.zeros((len(bins)))
+    for i in range(0, len(bins)-1):
+        yo[i] = y[np.where((x >= bins[i])* (x < bins[i+1]))].sum()
+    xo = bins[:-1]
+    yo = yo[:-1] / np.diff(bins)
+    return xo, yo
 
 def getcolor(index, colorlist): 
     if colorlist == []:
@@ -198,7 +224,7 @@ def loadfile(filename):
         # parse velvet contig stats format
         if filename.find("stats.txt") >= 0:
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
-	if filename.find(".npo") == len(filename)-4:
+	elif filename.find(".npo") == len(filename)-4:
             matrix = np.loadtxt(filename, usecols=(0, 1), skiprows=6)
             L = getlength(filename)
             matrix[:, 0] = matrix[:, 0] * L
@@ -213,15 +239,20 @@ def loadfile(filename):
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return []
 
-def printstratify(spectrum, bands=None):
+def printstratify(spectrum, bands=None, flat=False, label=""):
     '''prints table of sizes and data fracitons for separate
     bands, inclusive of lower bound, excluding upper band 
     boundary'''
     bands, frac, size = stratify(spectrum, bands)
-    for i in range(len(bands)):
-        if i != len(bands)-1:
-            print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
-                size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+    if flat == False:
+        for i in range(len(bands)):
+            if i != len(bands)-1:
+                print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
+                    size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+    else:
+         print "#name\t"+"\t".join(map(str,list(bands[:-1]+bands[1:])))
+         print label+"\t"+"\t".join(map(str, list(size)[:-1] + 
+                list(frac)[1:] ))
 
 def stratify(spectrum, bands=None):
     '''Breaks spectrum up into defined abundance-buckets,
@@ -250,12 +281,20 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
     n counts the (successful) traces.  Returns n.'''
     import matplotlib.pyplot as plt
     # note, calccumsum will raise an exception here if data is invalid
-    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     if label == None:
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
+    if option == 0 or option == 1 or option ==19 or option==20: 
+        xclean, yclean = smoothspectrum(spectrum)
+        spectrum = np.vstack([xclean, yclean]).T
+    if option==21:
+        xclean, yclean = pad(list(spectrum[:,0]), list(spectrum[:,1]), fill=False)
+        print "len x", len(spectrum[:,0])
+        print "len xclean", len(xclean)
+        spectrum = np.vstack([xclean, yclean]).T
     assert spectrum.dtype == "float"
+    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     # sorted by abundance/coverage
     b = np.flipud(spectrum[np.argsort(spectrum[:, 0]), :])
     # sorted by size (for contigs)
@@ -375,6 +414,18 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         xlabel, ylabel = ("number of bases sampled", "nonunique fraction")
         plt.ylim(0, 1)
         legendloc = "lower left"
+    elif option == 19:  # stairstep version of 1
+        pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel, drawstyle="steps")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
+        legendloc = "upper right"
+    elif option == 20:  # stairstep version of 18
+        pA = plt.semilogx(cn, cn * c1 * cn, "-", color=color, label=tracelabel, drawstyle="steps-mid")
+        xlabel, ylabel = ("kmer abundance", "data quantity")
+        legendloc = "upper right"
+    elif option == 21:  # stairstep, straight axes version of 1
+        pA = plt.plot(cn, cn * c1, "-", color=color, label=tracelabel, drawstyle="steps-mid")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
+        legendloc = "upper right"
     elif option == 30:
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
@@ -387,6 +438,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
             printstratify(spectrum)
         else:
             printstratify(spectrum)
+    if option == -3 :
+         printstratify(spectrum, flat=True, label=tracelabel)
     # For these two graphs, draw rainbow bands
     if option == 26:
         bands, frac, size = stratify(spectrum)
