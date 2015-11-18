@@ -11,6 +11,19 @@ Usage: countkmer${k}.sh one.fasta
        countkmer${k}.sh one.fasta [two.fasta ...]
        cat one.fastq two.fastq | countkmer${k}.sh > onetwo.21"
 
+if [[ $filename == *".fasta" ]]
+then
+FILETYPE=fasta
+fi
+if [[ $filename == *".fna" ]]
+then
+FILETYPE=fasta
+fi
+if [[ $filename == *".fa" ]]
+then
+FILETYPE=fasta
+fi
+
 if [ $# -lt 1 ]
     then
     if [ -t 0 ]   # Test STDIN is interactive
