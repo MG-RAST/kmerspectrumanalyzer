@@ -22,12 +22,13 @@ def fract(aa, epsilon, threshold):
     p = 0.0
     for i in range(len(xr)):
         # this is the expected number of nonzero categories after hypergeometric sampling
-        nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
-        if nonzero > 1E-5:  # For numerical stability, don't bother if denominator is mostly hopeless
+#        nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
+        nonzero = (1.-scipy.stats.hypergeom.pmf(0, NO, xr[i], epsilon*NO))
+        if nonzero * xr[i] * xn[i] > 1E-0 and nonzero > 1E-2  # For numerical stability, don't bother if denominator is mostly hopeless:
         # and this is the expected number of above-threshold survivors
             gt_thresh = 1.-scipy.stats.hypergeom.cdf(threshold + 0.5, NO, xr[i], epsilon*NO)
             interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
-            if (not np.isnan(interim)) and (nonzero > 1E-5) and (interim > 0):
+            if (not np.isnan(interim)) and (interim > 0):
                 p += interim
     return p / NO
 
