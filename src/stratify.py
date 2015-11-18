@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 '''Tool to generate bar graphs of data-depth fractions and
-basepair-by-depth distributions from kmer spectra'''
+basepair-by-depth distributions from kmer spectra
+'''
 
-import sys, os
+import sys
+import os
 import numpy as np
 import matplotlib as mpl
 from optparse import OptionParser
@@ -11,15 +13,18 @@ import ksatools
 
 def plotstratifiedfracs(labels, spectra):
     '''Given list of labels and list of spectra, splits spectra
-    up and produces bar plot of the stratified spectra's usage 
-    fractions'''
+    up and produces bar plot of the stratified spectra's usage
+    fractions
+    '''
     colors = ["#CCFFCC", "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"]
-    bands = [] ; fracs = []; sizes = [] ; fracc = []
+    bands = []
+    fracs = []
+    sizes = []
     plt.grid(linestyle="-", zorder=-10)
     for i in range(len(labels)):
         label = labels[i]
         spectrum = spectra[i]
-        sys.stderr.write("Stratifying "+label+"...\n")
+        sys.stderr.write("Stratifying " + label + "...\n")
         BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
         band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
         bands.append(band)
@@ -28,9 +33,14 @@ def plotstratifiedfracs(labels, spectra):
     for l in range(len(labels)):
         for i in range(len(bands[0])-1):
             if l == 0:
-                plt.barh(l, (fracs[l][i]-fracs[l][i+1]), left=(fracs[l][i+1]), color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), alpha=1.0, zorder=0)
+                plt.barh(l, (fracs[l][i]-fracs[l][i+1]),
+                         left=(fracs[l][i+1]), color=colors[i],
+                         label=str(bands[0][i])+"-"+str(bands[0][i+1]),
+                         alpha=1.0, zorder=0)
             else:
-                plt.barh(l, (fracs[l][i]-fracs[l][i+1]), left=(fracs[l][i+1]), color=colors[i], alpha=1.0, zorder=0)
+                plt.barh(l, (fracs[l][i]-fracs[l][i+1]),
+                         left=(fracs[l][i+1]), color=colors[i],
+                         alpha=1.0, zorder=0)
     pos = np.arange(len(labels)) + 0.5
     plt.yticks(pos, labels)
     plt.xlabel("Cumulative data fraction")
@@ -42,10 +52,13 @@ def plotstratifiedfracs(labels, spectra):
 def plotstratifiedsizes(labels, spectra):
     '''Given list of labels and spectra, produces stacked bar graphs
     on a log scale of the cumulative number of basepairs above or
-    equal to each depth boundary.'''
+    equal to each depth boundary.
+    '''
     colors = ["#CCFFCC", "#99FF99", "#55FF55", "#33CC33", "#009933", "#003300"]
     plt.grid(linestyle="-", zorder=-10)
-    bands = [] ; fracs = []; sizes = [] ; fracc = []
+    bands = []
+    fracs = []
+    sizes = []
     BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
     for i in range(len(labels)):
         label = labels[i]
@@ -59,9 +72,12 @@ def plotstratifiedsizes(labels, spectra):
         for i in range(len(bands[0])-1):
             sizec = np.array(sizes[l])
             if l == 0:
-                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], label=str(bands[0][i])+"-"+str(bands[0][i+1]), log=True)
+                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]),
+                         color=colors[i], label=str(bands[0][i])+
+                         "-"+str(bands[0][i+1]), log=True)
             else:
-                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]), color=colors[i], log=True)
+                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]),
+                         color=colors[i], log=True)
     pos = np.arange(len(labels)) + 0.5
     plt.xlim((1, 1E9))
     plt.yticks(pos, labels)
@@ -73,7 +89,8 @@ def plotstratifiedsizes(labels, spectra):
 
 def summarizestrata(labels, spectra):
     '''Prints one-line table-style summary of cumulative fractions and
-    sizes '''
+    sizes
+    '''
     BANDS = [1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000, 100000, 300000, 1000000]
     for spectrum, label in zip(spectra, labels):
         band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
@@ -148,7 +165,7 @@ if __name__ == '__main__':
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
                     contents = ksatools.loadfile(a[0])
                     if contents != []:
-                        spectra.append(contents) 
+                        spectra.append(contents)
                         labels.append(a[1])
     if opts.option == 0:
         plotstratifiedfracs(labels, spectra)
