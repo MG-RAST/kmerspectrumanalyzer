@@ -24,11 +24,14 @@ def fract(aa, epsilon, threshold):
         # this is the expected number of nonzero categories after hypergeometric sampling
 #        nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
         nonzero = (1.-scipy.stats.hypergeom.pmf(0, NO, xr[i], epsilon*NO))
-        if nonzero * xr[i] * xn[i] > 1E-0 and nonzero > 1E-2  # For numerical stability, don't bother if denominator is mostly hopeless:
+        # For efficiency, don't evaluate if numerator is too small 
+        # For numerical stability, don't evaluate term if denominator (nonzero) is too small
+        # note: second threshold (on nonzero) here creates kinks in the graph, but is important
+        if nonzero * xr[i] * xn[i] > 10E-0 and nonzero > 1E-2:  
         # and this is the expected number of above-threshold survivors
             gt_thresh = 1.-scipy.stats.hypergeom.cdf(threshold + 0.5, NO, xr[i], epsilon*NO)
             interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
-            if (not np.isnan(interim)) and (interim > 0):
+            if (not np.isnan(interim)) and (interim > 0): 
                 p += interim
     return p / NO
 
@@ -74,7 +77,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
         aug = matrix[:, i]
 #        lab = label + " " + str(thresholdlist[i])
         lab = str(thresholdlist[i]) + "x"
-        plt.grid(1)
+        plt.grid(axis='both')
         if SHADED == 0:
             plt.title(label)
             plt.semilogx(pex, aug, "-o", label=lab)
@@ -98,7 +101,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 #        plt.fill(pex, aug, "k", alpha=0.2)
     plt.ylim((0, 1))
     plt.xlim((1E4, 1E11))
-    if SHADED == 0 or n+1 == numplots:
+    if SHADED == 0 or n + 1 == numplots:
         plt.xlabel("Sequencing effort (bp)")
     else:    # suppress drawing of x-axis labels for all but last plot
         frame1 = plt.gca()
@@ -186,8 +189,8 @@ if __name__ == "__main__":
             filename = v
             spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
-                   color=COLORS[n], dump=OPTS.dump)
+                   color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS))
             n = n + 1
 #        plt.legend(loc="upper left")
-        sys.stderr.write("Warning! printing graphs in default" + OUTFILE)
+        sys.stderr.write("Warning! printing graphs in default filename " + OUTFILE + "\n")
         plt.savefig(OUTFILE)
