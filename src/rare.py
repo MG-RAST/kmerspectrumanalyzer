@@ -11,25 +11,24 @@ from optparse import OptionParser
 def fract(aa, epsilon, threshold):
     '''Evaluates the fraction of theoretically-subsampled spectra
     above a specified threshold.  Dataset abundance is attenuated by
-    the factor epsilon.  Returns a float.  aa is a two-column abudnance
-    table, epsilon and threshold are floats.'''
+    the factor epsilon.  Returns a float beween 0 and 1.  aa is a
+    two-column abudnance table, epsilon and threshold are floats.
+    '''
     sys.stderr.write("E %f T %f\n" % (epsilon, threshold))
 
     xr = aa[:, 0]
     xn = aa[:, 1]
     NO = np.sum(xn * xr)
     p = 0.0
-    smallr = xr * epsilon
     for i in range(len(xr)):
         # this is the expected number of nonzero categories after hypergeometric sampling
         nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
-        if nonzero > 1E-3:  # For numerical stability, don't bother if term is mostly hopeless
-        # and this is the expected number of above-threshold--duplicate or higher--survivors
+        if nonzero > 1E-5:  # For numerical stability, don't bother if denominator is mostly hopeless
+        # and this is the expected number of above-threshold survivors
             gt_thresh = 1.-scipy.stats.hypergeom.cdf(threshold + 0.5, NO, xr[i], epsilon*NO)
             interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
-            if (not np.isnan(interim)) and (nonzero > 1E-3) and (interim > 0):
+            if (not np.isnan(interim)) and (nonzero > 1E-5) and (interim > 0):
                 p += interim
-
     return p / NO
 
 def calc_resampled_fraction(aa, samplefracs, thresholds):
@@ -48,8 +47,9 @@ def calc_resampled_fraction(aa, samplefracs, thresholds):
 
 def plotme(b, label, color=None, thresholdlist=None, numplots=4,
            suppress=False, dump=False):
-    '''performs calculations and calls graphing routines,
-    given spectra'''
+    '''Performs calculations and calls graphing routines,
+    given spectra
+    '''
 # define range of subsamples
     N = np.sum(b[:, 0] * b[:, 1])
     samplefractions = 10**np.arange(2, 11, .5) / N  # CHEAP
