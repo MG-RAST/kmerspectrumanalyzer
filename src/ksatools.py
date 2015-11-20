@@ -257,7 +257,8 @@ def stratify(spectrum, bands=None):
     kmers=basepairs with kmer-depths greater than or equal
     to each bucket boundary.  Returns list of bands, list
     of (cumulative) fractions, and list of (cumulative)
-    basepairs for each band.'''
+    basepairs for each band.
+    '''
     if bands == None:
         bands = [1, 10, 100, 1000, 10000, 100000]
     n = spectrum[:, 0]
@@ -276,7 +277,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
     option determines the type of graph; label labels each trace;
-    n counts the (successful) traces.  Returns n.'''
+    n counts the (successful) traces.  Returns n.
+    '''
     import matplotlib.pyplot as plt
     # note, calccumsum will raise an exception here if data is invalid
     if label == None:
@@ -315,24 +317,13 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
         plot1 = plt.loglog
-    if option == 0 or option == -1:
-        if dump:
-            c = np.hstack(
-                cn.reshape((len(cn), 1)), (c1.reshape((len(cn), 1))))
-            sys.stderr.write("saving output table in %s\n" % outfile)
-            np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 1:
         p, q = (cn, cn * c1)
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
         plot1 = plt.loglog
-        if dump:
-            c = np.hstack((cn.reshape((len(cn), 1)),
-                          ((cn * c1).reshape((len(cn), 1)))))
-            sys.stderr.write("saving output table in %s\n" % outfile)
-            np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 2:
-        p,q = (b_zo, b_cn)
+        p, q = (b_zo, b_cn)
         plot1 = plt.loglog
         xlabel, ylabel = ("basepairs observed", "kmer abundance")
         legendloc = "lower left"
@@ -347,7 +338,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
     elif option == 5 or option == 25 or option == 24:
-        p, q = (yd , 1-zo/No)
+        p, q = (yd, 1-zo/No)
         plot1 = plt.semilogx
         xlabel, ylabel = ("kmer rank (bp)", "cumulative fraction of observed data")
         plt.xlim((1, 10**10))
@@ -361,10 +352,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         if max(b_cn) < 10**8:
             plt.ylim(1, 10**7)
         legendloc = "lower left"
-        if dump:
-            c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
-            sys.stderr.write("saving output table in %s\n" % outfile)
-            np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 7:
         plot1 = plt.plot
         p, q = (x, c_zd)
@@ -412,7 +399,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         legendloc = "upper right"
     elif option == 16:
         plot1 = plt.plot
-        p, q =  (x, c_yd) 
+        p, q = (x, c_yd) 
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 17:
@@ -449,8 +436,18 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
         p, q = (lam, entropyspectrum) 
-        xlabel, ylabel = ("lambda", "Renyientropy")
+        xlabel, ylabel = ("lambda", "Renyi entropy")
         legendloc = "upper right"
+    if dump:
+        c = np.hstack((p.reshape((len(p), 1)), q.reshape((len(p), 1))))
+        sys.stderr.write("saving output table in %s\n" % outfile)
+        ptype, qtype = ("%f", "%f")
+        if min(p) == 1: 
+            ptype="%d"
+        if min(q) == 1: 
+            qtype="%d"
+        np.savetxt(outfile, c, fmt=[ptype, qtype], delimiter="\t", 
+                   header=xlabel+"\t"+ylabel)
 
     if option == -2 or option == 26 or option == 25:
         if dump:
