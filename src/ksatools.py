@@ -10,6 +10,10 @@ import sys
 import numpy as np
 
 def renyispectrum(x, spectrum):
+    '''Given a two-dimensional spectrum spectrum and a one-dimensional
+    vector of Renyi spectrum exponents, return a vector of corresponding 
+    log10 Renyi entropies.
+    '''
     n = spectrum[:, 0]
     y = spectrum[:, 1]
     N = np.sum(n*y)
@@ -316,7 +320,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
     elif option == 1:
-        plot1, p, q = (plt,loglog, cn, cn * c1)
+        plot1, p, q = (plt.loglog, cn, cn * c1)
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
     elif option == 2:
@@ -419,9 +423,9 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         sys.stderr.write("saving output table in %s\n" % outfile)
         ptype, qtype = ("%f", "%f")
         if min(p) == 1: 
-            ptype="%d"
+            ptype = "%d"
         if min(q) == 1: 
-            qtype="%d"
+            qtype = "%d"
         np.savetxt(outfile, c, fmt=[ptype, qtype], delimiter="\t", 
                    header=xlabel+"\t"+ylabel)
 
@@ -431,7 +435,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         else:
             printstratify(spectrum)
     if option == -3:
-         printstratify(spectrum, flat=True, label=tracelabel)
+        printstratify(spectrum, flat=True, label=tracelabel)
     # For these two graphs, draw rainbow bands
     if option == 26:
         bands, frac, size = stratify(spectrum)
