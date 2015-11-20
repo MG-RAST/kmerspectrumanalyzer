@@ -307,11 +307,14 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     x = np.arange(len(b[:, 0]))                  # rank
     color = getcolor(n, colorlist)
     outfile = "%s.%d.plot.csv" % (filename, option)
+    style = ".-"
+    drawstyle = None
     if option == 0:
-        pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
-        pA = plt.loglog(b_cn, b_c1, ".", color=color)
+        p = b_cn
+        q = b_c1 
         xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
+        plot1 = plt.loglog
     if option == 0 or option == -1:
         if dump:
             c = np.hstack(
@@ -319,39 +322,40 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
             sys.stderr.write("saving output table in %s\n" % outfile)
             np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 1:
-        pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel)
-        pA = plt.loglog(cn, cn * c1, '.', color=color)
+        p, q = (cn, cn * c1)
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
+        plot1 = plt.loglog
         if dump:
             c = np.hstack((cn.reshape((len(cn), 1)),
                           ((cn * c1).reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s\n" % outfile)
             np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 2:
-        pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
+        p,q = (b_zo, b_cn)
+        plot1 = plt.loglog
         xlabel, ylabel = ("basepairs observed", "kmer abundance")
         legendloc = "lower left"
     elif option == 3:
-        pA = plt.semilogy(b_zo / No, b_cn, color=color, label=tracelabel)
-        pA = plt.semilogy(b_zo / No, b_cn, '.', color=color)
+        p, q = (b_zo / No, b_cn)
+        plot1 = plt.semilogy
         xlabel, ylabel = ("fraction of observed data", "kmer abundance")
         legendloc = "lower left"
     elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
-        pA = plt.semilogy(b_zd / Nd, b_cn, color=color, label=tracelabel)
-        pA = plt.semilogy(b_zd / Nd, b_cn, '.', color=color)
+        p, q = (b_zd / Nd, b_cn)
+        plot1 = plt.semilogy
         xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
     elif option == 5 or option == 25 or option == 24:
-        pA = plt.semilogx(yd, 1-zo / No, '-', color=color)
-        pA = plt.semilogx(yd, 1-zo / No, '.', color=color, label=tracelabel)
+        p, q = (yd , 1-zo/No)
+        plot1 = plt.semilogx
         xlabel, ylabel = ("kmer rank (bp)", "cumulative fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         legendloc = "lower left"
     elif option == 6 or option == 26:
-        pA = plt.loglog(b_zd, b_cn, '-', color=color, label=tracelabel)
-        pA = plt.loglog(b_zd, b_cn, '.', color=color)
+        plot1 = plt.loglog
+        p, q = (b_zd, b_cn)
         xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
         plt.xlim((1, 10**10))
         if max(b_cn) < 10**8:
@@ -362,73 +366,89 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
             sys.stderr.write("saving output table in %s\n" % outfile)
             np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 7:
-        pA = plt.plot(x, c_zd, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, c_zd)
         xlabel, ylabel = ("contig size rank", "cuml contig size")
         legendloc = "upper right"
     elif option == 8:
-        pA = plt.plot(x, c_zo / No, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, c_zo / No)
         xlabel, ylabel = ("contig size rank", "frac data explained")
         legendloc = "upper right"
     elif option == 9:
-        pA = plt.plot(x, d_zo, '-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, d_zo)
         xlabel, ylabel = ("contig explain rank", "data explained")
         legendloc = "upper right"
     elif option == 10:
-        pA = plt.plot(x, b_yo / No, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, b_yo / No)
         xlabel, ylabel = ("contig cov rank", "frac data explained")
         legendloc = "upper right"
     elif option == 11:
-        pA = plt.plot(x, b_yo, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, b_yo) 
         xlabel, ylabel = ("contig cov rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 12:
-        pA = plt.plot(c_zd, c_zo, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (c_zd, c_zo)
         xlabel, ylabel = ("cumulative contig size", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 13:
-        pA = plt.plot(x, b_cn, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, b_cn)
         xlabel, ylabel = ("contig cov rank", "kmer abundance")
         legendloc = "upper right"
     elif option == 14:
-        pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, d_cn * d_c1)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 15:
-        pA = plt.plot(x, c_c1, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, c_c1) 
         xlabel, ylabel = ("contig size rank", "contig size")
         legendloc = "upper right"
     elif option == 16:
-        pA = plt.plot(x, c_yd, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q =  (x, c_yd) 
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 17:
-        pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
+        plot1 = plt.plot
+        p, q = (x, d_cn * d_c1) 
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 18:  # semilog version of 1
-        pA = plt.semilogx(b_cn, b_c1, '.-', color=color, label=tracelabel)
+        plot1 = plt.semilogx
+        p, q = (b_cn, b_c1)
         xlabel, ylabel = ("number of bases sampled", "nonunique fraction")
         plt.ylim(0, 1)
         legendloc = "lower left"
     elif option == 19:  # stairstep version of 1
-        pA = plt.loglog(cn, cn * c1, "-", color=color, 
-                        label=tracelabel, drawstyle="steps")
+        plot1 = plt.loglog
+        p, q = (cn, cn * c1)
+        style, drawstyle = ("-", "steps")
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
     elif option == 20:  # stairstep version of 18
-        pA = plt.semilogx(cn, cn * c1 * cn, "-", color=color, 
-                          label=tracelabel, drawstyle="steps-mid")
+        plot1 = plt.semilogx
+        p, q = (cn, cn * c1 * cn)
+        style, drawstyle = ("-", "steps-mid")
         xlabel, ylabel = ("kmer abundance", "data quantity")
         legendloc = "upper right"
     elif option == 21:  # stairstep, straight axes version of 1
-        pA = plt.plot(cn, cn * c1, "-", color=color, 
-                      label=tracelabel, drawstyle="steps-mid")
+        plot1 = plt.plot
+        p, q = (cn, cn * c1)
+        style, drawstyle = ("-", "steps-mid")
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
     elif option == 30:
+        plot1 = plt.semilogy
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
-        pA = plt.semilogy(lam, entropyspectrum, '.-', color=color, label=tracelabel)
+        p, q = (lam, entropyspectrum) 
         xlabel, ylabel = ("lambda", "Renyientropy")
         legendloc = "upper right"
 
@@ -457,6 +477,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
 
     # Draw graphs if option >= 0
     if option >= 0:
+        plot1(p, q, style, color=color, label=tracelabel, drawstyle=drawstyle)
         if not opts.suppress:
             plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
