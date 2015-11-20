@@ -312,130 +312,106 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     style = ".-"
     drawstyle = None
     if option == 0:
-        p = b_cn
-        q = b_c1 
+        plot1, p, q = (plt.loglog, b_cn, c_c1)
         xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
-        plot1 = plt.loglog
     elif option == 1:
-        p, q = (cn, cn * c1)
+        plot1, p, q = (plt,loglog, cn, cn * c1)
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
-        plot1 = plt.loglog
     elif option == 2:
-        p, q = (b_zo, b_cn)
-        plot1 = plt.loglog
+        plot1, p, q = (plt.loglog, b_zo, b_cn)
         xlabel, ylabel = ("basepairs observed", "kmer abundance")
         legendloc = "lower left"
     elif option == 3:
-        p, q = (b_zo / No, b_cn)
-        plot1 = plt.semilogy
+        plot1, p, q = (plt.semilogy, b_zo / No, b_cn)
         xlabel, ylabel = ("fraction of observed data", "kmer abundance")
         legendloc = "lower left"
     elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
-        p, q = (b_zd / Nd, b_cn)
-        plot1 = plt.semilogy
+        plot1, p, q = (plt.semilogy, b_zd / Nd, b_cn)
         xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
     elif option == 5 or option == 25 or option == 24:
-        p, q = (yd, 1-zo/No)
-        plot1 = plt.semilogx
+        plot1, p, q = (plt.semilogx, yd, 1-zo/No)
         xlabel, ylabel = ("kmer rank (bp)", "cumulative fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         legendloc = "lower left"
     elif option == 6 or option == 26:
-        plot1 = plt.loglog
-        p, q = (b_zd, b_cn)
+        plot1, p, q = (plt.loglog, b_zd, b_cn)
         xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
         plt.xlim((1, 10**10))
         if max(b_cn) < 10**8:
             plt.ylim(1, 10**7)
         legendloc = "lower left"
     elif option == 7:
-        plot1 = plt.plot
-        p, q = (x, c_zd)
+        plot1, p, q = (plt.plot, x, c_zd)
         xlabel, ylabel = ("contig size rank", "cuml contig size")
         legendloc = "upper right"
     elif option == 8:
-        plot1 = plt.plot
-        p, q = (x, c_zo / No)
+        plto1, p, q = (plt.plot, x, c_zo / No)
         xlabel, ylabel = ("contig size rank", "frac data explained")
         legendloc = "upper right"
     elif option == 9:
-        plot1 = plt.plot
-        p, q = (x, d_zo)
+        plot1, p, q = (plt.plot, x, d_zo)
         xlabel, ylabel = ("contig explain rank", "data explained")
         legendloc = "upper right"
     elif option == 10:
-        plot1 = plt.plot
-        p, q = (x, b_yo / No)
+        plot1, p, q = (plt.plot, x, b_yo / No)
         xlabel, ylabel = ("contig cov rank", "frac data explained")
         legendloc = "upper right"
     elif option == 11:
-        plot1 = plt.plot
-        p, q = (x, b_yo) 
+        plot1, p, q = (plt.plot, x, b_yo) 
         xlabel, ylabel = ("contig cov rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 12:
-        plot1 = plt.plot
-        p, q = (c_zd, c_zo)
+        plot1, p, q = (plt.plot, c_zd, c_zo)
         xlabel, ylabel = ("cumulative contig size", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 13:
-        plot1 = plt.plot
-        p, q = (x, b_cn)
+        plot1, p, q = (plt.plot, x, b_cn)
         xlabel, ylabel = ("contig cov rank", "kmer abundance")
         legendloc = "upper right"
     elif option == 14:
-        plot1 = plt.plot
-        p, q = (x, d_cn * d_c1)
+        plot1, p, q = (plt.plot, x, d_cn * d_c1)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 15:
-        plot1 = plt.plot
-        p, q = (x, c_c1) 
+        plot1, p, q = (plt.plot, x, c_c1) 
         xlabel, ylabel = ("contig size rank", "contig size")
         legendloc = "upper right"
     elif option == 16:
-        plot1 = plt.plot
-        p, q = (x, c_yd) 
+        plot1, p, q = (plt.plot, x, c_yd) 
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 17:
-        plot1 = plt.plot
-        p, q = (x, d_cn * d_c1) 
+        plot1, p, q = (plt.plot, x, d_cn * d_c1) 
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 18:  # semilog version of 1
-        plot1 = plt.semilogx
-        p, q = (b_cn, b_c1)
+        plot1, p, q = (plt.semilogx, b_cn, b_c1)
         xlabel, ylabel = ("number of bases sampled", "nonunique fraction")
         plt.ylim(0, 1)
         legendloc = "lower left"
     elif option == 19:  # stairstep version of 1
-        plot1 = plt.loglog
-        p, q = (cn, cn * c1)
+        plot1, p, q = (plt.loglog, cn, cn * c1)
         style, drawstyle = ("-", "steps")
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
     elif option == 20:  # stairstep version of 18
-        plot1 = plt.semilogx
-        p, q = (cn, cn * c1 * cn)
+        plot1, p, q = (plt.semilogx, cn, cn * c1 * cn)
         style, drawstyle = ("-", "steps-mid")
         xlabel, ylabel = ("kmer abundance", "data quantity")
         legendloc = "upper right"
     elif option == 21:  # stairstep, straight axes version of 1
-        plot1 = plt.plot
-        p, q = (cn, cn * c1)
+        plot1, p, q = (plt.plot, cn, cn * c1)
         style, drawstyle = ("-", "steps-mid")
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
     elif option == 30:
-        plot1 = plt.semilogy
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
-        p, q = (lam, entropyspectrum) 
+        plot1, p, q = (plt.semilogy, lam, entropyspectrum) 
         xlabel, ylabel = ("lambda", "Renyi entropy")
         legendloc = "upper right"
     if dump:
