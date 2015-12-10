@@ -11,7 +11,7 @@ import numpy as np
 
 def renyispectrum(x, spectrum):
     '''Given a two-dimensional spectrum spectrum and a one-dimensional
-    vector of Renyi spectrum exponents, return a vector of corresponding 
+    vector of Renyi spectrum exponents, return a vector of corresponding
     log10 Renyi entropies.
     '''
     n = spectrum[:, 0]
@@ -316,7 +316,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     style = ".-"
     drawstyle = None
     if option == 0:
-        plot1, p, q = (plt.loglog, b_cn, c_c1)
+        plot1, p, q = (plt.loglog, b_cn, b_c1)
         xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
     elif option == 1:
@@ -365,7 +365,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         xlabel, ylabel = ("contig cov rank", "frac data explained")
         legendloc = "upper right"
     elif option == 11:
-        plot1, p, q = (plt.plot, x, b_yo) 
+        plot1, p, q = (plt.plot, x, b_yo)
         xlabel, ylabel = ("contig cov rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 12:
@@ -381,15 +381,15 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 15:
-        plot1, p, q = (plt.plot, x, c_c1) 
+        plot1, p, q = (plt.plot, x, c_c1)
         xlabel, ylabel = ("contig size rank", "contig size")
         legendloc = "upper right"
     elif option == 16:
-        plot1, p, q = (plt.plot, x, c_yd) 
+        plot1, p, q = (plt.plot, x, c_yd)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 17:
-        plot1, p, q = (plt.plot, x, d_cn * d_c1) 
+        plot1, p, q = (plt.plot, x, d_cn * d_c1)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
     elif option == 18:  # semilog version of 1
@@ -415,18 +415,18 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     elif option == 30:
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
-        plot1, p, q = (plt.semilogy, lam, entropyspectrum) 
+        plot1, p, q = (plt.semilogy, lam, entropyspectrum)
         xlabel, ylabel = ("lambda", "Renyi entropy")
         legendloc = "upper right"
     if dump:
         c = np.hstack((p.reshape((len(p), 1)), q.reshape((len(p), 1))))
         sys.stderr.write("saving output table in %s\n" % outfile)
         ptype, qtype = ("%f", "%f")
-        if min(p) == 1: 
+        if min(p) == 1:
             ptype = "%d"
-        if min(q) == 1: 
+        if min(q) == 1:
             qtype = "%d"
-        np.savetxt(outfile, c, fmt=[ptype, qtype], delimiter="\t", 
+        np.savetxt(outfile, c, fmt=[ptype, qtype], delimiter="\t",
                    header=xlabel+"\t"+ylabel)
 
     if option == -2 or option == 26 or option == 25:
