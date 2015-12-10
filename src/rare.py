@@ -122,9 +122,11 @@ if __name__ == "__main__":
                       action="store_true", help="suppress legend")
     PARSER.add_option("-c", "--colors", dest="colors",
                       help="comma-separated color list")
+    PARSER.add_option("-t", "--threshold", dest="threshold", type="int",
+                      help="threshold")
     PARSER.add_option("-o", "--output", dest="outfile", default="",
                       help="filename for output")
-    PARSER.add_option("-d", "--dump", dest="dump",
+    PARSER.add_option("-d", "--dump", dest="dump", default=None,
                       action="store_true", help="output table .rare.csv")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
@@ -149,6 +151,8 @@ if __name__ == "__main__":
         listofthresholds = [1]
     else:
         listofthresholds = [1, 3, 10, 30]
+    if OPTS.threshold:
+        listofthresholds = [ OPTS.threshold ] 
     OUTFILE = OPTS.outfile
     if OUTFILE == "":
         if OPTS.filelist:
