@@ -7,15 +7,19 @@ from ksatools import calccumsum, loadfile
 import numpy as np
 from numpy import array
 
+FIXTURE1 = np.array([[2000, 1000000],
+                     [20000, 10000],
+                     [200000, 100],
+                     [1000000, 1],
+                     [2000000, 1]], dtype="float")
 def test_calccumsum_pass():
-    data = np.array([[2000, 1000000], [20000, 10000], [200000, 100], [1000000, 1], [2000000, 1]], dtype="float")
+    data = FIXTURE1
     cn, c1, yd, yo, zd, zo = calccumsum(data)
     pass
 
 def test_calccumsum_00_file():
     data = loadfile("../test/test00.21")
     cn, c1, yd, yo, zd, zo = calccumsum(data)
-    exp = 0
     assert_equal(cn, 1)
     assert_equal(c1, 1)
     assert_equal(yd, 1)
@@ -44,11 +48,11 @@ def test_calccumsum_01_array_float():
     assert_true(np.all(zo == array([910, 1000])))
 
 def test_calccumsum_int():
-    data = np.array([[2000, 1000000], [20000, 10000], [200000, 100], [1000000, 1], [2000000, 1]], dtype="int")
+    data = FIXTURE1
     cn, c1, yd, yo, zd, zo = calccumsum(data)
     pass
 
 def test_calccumsum_float():
-    data = np.array([[2000, 1000000], [20000, 10000], [200000, 100], [1000000, 1], [2000000, 1]], dtype="float")
+    data = FIXTURE1
     cn, c1, yd, yo, zd, zo = calccumsum(data)
     pass

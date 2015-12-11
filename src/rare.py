@@ -24,14 +24,14 @@ def fract(aa, epsilon, threshold):
         # this is the expected number of nonzero categories after hypergeometric sampling
 #        nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
         nonzero = (1.-scipy.stats.hypergeom.pmf(0, NO, xr[i], epsilon*NO))
-        # For efficiency, don't evaluate if numerator is too small 
+        # For efficiency, don't evaluate if numerator is too small
         # For numerical stability, don't evaluate term if denominator (nonzero) is too small
         # note: second threshold (on nonzero) here creates kinks in the graph, but is important
-        if nonzero * xr[i] * xn[i] > 10E-0 and nonzero > 1E-2:  
+        if nonzero * xr[i] * xn[i] > 10E-0 and nonzero > 1E-2:
         # and this is the expected number of above-threshold survivors
             gt_thresh = 1.-scipy.stats.hypergeom.cdf(threshold + 0.5, NO, xr[i], epsilon*NO)
             interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
-            if (not np.isnan(interim)) and (interim > 0): 
+            if (not np.isnan(interim)) and (interim > 0):
                 p += interim
     return p / NO
 
@@ -152,13 +152,13 @@ if __name__ == "__main__":
     else:
         listofthresholds = [1, 3, 10, 30]
     if OPTS.threshold:
-        listofthresholds = [ OPTS.threshold ] 
+        listofthresholds = [OPTS.threshold]
     OUTFILE = OPTS.outfile
     if OUTFILE == "":
         if OPTS.filelist:
-            OUTFILE = OPTS.filelist + ".rare."+str(SHADED)+".png"
+            OUTFILE = OPTS.filelist + ".rare." + str(SHADED) + ".png"
         else:
-            OUTFILE = "test" + ".rare."+str(SHADED)+".png"
+            OUTFILE = "test" + ".rare." + str(SHADED) + ".png"
 
     if OPTS.filelist:
         listfile = OPTS.filelist
