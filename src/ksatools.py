@@ -451,7 +451,10 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         fracboundaries = 1 - np.array(frac)
         sizeboundaries = size
         drawboxes(fracboundaries, 0)
-
+    if opts.xlabel:
+        xlabel=opts.xlabel
+    if opts.ylabel:
+        ylabel=opts.ylabel
     # Draw graphs if option >= 0
     if option >= 0:
         plot1(p, q, style, color=color, label=tracelabel, drawstyle=drawstyle)

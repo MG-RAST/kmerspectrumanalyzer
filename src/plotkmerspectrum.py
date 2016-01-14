@@ -97,6 +97,12 @@ if __name__ == '__main__':
     parser.add_option(
         "-n", "--name", dest="title",
         default=None, help="Name for graph, graph title")
+    parser.add_option(
+        "-x", "--xlabel", dest="xlabel",
+        default=None, help="X label override")
+    parser.add_option(
+        "-y", "--ylabel", dest="ylabel",
+        default=None, help="Y label override")
 
     (opts, args) = parser.parse_args()
     graphtype = opts.option
