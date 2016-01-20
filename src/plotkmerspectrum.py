@@ -9,7 +9,7 @@ from optparse import OptionParser
 from ksatools import getmgrkmerspectrum, printstats, loadfile, makegraphs
 
 def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
-         stylelist=[]):
+         stylelist=None):
     '''loads file and invokes makegraphs and printstats.
     Appends graphics from each file onto the figure.
     opt is a symbol for the graph type;
