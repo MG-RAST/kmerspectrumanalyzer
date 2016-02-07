@@ -63,8 +63,8 @@ def dumpparameters(parameters):
 
 def nbinompdf(xvalues, poissonlambda, alpha):
     '''Negative binomial with lambda, alpha parameterization.'''
-    return np.exp(
-                  stats.nbinom.logpmf(xvalues, 1/alpha, 1 / (1 + poissonlambda * alpha)))
+    return np.exp(stats.nbinom.logpmf(xvalues, 1/alpha, 
+                  1 / (1 + poissonlambda * alpha)))
 
 def pevaln(xvalues, parameters, multipleorder=None):
     '''Main fit function, returns vector.'''

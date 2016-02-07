@@ -39,8 +39,8 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
             printstats(spectrum, filename, filehandle=logfh, n=n)
             n += 1
         except ValueError:   # This catches no data or defective data
-           sys.stderr.write("Error printing stats for %s\n" % filename)
-           print "Unexpected error:", sys.exc_info()[0]
+            sys.stderr.write("Error printing stats for %s\n" % filename)
+            print "Unexpected error:", sys.exc_info()[0]
     else:
         sys.stderr.write("Error with dataset %s\n" % filename)
     return n

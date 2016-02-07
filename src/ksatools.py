@@ -230,7 +230,10 @@ def loadfile(filename):
             L = getlength(filename)
             matrix[:, 0] = matrix[:, 0] * L
         else: # default bare-bones spectrum format
-            matrix = np.loadtxt(filename, comments="#")
+            try:
+                matrix = np.loadtxt(filename, comments="#")
+            except ValueError:
+                matrix = np.loadtxt(filename, skiprows=1, delimiter=",", usecols=(0,1))
         # return None if the file is empty
         if matrix.shape[0] == 0:
             return []
@@ -453,11 +456,12 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         sizeboundaries = size
         drawboxes(fracboundaries, 0)
     if opts.xlabel:
-        xlabel=opts.xlabel
+        xlabel = opts.xlabel
     if opts.ylabel:
-        ylabel=opts.ylabel
+        ylabel = opts.ylabel
     # Draw graphs if option >= 0
-    if stylelist is not None :
+    if stylelist is not None and stylelist != []:
+        print "stylelist", stylelist
         style = stylelist[n]
     if option >= 0:
         plot1(p, q, style, color=color, label=tracelabel, drawstyle=drawstyle)

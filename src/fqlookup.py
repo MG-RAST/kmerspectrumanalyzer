@@ -41,7 +41,7 @@ def read_index(filename):
     sys.stderr.write("Processing table %s  ...\n"%(filename,))
     in_idx  = open(filename)
     for l in in_idx:
-        if l[0] != "#" :
+        if l[0] != "#":
             s = l.rstrip().split()
             gian[s[0]] = int(s[1])
     return gian
@@ -79,10 +79,10 @@ def kmerabundance(seq, index):
 if __name__ == '__main__':
     usage = "usage: \n"
     parser = OptionParser(usage)
-    parser.add_option("-1", "--one",  dest="one", default=None, help="Input file 1")
-    parser.add_option("-2", "--two",  dest="two", default=None, help="Input file 2 (interleaved if absent)")
-    parser.add_option("-i", "--index",  dest="index", default=None, help="input index(es), comma delimited ")
-    parser.add_option("-t", "--type",  dest="typ", default="fastq", help="input datatype (fastq, fasta)")
+    parser.add_option("-1", "--one", dest="one", default=None, help="Input file 1")
+    parser.add_option("-2", "--two", dest="two", default=None, help="Input file 2 (interleaved if absent)")
+    parser.add_option("-i", "--index", dest="index", default=None, help="input index(es), comma delimited ")
+    parser.add_option("-t", "--type", dest="typ", default="fastq", help="input datatype (fastq, fasta)")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=True, help="Verbose [default off]")
     parser.add_option("-c", "--contig", dest="contig", action="store_true", default=False, help="Process contig")
     (opts, args) = parser.parse_args()
@@ -92,8 +92,8 @@ if __name__ == '__main__':
     if not (opts.one):
         parser.error("Missing input filename")
     if not os.path.isfile(opts.one):
-        parser.error("Missing input file %s"% opts.one )
-    if (opts.two and os.path.isfile(opts.two) ):
+        parser.error("Missing input file %s"% opts.one)
+    if (opts.two and os.path.isfile(opts.two)):
         in_two = open(opts.two)
     in_one = open(opts.one)
     sys.stderr.write("Reading index...\n")
@@ -120,25 +120,25 @@ if __name__ == '__main__':
             seq1 = str(seq_record1.seq)
             seq2 = str(seq_record2.seq)
             decoration = ""
-            if (seq1.find("N") == -1 and seq2.find("N") == -1 ) :
+            if (seq1.find("N") == -1 and seq2.find("N") == -1):
                 for indexno in range(len(indexlist)):
-                    (min1, med1, max1, avg1) = kmerabundance(str(seq1)+"N"+str(seq2), indexes[indexno])
+                    (min1, med1, max1, avg1) = kmerabundance(str(seq1) + "N" + str(seq2), indexes[indexno])
                     gc = gccontent(str(seq1)+"N"+str(seq2))
-    #                sys.stdout.write("%d\t%d\n%d\t%d\n" % ( min1, med1, max1, avg1 ) )
-                    decoration = decoration + " %d %d %d %.1f %.3f" % (  min1, med1, max1, avg1, gc )
+    #                sys.stdout.write("%d\t%d\n%d\t%d\n" % (min1, med1, max1, avg1))
+                    decoration = decoration + " %d %d %d %.1f %.3f" % (min1, med1, max1, avg1, gc)
                 seq_record1.description = "%s %s" % (seq_record1.description, decoration)
-                seq_record2.description = "%s" % (seq_record2.description, ) # decoration)
+                seq_record2.description = "%s" % (seq_record2.description,) # decoration)
     
                 SeqIO.write([seq_record1, seq_record2], sys.stdout, typ)
         if opts.verbose: sys.stderr.write("Done. \n")
     else:   # decorate contigs 
         for seq_record in records1:
             header = seq_record.description
-            for i in range(len(seq_record.seq) - CHOMPSIZE) :
+            for i in range(len(seq_record.seq) - CHOMPSIZE):
                 for indexno in range(len(indexlist)):
                     if indexno == 0:
                         print "Scores.%s" % header,
-                    seq = seq_record.seq[i : i+CHOMPSIZE] 
+                    seq = seq_record.seq[i: i+CHOMPSIZE] 
                     (min1, med1, max1, avg1) = kmerabundance(seq, indexes[indexno]) 
                     print "%d %d %d %.1f" % (min1, med1, max1, avg1),
                 print
