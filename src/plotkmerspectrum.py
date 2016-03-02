@@ -25,7 +25,7 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
             % opts.filetype)
     if spectrum == []:   # Abort this trace--but try to graph the others
         return n
-    if label == None:
+    if label is None:
         label = filename
     if spectrum.shape[1] > 0:
         spectrum = spectrum[np.lexsort((spectrum[:, 1], spectrum[:, 0]))]
@@ -40,7 +40,7 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
             n += 1
         except ValueError:   # This catches no data or defective data
             sys.stderr.write("Error printing stats for %s\n" % filename)
-            print "Unexpected error:", sys.exc_info()[0]
+            print("Unexpected error:" + sys.exc_info()[0])
     else:
         sys.stderr.write("Error with dataset %s\n" % filename)
     return n

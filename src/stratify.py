@@ -95,9 +95,9 @@ def summarizestrata(labels, spectra):
     for spectrum, label in zip(spectra, labels):
         band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
         bandsbanner = map(str, BANDS)
-        print "#name\t" + "\t".join(bandsbanner) + "\t" + "\t".join(bandsbanner)
-        print label+"\t" + "\t".join(map(str, frac)) + "\t",
-        print "" + "\t".join(map(str, size))
+        print( "#name\t" + "\t".join(bandsbanner) + "\t" + "\t".join(bandsbanner))
+        print( label+"\t" + "\t".join(map(str, frac)) + "\t",)
+        print( "" + "\t".join(map(str, size)))
     return
 
 if __name__ == '__main__':
@@ -112,7 +112,7 @@ if __name__ == '__main__':
         default=None, help="output file name")
     parser.add_option(
         "-g", "--graph", dest="option", action="store", type="int",
-        default="6", help="graph type 0 = fraction, 1 = basepairs")
+        default="0", help="graph type 0 = fraction, 1 = basepairs")
     parser.add_option(
         "-i", "--interactive", dest="interactive", action="store_true",
         default=False, help="interactive mode--draw window")

@@ -78,9 +78,9 @@ def calcmedian(yd, y, num):
         bottom = None
     if top != None and bottom != None:
         cutoff = yd[bottom] + (num - y[bottom]) / (y[top] - y[bottom]) * (yd[top] -yd[bottom])
-    elif top != None and bottom == None:
+    elif top != None and bottom is None:
         cutoff = ((num *1.0) / (y[top]) * (yd[top]))
-    elif top == None and bottom != None:
+    elif top is None and bottom != None:
         cutoff = yd[bottom]
     else:
         cutoff = 0
@@ -133,7 +133,7 @@ def getmgrkmerspectrum(accessionnumber, mgrkey=None):
 # malformed JSON are likely failure modes.
     try:
         opener = urllib2.urlopen(some_url)
-    except urllib2.HTTPError, e:
+    except urllib2.HTTPError as e:
         sys.stderr.write("Error retrieving %s" % some_url)
         sys.stderr.write("Error with HTTP request: %d %s\n%s" % (e.code, e.reason, e.read()))
         return np.atleast_2d(np.array([1, 0]))
@@ -198,18 +198,18 @@ def printstats(a, filename, filehandle=None, n=0):
     assert (AVONE - 1.) < 1E-7
     AVCOV = np.sum(cn * c1 * cn) / T
     AVGEN = np.sum(cn * c1 * c1) / T
-    if filehandle == None:
+    if filehandle is None:
         consensusfh = open(filename, "w")
     else:
         consensusfh = filehandle
-    if filehandle == None or n == 0:
+    if filehandle is None or n == 0:
         consensusfh.write(
             "#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
             "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
     consensusfh.write(
         "%s\t%.1f\t%.1f\t%.1f\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.2f\n" %
         (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
-    if filehandle == None:
+    if filehandle is None:
         consensusfh.close()
 
 def getlength(filename):
@@ -233,7 +233,7 @@ def loadfile(filename):
             try:
                 matrix = np.loadtxt(filename, comments="#")
             except ValueError:
-                matrix = np.loadtxt(filename, skiprows=1, delimiter=",", usecols=(0,1))
+                matrix = np.loadtxt(filename, skiprows=1, delimiter=",", usecols=(0, 1))
         # return None if the file is empty
         if matrix.shape[0] == 0:
             return []
@@ -251,12 +251,12 @@ def printstratify(spectrum, bands=None, flat=False, label=""):
     if flat == False:
         for i in range(len(bands)):
             if i != len(bands)-1:
-                print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
-                    size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+                print("{:.04f}\t{: 13d}\t{:d}-{:d}\n".format((frac[i] - frac[i+1]), (
+                    size[i] - size[i+1]), str(bands[i]), str(bands[i+1])))
     else:
-        print "#name\t"+"\t".join(map(str, list(bands[:-1]+bands[1:])))
-        print label+"\t"+"\t".join(map(str, list(size)[:-1] +
-                                       list(frac)[1:]))
+        print("#name\t"+"\t".join(map(str, list(bands[:-1]+bands[1:]))))
+        print(label+"\t"+"\t".join(map(str, list(size)[:-1] +
+                                       list(frac)[1:])))
 
 def stratify(spectrum, bands=None):
     '''Breaks spectrum up into defined abundance-buckets,
@@ -266,7 +266,7 @@ def stratify(spectrum, bands=None):
     of (cumulative) fractions, and list of (cumulative)
     basepairs for each band.
     '''
-    if bands == None:
+    if bands is None:
         bands = [1, 10, 100, 1000, 10000, 100000]
     n = spectrum[:, 0]
     y = spectrum[:, 1]
@@ -289,7 +289,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     '''
     import matplotlib.pyplot as plt
     # note, calccumsum will raise an exception here if data is invalid
-    if label == None:
+    if label is None:
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
@@ -298,8 +298,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         spectrum = np.vstack([xclean, yclean]).T
     if option == 21:
         xclean, yclean = pad(list(spectrum[:, 0]), list(spectrum[:, 1]), fill=False)
-        print "len x", len(spectrum[:, 0])
-        print "len xclean", len(xclean)
         spectrum = np.vstack([xclean, yclean]).T
     assert spectrum.dtype == "float"
     (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
@@ -357,7 +355,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         xlabel, ylabel = ("contig size rank", "cuml contig size")
         legendloc = "upper right"
     elif option == 8:
-        plto1, p, q = (plt.plot, x, c_zo / No)
+        plot1, p, q = (plt.plot, x, c_zo / No)
         xlabel, ylabel = ("contig size rank", "frac data explained")
         legendloc = "upper right"
     elif option == 9:
@@ -461,7 +459,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         ylabel = opts.ylabel
     # Draw graphs if option >= 0
     if stylelist is not None and stylelist != []:
-        print "stylelist", stylelist
         style = stylelist[n]
     if option >= 0:
         plot1(p, q, style, color=color, label=tracelabel, drawstyle=drawstyle)
@@ -469,6 +466,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
             plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        if hasattr(opts, "title") and not opts.title == None and n == 0:
+        if hasattr(opts, "title") and not opts.title is None and n == 0:
             plt.title(opts.title)
         plt.grid(1)

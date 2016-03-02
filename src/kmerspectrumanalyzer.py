@@ -46,19 +46,19 @@ def calculatederivative(vector, fun):
     Hfun = nd.Hessian(fun)
     Hess = Hfun(vector)
 #    plt.imshow(np.log(abs(Hess)), interpolation="nearest"); plt.colorbar(); plt.show()
-    print "Hessian", Hess
-    print "11", 1/np.sqrt(Hess[0][0])
-    print "22", 1/np.sqrt(Hess[1][1])
-    print "33", 1/np.sqrt(Hess[2][2])
-    print "frac11", 1/np.sqrt(Hess[0][0])/vector[0]
-    print "frac22", 1/np.sqrt(Hess[1][1])/vector[1]
-    print "frac33", 1/np.sqrt(Hess[2][2])/vector[2]
+    print("Hessian", Hess)
+    print("11", 1/np.sqrt(Hess[0][0]))
+    print("22", 1/np.sqrt(Hess[1][1]))
+    print("33", 1/np.sqrt(Hess[2][2]))
+    print("frac11", 1/np.sqrt(Hess[0][0])/vector[0])
+    print("frac22", 1/np.sqrt(Hess[1][1])/vector[1])
+    print("frac33", 1/np.sqrt(Hess[2][2])/vector[2])
     return Hess
 
 def dumpparameters(parameters):
     '''Prints parameters.'''
     for k2 in range(len(parameters)):
-        print "%d\t%.4f " % (k2, parameters[k2])
+        print("%d\t%.4f " % (k2, parameters[k2]))
     return
 
 def nbinompdf(xvalues, poissonlambda, alpha):
@@ -102,7 +102,7 @@ def windowmask(xxx, yyy, covest, multipleorder):
     if len(returnx) == 0:  # There is no data in range.   This is not going to work.
         returnx = np.arange(int(lim1), int(lim2)+1)
         returny = np.zeros(returnx.shape)
-    print "windowmask: returnx size", len(returnx), "max", max(returnx), "min", min(returnx)
+    print("windowmask: returnx size", len(returnx), "max", max(returnx), "min", min(returnx))
     return returnx, returny
 
 def writefile():
@@ -120,7 +120,7 @@ def writedetails():
                               model.reshape((len(model), 1))))
     np.savetxt("%s.fit.detail.csv" % OUTFILE, OUTPUTMATRIX,
                fmt=['%d', '%.1f', '%.1f'], delimiter="\t")
-    print "sumerr\t%f" % sumscorefn(plsq)
+    print("sumerr\t%f" % sumscorefn(plsq))
 
 def plotfit():
     '''Produce plot of fit'''
@@ -187,13 +187,13 @@ if __name__ == '__main__':
     OUTFILE = OPTS.outstem
     if OUTFILE == None:
         OUTFILE = INFILE
-    print "INFILE", INFILE
-    print "OUTFILE", OUTFILE
+    print("INFILE", INFILE)
+    print("OUTFILE", OUTFILE)
     MAX_COV, MIN_COV = [int(cov) for cov in OPTS.cutoff.split(",")]
 #  pad data with zeroes representing bins with no counts.
-    print "Padding... originally %d, max %d " % (len(ORIGX), max(ORIGX))
+    print("Padding... originally %d, max %d " % (len(ORIGX), max(ORIGX)))
     (paddedx1, paddedy1) = pad(ORIGX.tolist(), ORIGY.tolist())
-    print "Padding... finally %d "% len(paddedx1)
+    print("Padding... finally %d "% len(paddedx1))
     sys.stdout.flush()
     padx = np.array(paddedx1)
     pady = np.array(paddedy1)
@@ -203,12 +203,12 @@ if __name__ == '__main__':
     z1 = padp[(LOWCUTOFF-1):]
     guessx = sum(padp[LOWCUTOFF-1:]) / sum(paddedy1[LOWCUTOFF-1:])
     guessy = sum(paddedy1[LOWCUTOFF-1:])
-    print "Guessing... cov=", guessx, " size=", guessy
+    print("Guessing... cov=", guessx, " size=", guessy)
 
 #  guess method 2: find maximum of truncated data
     maxindex = int(np.mean(np.where(padp[LOWCUTOFF-1:] == padp[LOWCUTOFF-1:].max())[0]))
     if maxindex < LOWCUTOFF - 1:
-        print "WARNING! maximum %d is lower than lowcutoff %d" % (maxindex, LOWCUTOFF)
+        print("WARNING! maximum %d is lower than lowcutoff %d" % (maxindex, LOWCUTOFF))
     guessmax = padx[maxindex]
     sys.stdout.write("guessmax, %d\n" % guessmax)
 # guess method 3:  override guess if initial guess provided
@@ -224,13 +224,13 @@ if __name__ == '__main__':
     SCOREFN = weightedleastsquares
 
     plsq0 = leastsq(SCOREFN, parms0, args=(y, x, [1]), maxfev=MAXFEV)[0]
-    print "First fit "
+    print("First fit ")
     dumpparameters(plsq0)
 
     if OPTS.likelihood:
         SCOREFN = loglikelihood
         plsq0 = leastsq(SCOREFN, plsq0, args=(y, x, [1]), maxfev=MAXFEV)[0]
-        print "Second fit "
+        print("Second fit ")
         dumpparameters(plsq0)
     else:
         SCOREFN = weightedleastsquares
@@ -249,34 +249,34 @@ if __name__ == '__main__':
     fitterms = [fittermsorder[0], SECONDPEAK]
     fitterms.extend(fittermsorder[1:])
     fittermsorder = fitterms[0:NUMBEROFTERMS]
-    print fittermsorder
-    print "lenfittermsorder", len(fittermsorder)
+    print(fittermsorder)
+    print("lenfittermsorder", len(fittermsorder))
 
 #   successively add parameters to the fit
 #    plsq = plsq[0:2]  # throw away the initial least squares fit
     for k in range(0, len(fittermsorder)):
-        print "I: ", k,
+        print("I: ", k,)
         fittermsorderpartial = fittermsorder[0:k+1]
-        print fittermsorderpartial
-        print "applying windowmask for fit with guess", covguess, fittermsorderpartial
+        print(fittermsorderpartial)
+        print("applying windowmask for fit with guess", covguess, fittermsorderpartial)
         x, y = windowmask(padx, pady, covguess, fittermsorderpartial)
         if OPTS.verbose:
-            print "size parms0= %d  size x, y = %d" % (len(parms0), len(x))
+            print("size parms0= %d  size x, y = %d" % (len(parms0), len(x)))
         if k != 0:   # Do not add the next term the first time
-            print "masking for guess", covguess, [fittermsorder[k]]
+            print("masking for guess", covguess, [fittermsorder[k]])
             tempx, tempy = windowmask(padx, pady, covguess, [fittermsorder[k]])
             tempguess = np.sum(tempy)
-            print "  resulting guess ", tempguess
+            print("  resulting guess ", tempguess)
             parms0 = np.concatenate([plsq, [tempguess]])
-        print "committing search on", fittermsorderpartial
+        print("committing search on", fittermsorderpartial)
         plsq = leastsq(SCOREFN, parms0, args=(y, x, fittermsorderpartial), diag=(1/ np.sqrt(np.minimum(np.maximum(np.abs(parms0), 10), 1E7))), maxfev=MAXFEV)[0]
         if OPTS.verbose:
             sys.stderr.write("fitting with %d params\n"%(len(parms0)))
-        print "fit %.1f, %.1f, %.3f " % (plsq[0], plsq[1], plsq[2])
+        print("fit %.1f, %.1f, %.3f " % (plsq[0], plsq[1], plsq[2]))
         covguess = plsq[0]
-        print "Final fit parameters:"
+        print("Final fit parameters:")
         dumpparameters(plsq)
-        print "*************"
+        print("*************")
     if OPTS.errorbars:
         hessian = calculatederivative(plsq, sumscorefn)
 #  Display summary of the fit
@@ -284,16 +284,16 @@ if __name__ == '__main__':
     SHAPE = plsq[1]
     GENOMESIZE = 0
     NUMGTHALF = np.sum(pady[np.where(padx > plsq[0] * 0.5)])
-    print "parameters"
+    print("parameters")
     for k in range(2, len(plsq)):
-        print "%d\t%.1f" %       (fittermsorder[k-2], np.max([plsq[k], 0]))
+        print("{}\t{:.1f}".format(fittermsorder[k-2], np.max([plsq[k], 0])))
         GENOMESIZE = GENOMESIZE + fittermsorder[k-2] * np.max([plsq[k], 0])
-    print "Filename: %s"% INFILE
-    print "Genomesize %.1f " % GENOMESIZE
-    print "coverage   %.1f " % COVERAGE
-    print "shape      %.2f " % SHAPE
-    print "numdistinct %.1f " % (np.sum(np.maximum(plsq[2:], 0)))
-    print "numgthalf   %d " % (NUMGTHALF)
+    print("Filename: {:s}".format(INFILE))
+    print("Genomesize {:.1f} ".format(GENOMESIZE))
+    print("coverage   {:.1f} ".format(COVERAGE))
+    print("shape      {:.2f} ".format(SHAPE))
+    print("numdistinct {:.1f} ".format(np.sum(np.maximum(plsq[2:], 0))))
+    print("numgthalf   {:d} ".format(NUMGTHALF))
 
 # plot data + model
     dispx = ORIGX                          # complete x
