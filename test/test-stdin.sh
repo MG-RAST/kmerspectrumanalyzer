@@ -3,6 +3,9 @@ set -x #echo on
 
 rm *.21 
 
+# download the datasets if needed
+make NC_017625.fna SRR001665_1.fastq SRR001665_2.fastq.gz
+
 # build the datasets 
 cat NC_017625.fna NC_017625.fna > DOUBLE.fna
 

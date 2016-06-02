@@ -13,9 +13,23 @@ SRR016858.fastq.gz:
 SRR016860A.fastq: SRR016860.fastq.gz SRR016858.fastq.gz SRR016859.fastq.gz
 	zcat SRR0168??.fastq.gz  > SRR016860A.fastq
 
+SRR033548.fastq:
+	curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR033/SRR033548/SRR033548.fastq.gz > SRR033548.fastq.gz   # 3Mb tiny fastq-format dataset
+
+SRR001665_1.fastq.gz:
+	curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR001/SRR001665/SRR001665_1.fastq.gz > SRR001665_1.fastq.gz   # 320Mb
+SRR001665_2.fastq.gz:
+	curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR001/SRR001665/SRR001665_2.fastq.gz > SRR001665_2.fastq.gz   # 350Mb
+
+SRR001665_1_X10.fastq: SRR001665_1.fastq
+	cat SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq SRR001665_1.fastq > SRR001665_1_X10.fastq
+
+%: %.gz
+	cat $^ | gunzip > $@
+
 # retrieve reference DH1 genome
 NC_017625.fna:
-	wget ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/ASSEMBLY_BACTERIA/Escherichia_coli/GCF_000023365/NC_017625.fna
+	wget ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/ASSEMBLY_BACTERIA/Escherichia_coli/GCF_000023365/NC_017625.fna  # 4.5Mb
 
 %.fastq.21: %.fastq
 	countkmer21.sh $<
@@ -37,3 +51,4 @@ NC_017625.fna:
 
 clean:
 	rm *.fit.csv *.fit.detail.csv *.fit.png *.pdf
+
