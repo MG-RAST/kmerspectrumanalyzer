@@ -235,10 +235,11 @@ def loadfile(filename):
             except ValueError:
                 matrix = np.loadtxt(filename, skiprows=1, delimiter=",", usecols=(0, 1))
         # return None if the file is empty
+        matrix = np.atleast_2d(matrix)
         if matrix.shape[0] == 0:
             return []
         else:
-            return np.atleast_2d(matrix)
+            return matrix
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
         return []
