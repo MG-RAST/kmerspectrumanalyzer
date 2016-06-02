@@ -19,7 +19,8 @@ def test_calccumsum_one_zero():
 
 def test_calccumsum_one_half():
     data = np.array([[100, 1000]], dtype="float")
-    result = fract(data, 1, 100)
+    result = fract(data, 0.5, 50)
+    print result
     assert_true(result > 0.3)
     assert_true(result < 0.7)
 
