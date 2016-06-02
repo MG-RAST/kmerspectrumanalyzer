@@ -8,7 +8,8 @@ from optparse import OptionParser
 
 from ksatools import getmgrkmerspectrum, printstats, loadfile, makegraphs
 
-def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
+def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
+         stylelist=None):
     '''loads file and invokes makegraphs and printstats.
     Appends graphics from each file onto the figure.
     opt is a symbol for the graph type;
@@ -24,7 +25,7 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
             % opts.filetype)
     if spectrum == []:   # Abort this trace--but try to graph the others
         return n
-    if label == None:
+    if label is None:
         label = filename
     if spectrum.shape[1] > 0:
         spectrum = spectrum[np.lexsort((spectrum[:, 1], spectrum[:, 0]))]
@@ -32,15 +33,14 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
         try:
             makegraphs(
                 spectrum, filename, opt, label, n=n, dump=opts.dump, 
-                opts=opts, colorlist=colorlist)
+                opts=opts, colorlist=colorlist, stylelist=stylelist)
 #            sys.stderr.write("Printing stats in logfile %s %d\n" %
 #                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
-#            printstats(spectrum, filename, filehandle=sys.stdout, n=n)
             n += 1
         except ValueError:   # This catches no data or defective data
             sys.stderr.write("Error printing stats for %s\n" % filename)
-            print "Unexpected error:", sys.exc_info()[0]
+            print("Unexpected error:" + sys.exc_info()[0])
     else:
         sys.stderr.write("Error with dataset %s\n" % filename)
     return n
@@ -97,6 +97,12 @@ if __name__ == '__main__':
     parser.add_option(
         "-n", "--name", dest="title",
         default=None, help="Name for graph, graph title")
+    parser.add_option(
+        "-x", "--xlabel", dest="xlabel",
+        default=None, help="X label override")
+    parser.add_option(
+        "-y", "--ylabel", dest="ylabel",
+        default=None, help="Y label override")
 
     (opts, args) = parser.parse_args()
     graphtype = opts.option
@@ -129,6 +135,7 @@ if __name__ == '__main__':
     # Loop over input identifiers, and skip if main()
     # fails to produce some traces
     colorlist = []
+    stylelist = []
     if opts.filelist:
         assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
         IN_FILE = open(opts.filelist, "r")
@@ -138,12 +145,14 @@ if __name__ == '__main__':
                 if len(a[0]) > 0:
                     if len(a) == 1:
                         a.append(a[0])  # use filename as label if nothing else
-                    if len(a) == 3:     # if three columns, last column is color
+                    if len(a) >= 3:     # if three columns, last column is color
                         colorlist.append((a[2]))
+                    if len(a) >= 4:     # if three columns, last column is color
+                        stylelist.append((a[3]))
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
                     graphcount = main(
                         a[0], graphtype, label=a[1], n=graphcount, 
-                        opts=opts, colorlist=colorlist)
+                        opts=opts, colorlist=colorlist, stylelist=stylelist)
     else:
         for f in args:
             filen = f

@@ -157,7 +157,7 @@ def kmer_count(infile, procs, length, size, count, tmpdir):
     jf_cmd = ['jellyfish', 'count', '-C', '-t', str(procs), '-m', str(length), 
         '-c', str(count), '-s', size, '-o', jf_base, infile]
     _sout, _serr = run_cmd(jf_cmd)
-    parts = glob.glob(jf_base + '_*')
+    parts = glob.glob(jf_base + '*')
     return merge_hash_set(parts, tmpdir)
 
 def main(args):
@@ -177,6 +177,8 @@ def main(args):
     parser.add_argument("-d", "--tmpdir", dest="tmpdir", default=None, help="Dir to store intermediate files [default is dir of output file]")
 
     args = parser.parse_args()
+    if sys.version_info < (2,6):
+        raise Exception("Python version 2.6 or later is required for kmer-tool2")
     if args.output == None:
         parser.error("[error] missing output files")
     if not args.type in TYPES:
@@ -187,6 +189,7 @@ def main(args):
         parser.error("[error] missing / invalid kmer length")
     if (args.type == 'hash') and (args.format == 'hash'):
         parser.error("[error] both input and output is binary hash")
+
 
     if args.procs < 1:
         args.procs = 1

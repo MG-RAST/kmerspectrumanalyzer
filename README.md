@@ -20,8 +20,7 @@ the University of Maryland's Jellyfish kmer counting library.
 *   numpy http://www.numpy.org/
 *   scipy http://www.scipy.org/
 *   matplotlib http://www.matplotlib.org/
-*   jellyfish 1.1.5 or 1.1.6  http://www.cbcb.umd.edu/software/jellyfish/ 
-(Untested with jellyfish 2.0)
+*   jellyfish > 1.1.5; tested with 1.1.11 and 2.2.6 http://www.cbcb.umd.edu/software/jellyfish/ 
 
 ## License
 kmerspectrumanalyzer is under the BSD license; see LICENSE.

@@ -11,23 +11,28 @@ from optparse import OptionParser
 def fract(aa, epsilon, threshold):
     '''Evaluates the fraction of theoretically-subsampled spectra
     above a specified threshold.  Dataset abundance is attenuated by
-    the factor epsilon.  Returns a float.  aa is a two-column abudnance
-    table, epsilon and threshold are floats.'''
+    the factor epsilon.  Returns a float beween 0 and 1.  aa is a
+    two-column abudnance table, epsilon and threshold are floats.
+    '''
     sys.stderr.write("E %f T %f\n" % (epsilon, threshold))
-        
+
     xr = aa[:, 0]
     xn = aa[:, 1]
     NO = np.sum(xn * xr)
     p = 0.0
-    smallr = xr * epsilon
     for i in range(len(xr)):
-            nonzero = (1.-scipy.stats.hypergeom.cdf( 0.5, NO, xr[i] , epsilon*NO ))
-            if nonzero > 1E-3:  # For numerical stability, don't bother if term is mostly hopeless
-                gt_thresh = 1.-scipy.stats.hypergeom.cdf( threshold + 0.5, NO, xr[i], epsilon*NO  )
-                interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
-                if (not np.isnan(interim)) and (nonzero > 1E-3) and (interim > 0):
-                     p += interim
-
+        # this is the expected number of nonzero categories after hypergeometric sampling
+#        nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
+        nonzero = (1.-scipy.stats.hypergeom.pmf(0, NO, xr[i], epsilon*NO))
+        # For efficiency, don't evaluate if numerator is too small
+        # For numerical stability, don't evaluate term if denominator (nonzero) is too small
+        # note: second threshold (on nonzero) here creates kinks in the graph, but is important
+        if nonzero * xr[i] * xn[i] > 10E-0 and nonzero > 1E-2:
+        # and this is the expected number of above-threshold survivors
+            gt_thresh = 1.-scipy.stats.hypergeom.cdf(threshold + 0.5, NO, xr[i], epsilon*NO)
+            interim = float(xn[i] * xr[i]) * (gt_thresh / nonzero)
+            if (not np.isnan(interim)) and (interim > 0):
+                p += interim
     return p / NO
 
 def calc_resampled_fraction(aa, samplefracs, thresholds):
@@ -45,9 +50,10 @@ def calc_resampled_fraction(aa, samplefracs, thresholds):
     return matrix
 
 def plotme(b, label, color=None, thresholdlist=None, numplots=4,
-     suppress=False, dump=False):
-    '''performs calculations and calls graphing routines,
-    given spectra'''
+           suppress=False, dump=False):
+    '''Performs calculations and calls graphing routines,
+    given spectra
+    '''
 # define range of subsamples
     N = np.sum(b[:, 0] * b[:, 1])
     samplefractions = 10**np.arange(2, 11, .5) / N  # CHEAP
@@ -71,7 +77,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
         aug = matrix[:, i]
 #        lab = label + " " + str(thresholdlist[i])
         lab = str(thresholdlist[i]) + "x"
-        plt.grid(1)
+        plt.grid(axis='both')
         if SHADED == 0:
             plt.title(label)
             plt.semilogx(pex, aug, "-o", label=lab)
@@ -95,7 +101,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 #        plt.fill(pex, aug, "k", alpha=0.2)
     plt.ylim((0, 1))
     plt.xlim((1E4, 1E11))
-    if SHADED == 0 or n+1 == numplots:
+    if SHADED == 0 or n + 1 == numplots:
         plt.xlabel("Sequencing effort (bp)")
     else:    # suppress drawing of x-axis labels for all but last plot
         frame1 = plt.gca()
@@ -106,20 +112,22 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 if __name__ == "__main__":
     PARSER = OptionParser("rare.py -- rarefy kmer spectra")
     PARSER.add_option("-i", "--interactive", dest="interactive",
-         action="store_true", default=False,
-         help="interactive mode--draw window")
+                      action="store_true", default=False,
+                      help="interactive mode--draw window")
     PARSER.add_option("-l", "--list", dest="filelist", default=None,
-         help="file containing list of targets and labels")
+                      help="file containing list of targets and labels")
     PARSER.add_option("-g", "--graphtype", dest="graphtype", default=1,
-         help="graph type 1: shaded 2: non-shaded 3: kmer richness")
+                      help="graph type 1: shaded 2: non-shaded 3: kmer richness")
     PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=False,
-         action="store_true", help="suppress legend")
+                      action="store_true", help="suppress legend")
     PARSER.add_option("-c", "--colors", dest="colors",
-         help="comma-separated color list")
+                      help="comma-separated color list")
+    PARSER.add_option("-t", "--threshold", dest="threshold", type="int",
+                      help="threshold")
     PARSER.add_option("-o", "--output", dest="outfile", default="",
-         help="filename for output")
-    PARSER.add_option("-d", "--dump", dest="dump",
-         action="store_true", help="output table .rare.csv")
+                      help="filename for output")
+    PARSER.add_option("-d", "--dump", dest="dump", default=None,
+                      action="store_true", help="output table .rare.csv")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
 
@@ -132,10 +140,9 @@ if __name__ == "__main__":
     if OPTS.colors:
         COLORS = OPTS.colors.split(",")
     else:
-        COLORS = [
-                  "b", "g", "r", "c", "y", "m", "k", "BlueViolet",
-                  "Coral", "Chartreuse", "DarkGrey", "DeepPink", 
-                  "LightPink" ]
+        COLORS = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
+                  "Coral", "Chartreuse", "DarkGrey", "DeepPink",
+                  "LightPink"]
 # construct range of thresholds, calculate threshold fraction curves
 # not lightning fast but should be
     listofthresholds = [1, 3.3, 10, 33, 100, 330, 1000, 3300, 10000]
@@ -144,17 +151,19 @@ if __name__ == "__main__":
         listofthresholds = [1]
     else:
         listofthresholds = [1, 3, 10, 30]
+    if OPTS.threshold:
+        listofthresholds = [OPTS.threshold]
     OUTFILE = OPTS.outfile
     if OUTFILE == "":
         if OPTS.filelist:
-            OUTFILE = OPTS.filelist + ".rare."+str(SHADED)+".png"
+            OUTFILE = OPTS.filelist + ".rare." + str(SHADED) + ".png"
         else:
-            OUTFILE = "test" + ".rare."+str(SHADED)+".png"
+            OUTFILE = "test" + ".rare." + str(SHADED) + ".png"
 
     if OPTS.filelist:
         listfile = OPTS.filelist
-        assert os.path.isfile(listfile), "File {} does not exist".format(
-             listfile)
+        assert os.path.isfile(listfile), \
+            "File {} does not exist".format(listfile)
         IN_FILE = open(listfile, "r").readlines()
         numplots = len(IN_FILE)
         for line in IN_FILE:
@@ -172,8 +181,8 @@ if __name__ == "__main__":
                     spectrum = ksatools.loadfile(filename)
                     if spectrum != []:
                         plotme(spectrum, label=a[1], color=selectedcolor,
-                            thresholdlist=listofthresholds,
-                            numplots=numplots, dump=OPTS.dump)
+                               thresholdlist=listofthresholds,
+                               numplots=numplots, dump=OPTS.dump)
                         n = n + 1
         if OPTS.suppresslegend == 0:
             plt.legend(loc="upper left")
@@ -184,8 +193,8 @@ if __name__ == "__main__":
             filename = v
             spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
-               color=COLORS[n], dump=OPTS.dump)
+                   color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS))
             n = n + 1
 #        plt.legend(loc="upper left")
-        sys.stderr.write("Warning! printing graphs in default" + OUTFILE)
-        plt.savefig(OUTFILE) 
+        sys.stderr.write("Warning! printing graphs in default filename " + OUTFILE + "\n")
+        plt.savefig(OUTFILE)

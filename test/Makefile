@@ -15,7 +15,7 @@ SRR016860A.fastq: SRR016860.fastq.gz SRR016858.fastq.gz SRR016859.fastq.gz
 
 # retrieve reference DH1 genome
 NC_017625.fna:
-	wget ftp://ftp-trace.ncbi.nih.gov/genomes/Bacteria/Escherichia_coli_DH1_uid161951/NC_017625.fna
+	wget ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/ASSEMBLY_BACTERIA/Escherichia_coli/GCF_000023365/NC_017625.fna
 
 %.fastq.21: %.fastq
 	countkmer21.sh $<
