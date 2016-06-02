@@ -8,7 +8,7 @@ from optparse import OptionParser
 
 from ksatools import getmgrkmerspectrum, printstats, loadfile, makegraphs
 
-def main(filename, opt=6, label=None, n=0, opts=None):
+def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[]):
     '''loads file and invokes makegraphs and printstats.
     Appends graphics from each file onto the figure.
     opt is a symbol for the graph type;
@@ -19,9 +19,10 @@ def main(filename, opt=6, label=None, n=0, opts=None):
     elif opts.filetype == "file":
         spectrum = loadfile(filename)
     else:
-        raise ValueError("%s is invalid type (valid types are mgm and file)"
+        raise ValueError(
+            "%s is invalid type (valid types are mgm and file)"
             % opts.filetype)
-    if spectrum == None:   # Abort this trace--but try to graph the others
+    if spectrum == []:   # Abort this trace--but try to graph the others
         return n
     if label == None:
         label = filename
@@ -29,7 +30,9 @@ def main(filename, opt=6, label=None, n=0, opts=None):
         spectrum = spectrum[np.lexsort((spectrum[:, 1], spectrum[:, 0]))]
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
-            makegraphs(spectrum, filename, opt, label, n=n, dump=opts.dump, opts=opts)
+            makegraphs(
+                spectrum, filename, opt, label, n=n, dump=opts.dump, 
+                opts=opts, colorlist=colorlist)
 #            sys.stderr.write("Printing stats in logfile %s %d\n" %
 #                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
@@ -45,29 +48,55 @@ def main(filename, opt=6, label=None, n=0, opts=None):
 if __name__ == '__main__':
     usage = '''usage: plotkmerspectrum.py [options] <datafile> [<datafile2> <datafile3>...]
        plotkmerspectrum.py [options] -l <file containing targets, labels> '''
+    GRAPHNUMBERDESCRIPTION = '''-3: No graphs, produce stratify one-line summary
+-2: No graphs, but produce stratify table
+-1: no graphs, only append summary to kmers.log
+0 : number of kmers vs. kmer abundance (basic spectrum)
+1 : kmers observed vs. kmer abundance (scaled spectrum)
+2 : kmer abundance vs. basepairs observed
+3 : kmer abundance vs. fraction of observed data
+4 : kmer abundance vs. fraction of distinct kmers
+5 : fraction of observed vs. kmer rank  (kmer k-dominance curve)
+6 : kmer abundance vs. kmer rank  (kmer rank-abundance)
+24: band-colored variant
+25: band-colored variant of kmer k-dominance curve
+26: band-colored variant of kmer rank-abundance curve
+30: Renyi entropy (transformation, function of lambda)
+'''
     parser = OptionParser(usage)
-    parser.add_option("-d", "--dump", dest="dump", action="store_true",
-         default=False, help="dump table with outputs ")
-    parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
-         default=False, help="verbose")
-    parser.add_option("-o", "--outfile", dest="outfile", action="store",
-         default=None, help="dump table with outputs ")
-    parser.add_option("-g", "--graph", dest="option", action="store", type="int",
-         default="6", help="Graph number ")
-    parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
-         default=False, help="interactive mode--draw window")
-    parser.add_option("-l", "--list", dest="filelist",
-         default=None, help="file containing list of targets and labels")
-    parser.add_option("-t", "--type", dest="filetype",
-         default="file", help="type for file list (file,mgm)")
-    parser.add_option("-w", "--writetype", dest="writetype",
-         default="pdf", help="file type for output (pdf,png)")
-    parser.add_option("-a", "--appendlogfile", dest="logfile",
-         default="kmers.log", help="logfile for summary statistics")
-    parser.add_option("-s", "--suppresslegend", dest="suppress", action="store_true",
-         default=False, help="supress display of legend")
-    parser.add_option("-n", "--name", dest="title",
-         default=None, help="Name for graph, graph title")
+    parser.add_option(
+        "-d", "--dump", dest="dump", action="store_true",
+        default=False, help="dump table with outputs ")
+    parser.add_option(
+        "-v", "--verbose", dest="verbose", action="store_true",
+        default=False, help="verbose")
+    parser.add_option(
+        "-o", "--outfile", dest="outfile", action="store",
+        default=None, help="dump table with outputs ")
+    parser.add_option(
+        "-g", "--graph", dest="option", action="store", type="int",
+        default="6", help=GRAPHNUMBERDESCRIPTION)
+    parser.add_option(
+        "-i", "--interactive", dest="interactive", action="store_true",
+        default=False, help="interactive mode--draw window")
+    parser.add_option(
+        "-l", "--list", dest="filelist",
+        default=None, help="file containing list of targets and labels")
+    parser.add_option(
+        "-t", "--type", dest="filetype",
+        default="file", help="type for file list (file,mgm)")
+    parser.add_option(
+        "-w", "--writetype", dest="writetype",
+        default="pdf", help="file type for output (pdf,png)")
+    parser.add_option(
+        "-a", "--appendlogfile", dest="logfile",
+        default="kmers.log", help="logfile for summary statistics")
+    parser.add_option(
+        "-s", "--suppresslegend", dest="suppress", action="store_true",
+        default=False, help="supress display of legend")
+    parser.add_option(
+        "-n", "--name", dest="title",
+        default=None, help="Name for graph, graph title")
 
     (opts, args) = parser.parse_args()
     graphtype = opts.option
@@ -99,6 +128,7 @@ if __name__ == '__main__':
     graphcount = 0
     # Loop over input identifiers, and skip if main()
     # fails to produce some traces
+    colorlist = []
     if opts.filelist:
         assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
         IN_FILE = open(opts.filelist, "r")
@@ -107,9 +137,13 @@ if __name__ == '__main__':
                 a = line.strip().split("\t")
                 if len(a[0]) > 0:
                     if len(a) == 1:
-                        a.append(a[0])
+                        a.append(a[0])  # use filename as label if nothing else
+                    if len(a) == 3:     # if three columns, last column is color
+                        colorlist.append((a[2]))
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
-                    graphcount = main(a[0], graphtype, label=a[1], n=graphcount, opts=opts)
+                    graphcount = main(
+                        a[0], graphtype, label=a[1], n=graphcount, 
+                        opts=opts, colorlist=colorlist)
     else:
         for f in args:
             filen = f

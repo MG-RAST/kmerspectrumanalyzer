@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 '''Tool to generate graphs of kmer spectra'''
 
+COLORLIST = [
+    "b", "g", "r", "c", "y",
+    "m", "k", "BlueViolet", "Coral", "Chartreuse",
+    "DarkGrey", "DeepPink", "LightPink"]
+
 import sys
 import numpy as np
 
@@ -15,23 +20,48 @@ def renyispectrum(x, spectrum):
         R[i] = G
     return R
 
-def pad(xvalues, yvalues):
+def pad(xvalues, yvalues, fill=True):
     '''Adds missing integer values to x and corresponding zeros to y.'''
     yout = []
     xout = []
-    for i in range(int(1.5*(max(xvalues)))):
-        try:
-            xout.append(xvalues[xvalues.index(i+1)])
-            yout.append(yvalues[xvalues.index(i+1)])
-        except ValueError:
-            xout.append(i+1)
-            yout.append(0)
+    xv = np.arange(1, int(1.5*max(xvalues)))
+    yv = np.zeros(shape = int(1.5*max(xvalues)-1), dtype=int)
+
+    if fill==True:
+        for i, x in enumerate(xvalues):
+            yv[np.where(xv==x)[0][0]] = yvalues[i]
+        xout = list(xv)
+        yout = list(yv)
+    else:
+        for i,x in enumerate(xvalues):
+#          print "x,", x
+          if (x-1 not in xvalues) and (x-1) not in xout: 
+              xout.append(x-1) 
+              yout.append(0) 
+#              print "Adding x-1,0", x-1
+          if  yvalues[xvalues.index(x)]>0:
+              xout.append(xvalues[xvalues.index(x)])
+              yout.append(yvalues[xvalues.index(x)])
+          if (x+1 not in xvalues) and (x+1) not in xout:
+              xout.append(x+1) 
+              yout.append(0) 
+#              print "Adding x+1, 0", x+1
     return(xout, yout)
 
-def getcolor(index):
-    '''returns a string that cycles through more colors than default'''
-    colorlist = ["b", "g", "r", "c", "y", "m", "k", "BlueViolet",
-            "Coral", "Chartreuse", "DarkGrey", "DeepPink", "LightPink"]
+def smoothspectrum(data):
+    bins = np.hstack((np.arange(1,200), np.exp(np.arange(0,4, .01) * np.log(10)) * 200))
+    x = data[:,0]
+    y = data[:,1]
+    yo = np.zeros((len(bins)))
+    for i in range(0, len(bins)-1):
+        yo[i] = y[np.where((x >= bins[i])* (x < bins[i+1]))].sum()
+    xo = bins[:-1]
+    yo = yo[:-1] / np.diff(bins)
+    return xo, yo
+
+def getcolor(index, colorlist): 
+    if colorlist == []:
+        colorlist = COLORLIST
     l = index % len(colorlist)
     return colorlist[l]
 
@@ -53,8 +83,6 @@ def calcmedian(yd, y, num):
         cutoff = yd[bottom]
     else:
         cutoff = 0
-    if num <= 1:
-        cutoff = np.ceil(cutoff - .001)
     return cutoff
 
 def cleanlabel(label):
@@ -155,7 +183,7 @@ def printstats(a, filename, filehandle=None, n=0):
     if T == 0:
         H = np.NaN
     H2 = 1 / sum(c1 * j * j)        # antilog Reyni entropy / Simpson index
-    w = yo / yo.max()
+    w = np.array(yo, dtype="float") / yo.max()
     wd = yd
     M90 = calcmedian(wd, w, .9)      # 90th percentile by observations
     M50 = calcmedian(wd, w, .5)      # 50th percentile by observations
@@ -174,13 +202,21 @@ def printstats(a, filename, filehandle=None, n=0):
     else:
         consensusfh = filehandle
     if filehandle == None or n == 0:
-        consensusfh.write("#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
-             "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
-    consensusfh.write("%s\t%d\t%d\t%d\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.1f\n" %
-                      (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
+        consensusfh.write(
+            "#filename\tM10\tM50\tM90\tM100\tF100\tF10K" +
+            "\tF1M\tH\tH2\tAVC\tAVG\tC50\n")
+    consensusfh.write(
+        "%s\t%.1f\t%.1f\t%.1f\t%d\t%f\t%f\t%f\t%.1f\t%.1f\t%.1f\t%.1f\t%.2f\n" %
+        (filename, M10, M50, M90, M100, F100, F10K, F1M, H, H2, AVCOV, AVGEN, C50))
     if filehandle == None:
         consensusfh.close()
 
+def getlength(filename):
+    '''parse nonpareil output npo for length parameter'''
+    for line in open(filename):
+       if line[0:5] == "# @L:":
+           return float(line[6:])
+     
 def loadfile(filename):
     '''Loads file, returns two-column ndarray or None on
     failure.  Uses filename to guess format.'''
@@ -188,28 +224,43 @@ def loadfile(filename):
         # parse velvet contig stats format
         if filename.find("stats.txt") >= 0:
             matrix = np.loadtxt(filename, usecols=(5, 1), skiprows=1)
+	elif filename.find(".npo") == len(filename)-4:
+            matrix = np.loadtxt(filename, usecols=(0, 1), skiprows=6)
+            L = getlength(filename)
+            matrix[:, 0] = matrix[:, 0] * L
         else: # default bare-bones spectrum format
-            matrix = np.loadtxt(filename)
+            matrix = np.loadtxt(filename, comments="#")
         # return None if the file is empty
         if matrix.shape[0] == 0:
-            return None
+            return []
         else:
             return np.atleast_2d(matrix)
     except IOError:
         sys.stderr.write("ERROR: Can't find file %s\n" % filename)
-        return None
+        return []
 
-def plotstratify(spectrum, bands=None):
+def printstratify(spectrum, bands=None, flat=False, label=""):
+    '''prints table of sizes and data fracitons for separate
+    bands, inclusive of lower bound, excluding upper band 
+    boundary'''
     bands, frac, size = stratify(spectrum, bands)
-    for i in range(len(bands)):
-        if i != len(bands)-1:
-            print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
-                size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+    if flat == False:
+        for i in range(len(bands)):
+            if i != len(bands)-1:
+                print "%.04f"%(frac[i] - frac[i+1]), "\t% 13d"% (
+                    size[i] - size[i+1]), "\t", str(bands[i])+"-"+str(bands[i+1])
+    else:
+         print "#name\t"+"\t".join(map(str,list(bands[:-1]+bands[1:])))
+         print label+"\t"+"\t".join(map(str, list(size)[:-1] + 
+                list(frac)[1:] ))
 
 def stratify(spectrum, bands=None):
     '''Breaks spectrum up into defined abundance-buckets,
-    reporting data fraction and number of kmers=basepairs
-    contained in each bucket.'''
+    reporting cumulative data fraction and number of 
+    kmers=basepairs with kmer-depths greater than or equal
+    to each bucket boundary.  Returns list of bands, list
+    of (cumulative) fractions, and list of (cumulative) 
+    basepairs for each band.'''
     if bands == None:
         bands = [1, 10, 100, 1000, 10000, 100000]
     n = spectrum[:, 0]
@@ -220,26 +271,30 @@ def stratify(spectrum, bands=None):
     size = []
     for b in bands:
         frac.append(np.sum(p[n >= b]) / T)
-        size.append(np.sum(y[n >= b]) + 1)
-    # +1 adds an artificial count in the largest bin
-    frac.append(0)
-    size.append(0)
-    bands.append(bands[-1] * 10)
+        size.append(np.sum(y[n >= b])    )
     return bands, frac, size
 
-def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=None):
+def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=None, colorlist=COLORLIST):
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
     option determines the type of graph; label labels each trace;
     n counts the (successful) traces.  Returns n.'''
     import matplotlib.pyplot as plt
     # note, calccumsum will raise an exception here if data is invalid
-    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     if label == None:
         tracelabel = cleanlabel(filename)
     else:
         tracelabel = cleanlabel(label)
+    if option == 0 or option == 1 or option ==19 or option==20: 
+        xclean, yclean = smoothspectrum(spectrum)
+        spectrum = np.vstack([xclean, yclean]).T
+    if option==21:
+        xclean, yclean = pad(list(spectrum[:,0]), list(spectrum[:,1]), fill=False)
+        print "len x", len(spectrum[:,0])
+        print "len xclean", len(xclean)
+        spectrum = np.vstack([xclean, yclean]).T
     assert spectrum.dtype == "float"
+    (cn, c1, yd, yo, zd, zo) = calccumsum(spectrum)
     # sorted by abundance/coverage
     b = np.flipud(spectrum[np.argsort(spectrum[:, 0]), :])
     # sorted by size (for contigs)
@@ -252,7 +307,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
     No = b_zo.max()
     Nd = b_zd.max()
     x = np.arange(len(b[:, 0]))                  # rank
-    color = getcolor(n)
+    color = getcolor(n, colorlist)
     outfile = "%s.%d.plot.csv" % (filename, option)
     if option == 0:
         pA = plt.loglog(b_cn, b_c1, "-", color=color, label=tracelabel)
@@ -261,8 +316,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         legendloc = "upper right"
     if option == 0 or option == -1:
         if dump:
-            c = np.hstack((cn.reshape((len(cn), 1)),
-                (c1.reshape((len(cn), 1)))))
+            c = np.hstack(
+                cn.reshape((len(cn), 1)), (c1.reshape((len(cn), 1))))
             sys.stderr.write("saving output table in %s\n" % outfile)
             np.savetxt(outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 1:
@@ -271,11 +326,12 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
         if dump:
-            c = np.hstack((cn.reshape((len(cn), 1)),
+            c = np.hstack(
+                (cn.reshape((len(cn), 1)),
                 ((cn * c1).reshape((len(cn), 1)))))
             sys.stderr.write("saving output table in %s\n" % outfile)
-            np.savetxt(outfile, c, fmt=['%d', '%d'],
-                delimiter="\t")
+            np.savetxt(
+                outfile, c, fmt=['%d', '%d'], delimiter="\t")
     elif option == 2:
         pA = plt.loglog(b_zo, b_cn, color=color, label=tracelabel)
         xlabel, ylabel = ("basepairs observed", "kmer abundance")
@@ -291,9 +347,9 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         xlabel, ylabel = ("fraction of distinct kmers", "kmer abundance")
         legendloc = "upper right"
     elif option == 5 or option == 25 or option == 24:
-        pA = plt.semilogx(yd, zo / No, '-', color=color)
-        pA = plt.semilogx(yd, zo / No, '.', color=color, label=tracelabel)
-        xlabel, ylabel = ("kmer rank (bp)", "fraction of observed data")
+        pA = plt.semilogx(yd, 1-zo / No, '-', color=color)
+        pA = plt.semilogx(yd, 1-zo / No, '.', color=color, label=tracelabel)
+        xlabel, ylabel = ("kmer rank (bp)", "cumulative fraction of observed data")
         plt.xlim((1, 10**10))
         plt.ylim(0, 1)
         legendloc = "lower left"
@@ -302,7 +358,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         pA = plt.loglog(b_zd, b_cn, '.', color=color)
         xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
         plt.xlim((1, 10**10))
-        plt.ylim(1, 10**7)
+        if max(b_cn) < 10**8:
+            plt.ylim(1, 10**7)
         legendloc = "lower left"
         if dump:
             c = np.hstack((yd.reshape((len(yd), 1)), cn.reshape((len(cn), 1))))
@@ -352,18 +409,37 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0, dump=False, opts=N
         pA = plt.plot(x, d_cn * d_c1, '.-', color=color, label=tracelabel)
         xlabel, ylabel = ("contig expl rank", "data explained (bogo bp)")
         legendloc = "upper right"
+    elif option == 18:  # semilog version of 1
+        pA = plt.semilogx(b_cn, b_c1, '.-', color=color, label=tracelabel)
+        xlabel, ylabel = ("number of bases sampled", "nonunique fraction")
+        plt.ylim(0, 1)
+        legendloc = "lower left"
+    elif option == 19:  # stairstep version of 1
+        pA = plt.loglog(cn, cn * c1, "-", color=color, label=tracelabel, drawstyle="steps")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
+        legendloc = "upper right"
+    elif option == 20:  # stairstep version of 18
+        pA = plt.semilogx(cn, cn * c1 * cn, "-", color=color, label=tracelabel, drawstyle="steps-mid")
+        xlabel, ylabel = ("kmer abundance", "data quantity")
+        legendloc = "upper right"
+    elif option == 21:  # stairstep, straight axes version of 1
+        pA = plt.plot(cn, cn * c1, "-", color=color, label=tracelabel, drawstyle="steps-mid")
+        xlabel, ylabel = ("kmer abundance", "kmers observed")
+        legendloc = "upper right"
     elif option == 30:
         lam = np.arange(.01, 10, .01)
-        entropyspectrum = np.power(10,renyispectrum(lam, spectrum))
+        entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
         pA = plt.semilogy(lam, entropyspectrum, '.-', color=color, label=tracelabel)
         xlabel, ylabel = ("lambda", "Renyientropy")
         legendloc = "upper right"
 
     if option == -2 or option == 26 or option == 25:
         if dump:
-            plotstratify(spectrum)
+            printstratify(spectrum)
         else:
-            plotstratify(spectrum)
+            printstratify(spectrum)
+    if option == -3 :
+         printstratify(spectrum, flat=True, label=tracelabel)
     # For these two graphs, draw rainbow bands
     if option == 26:
         bands, frac, size = stratify(spectrum)

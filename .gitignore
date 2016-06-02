@@ -1,6 +1,9 @@
 *.pdf
 *.pyc
 *.png
+.DS_Store
 tifffile.py
 *.log
 *.aux
+scraps
+.*.swp

@@ -49,6 +49,48 @@ a mixed-poisson model; if you have a single, well-behaved genome with
 more than 30x coverage, this will estimate genome size and kmer
 abundance.
 
+## Example invokations
+
+### Calculate spectra
+Presuming you have sequence data in a pile of fastq files.  First 
+we will count the 21mers in each file:
+`count-kmer21.sh *.fastq`  
+
+This creates a list of files ending in `.fastq.21` that contain only
+numbers.
+
+### Give human-readable names to datafiles
+In `repeatresolutionpaper/counts-validationgenomedata` there is a 
+collection of 21 such kmer spectra.   `list` contains two columns, the
+first three lines of which are:
+```
+SRR039966A.fastq.21     T.paraluiscuniculi 22x
+SRR006331.fastq.21      M.agalactiae 22x
+SRR006330.fastq.21      A.baylyi 23x
+```
+This first column contains the filenames of the spectra; the second
+(optional) column contains a human readable name for the datasets;
+the third (optional) column contains the color of the trace.
+
+### Generate kmer graphs
+These lines will generate graphs comparing the kmer spectra:
+
+```
+plotkmerspectrum -l list -g 1   # generates list.1.pdf
+plotkmerspectrum -l list -g 5   # generates list.5.pdf
+plotkmerspectrum -l list -g 6   # generates list.6.pdf
+```
+
+### Generate stacked-bar kmer summaries
+These lines will generate graphical summaries of depth and sequnece 
+amount, stratified by bands of depth:
+```
+stratify.py -l list  -g 0 -o list.frac3.pdf
+stratify.py -l list  -g 1 -o list.size3.pdf
+stratify.py -l list  -g 0 -s -o list.frac3s.pdf
+stratify.py -l list  -g 1 -s -o list.size3s.pdf
+```
+
 ## Paper
 A paper describing kmerspectrumanalyzer was
 published August 2013 in *BMC Genomics. 2013 14(1):537*

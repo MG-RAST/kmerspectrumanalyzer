@@ -52,10 +52,11 @@ def kmerabundance(seq, index):
     for i in range(0, len(seq) - k):
         word = seq[i:i+k]
         w = lesserkmer(str(word).upper())
-        try:
-            a.append(index[w])
-        except KeyError:
-            a.append(0)
+        if w.find("N") == -1:
+            try:
+                a.append(index[w])
+            except KeyError:
+                a.append(0)
     a.sort()
     try:
         median = a[len(a) / 2]
@@ -122,8 +123,9 @@ if __name__ == '__main__':
             if (seq1.find("N") == -1 and seq2.find("N") == -1 ) :
                 for indexno in range(len(indexlist)):
                     (min1, med1, max1, avg1) = kmerabundance(str(seq1)+"N"+str(seq2), indexes[indexno])
+                    gc = gccontent(str(seq1)+"N"+str(seq2))
     #                sys.stdout.write("%d\t%d\n%d\t%d\n" % ( min1, med1, max1, avg1 ) )
-                    decoration = decoration + " %d %d %d %.1f " % (  min1, med1, max1, avg1 )
+                    decoration = decoration + " %d %d %d %.1f %.3f" % (  min1, med1, max1, avg1, gc )
                 seq_record1.description = "%s %s" % (seq_record1.description, decoration)
                 seq_record2.description = "%s" % (seq_record2.description, ) # decoration)
     
