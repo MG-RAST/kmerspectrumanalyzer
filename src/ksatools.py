@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+from __future__ import division
+
 '''Tool to generate graphs of kmer spectra'''
 
 COLORLIST = [
@@ -68,6 +70,10 @@ def getcolor(index, colorlist):
 
 def calcmedian(yd, y, num):
     '''interpolates, returning value of yd corresponding to to num on y'''
+    # assert y and yd are sorted
+    ya = np.argsort(y)[::-1]
+    y = y[ya]
+    yd = yd[ya]
     try:
         top = np.max(np.nonzero(y > num))
     except ValueError:
@@ -252,8 +258,8 @@ def printstratify(spectrum, bands=None, flat=False, label=""):
     if flat == False:
         for i in range(len(bands)):
             if i != len(bands)-1:
-                print("{:.04f}\t{: 13d}\t{:d}-{:d}\n".format((frac[i] - frac[i+1]), (
-                    size[i] - size[i+1]), str(bands[i]), str(bands[i+1])))
+                print("{:.04f}\t{: 13.0f}\t{:.0f}-{:.0f}\n".format((frac[i] - frac[i+1]), (
+                    size[i] - size[i+1]), bands[i], bands[i+1]))
     else:
         print("#name\t"+"\t".join(map(str, list(bands[:-1]+bands[1:]))))
         print(label+"\t"+"\t".join(map(str, list(size)[:-1] +
@@ -318,11 +324,11 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     outfile = "%s.%d.plot.csv" % (filename, option)
     style = ".-"
     drawstyle = None
-    if option == 0:
+    if option == 0 or True:  # fallback visualization
         plot1, p, q = (plt.loglog, b_cn, b_c1)
         xlabel, ylabel = ("kmer abundance", "number of kmers")
         legendloc = "upper right"
-    elif option == 1:
+    if option == 1:
         plot1, p, q = (plt.loglog, cn, cn * c1)
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
@@ -454,16 +460,20 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         fracboundaries = 1 - np.array(frac)
         sizeboundaries = size
         drawboxes(fracboundaries, 0)
-    if opts.xlabel:
+    if hasattr(opts, "xlabel"):
         xlabel = opts.xlabel
-    if opts.ylabel:
+    if hasattr(opts, "ylabel"):
         ylabel = opts.ylabel
+    if hasattr(opts, "suppress"):
+        suppress = True
+    else:
+        suppress = False
     # Draw graphs if option >= 0
     if stylelist is not None and stylelist != []:
         style = stylelist[n]
     if option >= 0:
         plot1(p, q, style, color=color, label=tracelabel, drawstyle=drawstyle)
-        if not opts.suppress:
+        if not suppress:
             plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
