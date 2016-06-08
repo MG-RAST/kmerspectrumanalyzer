@@ -97,7 +97,7 @@ def test_getmgrkmerspectrum_fail():
     g = getmgrkmerspectrum("mgm4441680.3", mgrkey="INVALID")
 
 def test_printstats():
-    p = printstats(FIXTURE1, "out.txt")
+    p = printstats(FIXTURE1, "tempstatsout.txt")
 
 def test_printstratify():
     p = printstratify(FIXTURE1)
@@ -105,23 +105,51 @@ def test_printstratify():
 def test_makesgraphs():
     for i in range(-3,27):
         print "testing visualization {:d}".format(i)
-        p = makegraphs(FIXTURE1, "filename", option = i)
+        p = makegraphs(FIXTURE1, "tempfilename", option = i)
 
 def test_makegraphs_d():
-    p = makegraphs(FIXTURE1, "filename", option=6, dump=True)
+    p = makegraphs(FIXTURE1, "tempfilename", option=6, dump=True)
 
 def test_makegraphs_l():
-    p = makegraphs(FIXTURE1, "filename", option=6, label="ridiculouslabel")
+    p = makegraphs(FIXTURE1, "tempfilename", option=6, label="ridiculouslabel")
 
 def test_makegraphs_30():
-    p = makegraphs(FIXTURE1, "filename", option=30)
+    p = makegraphs(FIXTURE1, "tempfilename", option=30)
 
 
 def test_cmdline_1():
-    call(["plotkmerspectrum.py", "-g", "-1", "../test00.21"])
+    call("plotkmerspectrum.py -g -1 ../test00.21", shell=True)
 
 def test_cmdline_2():
-    call(["plotkmerspectrum.py", "-g", "0", "../test00.21"])
+    call("plotkmerspectrum.py -g 0 ../test00.21", shell=True)
+
+def test_cmdline_3():
+    call("plotkmerspectrum.py -g 1 ../test00.21 -o temptest00.01.png", shell=True)
+
+def test_cmdline_4():
+    call("plotkmerspectrum.py -g 1 ../test00.21 -x xlabel -y ylabel -t title -s -o temptest00.01.pdf", shell=True)
+
+def test_empty():
+    call("echo | countkmer21.sh > tempy.21", shell=True) 
+
+
+def test_empty2():
+    call("echo -n | countkmer21.sh > tempx.21", shell=True)
+
+def test_list():
+    call("plotkmerspectrum.py -l testlist1", shell=True)
+    call("plotkmerspectrum.py -l testlist2", shell=True)
+    call("plotkmerspectrum.py -l testlist3", shell=True)
+    call("plotkmerspectrum.py -l testlist4", shell=True)
+    call("plotkmerspectrum.py -l testlist5", shell=True)
+    call("plotkmerspectrum.py -l testlist6", shell=True)
+    call("plotkmerspectrum.py -l testlist7", shell=True)
+    call("plotkmerspectrum.py -l testlist8", shell=True)
+
+def test_counttoy():
+    call("countkmer21.sh toy.fa", shell=True)
+    call("cat toy.fa | countkmer21.sh >  test-toy-std.21", shell=True)
+
 
 #def test_cmdline_getmgr():
 #    call(['plotkmerspectrum.py','-l','../test/mgrlist','-i','-g','6','-t','mgm'])

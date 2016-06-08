@@ -2,6 +2,7 @@
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
 import numpy as np
+from subprocess import call
 from numpy import array
 
 from rare import fract, calc_resampled_fraction, plotme
@@ -58,24 +59,36 @@ def test_calc_resampled_fraction():
     assert_true(m2.shape[1] == len(thresholds))
 
 def test_plotme0():
-    p = plotme(FIXTURE, "fixture label", shaded=0)
-    p = plotme(FIXTURE2, "fixture label", shaded=0)
+    p = plotme(FIXTURE, "templabel", shaded=0)
+    p = plotme(FIXTURE2, "templabel", shaded=0)
 def test_plotme1():
-    p = plotme(FIXTURE, "fixture label", shaded=1)
-    p = plotme(FIXTURE2, "fixture label", shaded=1)
+    p = plotme(FIXTURE, "templabel", shaded=1)
+    p = plotme(FIXTURE2, "templabel", shaded=1)
 def test_plotme2():
-    p = plotme(FIXTURE, "fixture label", shaded=2)
-    p = plotme(FIXTURE2, "fixture label", shaded=2)
+    p = plotme(FIXTURE, "templabel", shaded=2)
+    p = plotme(FIXTURE2, "templabel", shaded=2)
 def test_plotme3():
-    p = plotme(FIXTURE, "fixture label", shaded=3)
-    p = plotme(FIXTURE2, "fixture label", shaded=3)
+    p = plotme(FIXTURE, "templabel", shaded=3)
+    p = plotme(FIXTURE2, "templabel", shaded=3)
 def test_plotmeS():
-    p = plotme(FIXTURE, "fixture label", shaded=2, suppress=True)
-    p = plotme(FIXTURE2, "fixture label", shaded=2, suppress=True)
+    p = plotme(FIXTURE, "templabel", shaded=2, suppress=True)
+    p = plotme(FIXTURE2, "templabel", shaded=2, suppress=True)
 def test_plotmeD():
-    p = plotme(FIXTURE, "fixture label", shaded=2, dump=True)
-    p = plotme(FIXTURE2, "fixture label", shaded=2, dump=True)
+    p = plotme(FIXTURE, "templabel", shaded=2, dump=True)
+    p = plotme(FIXTURE2, "templabel", shaded=2, dump=True)
 
 def test_plotmeT():
-    p = plotme(FIXTURE, "fixture label", shaded=2, thresholdlist=[1,10,100])
-    p = plotme(FIXTURE2, "fixture label", shaded=2, thresholdlist=[1,10,100])
+    p = plotme(FIXTURE, "templabel", shaded=2, thresholdlist=[1,10,100])
+    p = plotme(FIXTURE2, "templabel", shaded=2, thresholdlist=[1,10,100])
+
+def test_cmdline1():
+    call("rare.py -g 2 ../repeatresolutionpaper/counts-validationgenomedata/list -s -o list.rare.2s.png", shell=True)
+    call("rare.py -g 2 ../repeatresolutionpaper/counts-validationgenomedata/list -o list.rare.2s.png", shell=True)
+
+def test_cmdline2():
+    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 0 -o list.frac3.pdf", shell=True)
+    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 1 -o list.size3.pdf", shell=True)
+    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 0 -s -o list.frac3s.pdf", shell=True)
+    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 1 -s -o list.size3s.pdf", shell=True)
+
+
