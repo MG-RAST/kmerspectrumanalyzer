@@ -50,16 +50,18 @@ def calc_resampled_fraction(aa, samplefracs, thresholds):
     return matrix
 
 def plotme(b, label, color=None, thresholdlist=None, numplots=4,
-           suppress=False, dump=False):
+           suppress=False, dump=False, shaded=0, n=1):
     '''Performs calculations and calls graphing routines,
     given spectra
     '''
 # define range of subsamples
+    import matplotlib.pyplot as plt
     N = np.sum(b[:, 0] * b[:, 1])
     samplefractions = 10**np.arange(2, 11, .5) / N  # CHEAP
     samplefractions = 10**np.arange(2, 11, .1) / N
 # Throw away unecessary samples
     samplefractions = np.hstack((samplefractions[samplefractions < 1], 1))
+    SHADED = shaded
     if thresholdlist == None:
         thresholdlist = [1]
 
@@ -182,7 +184,7 @@ if __name__ == "__main__":
                     if spectrum != []:
                         plotme(spectrum, label=a[1], color=selectedcolor,
                                thresholdlist=listofthresholds,
-                               numplots=numplots, dump=OPTS.dump)
+                               numplots=numplots, dump=OPTS.dump, shaded=SHADED)
                         n = n + 1
         if OPTS.suppresslegend == 0:
             plt.legend(loc="upper left")
@@ -193,7 +195,7 @@ if __name__ == "__main__":
             filename = v
             spectrum = ksatools.loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
-                   color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS))
+                   color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS), shaded=SHADED)
             n = n + 1
 #        plt.legend(loc="upper left")
         sys.stderr.write("Warning! printing graphs in default filename " + OUTFILE + "\n")
