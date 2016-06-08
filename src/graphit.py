@@ -32,16 +32,16 @@ def plotme(data, graphtype=None, label=None, n=0, opts=None, color=None, style="
     if graphtype == "semilogy":
         if opts.dot:
             pA = plt.semilogy(s*data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.semilogy(s*data[:, 0], data[:, 1], color=color, label=None, linestyle=style)
+        pA = plt.semilogy(s*data[:, 0], data[:, 1], color=color, label=None, linestyle=style, linewidth=opts.thickness)
         legendloc = "upper right"
     if graphtype == "semilogx":
         if opts.dot:
             pA = plt.semilogx(data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.semilogx(s*data[:, 0], data[:, 1], color=color, label=label, linestyle=style)
+        pA = plt.semilogx(s*data[:, 0], data[:, 1], color=color, label=label, linestyle=style, linewidth=opts.thickness)
         legendloc = "upper right"
     if graphtype == "loglog":
         pA = plt.loglog(s*data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.loglog(s*data[:, 0], data[:, 1], color=color, label=None, linestyle=style)
+        pA = plt.loglog(s*data[:, 0], data[:, 1], color=color, label=None, linestyle=style, linewidth=opts.thickness)
         legendloc = "upper right"
     if not opts.suppress:
         plt.legend()
@@ -71,6 +71,8 @@ if __name__ == '__main__':
                       default=False, help="interactive mode--draw window")
     parser.add_option("-l", "--list", dest="filelist",
                       default=None, help="file containing list of targets and labels")
+    parser.add_option("-t", "--thickness", dest="thickness",
+                      default=2, help="line thickness for traces")
     parser.add_option("-w", "--writetype", dest="writetype",
                       default="pdf", help="file type for output (pdf,png)")
     parser.add_option("-p", "--plotlegend", dest="plotlegend",
