@@ -1,0 +1,5 @@
+# name                  length  av.qual #-reads mx.cov. av.cov  GC%     CnIUPAC CnFunny CnN     CnX     CnGap   CnNoCov
+assem5928_1Mp_c1          597     77      273     96      45.57   55.28   0       0       0       0       0       0
+assem5928_1Mp_c2          5686    89      3336    122     58.49   45.67   0       0       0       0       0       0
+assem5928_1Mp_c3          3280    88      1844    116     56.14   45.67   0       0       0       0       0       0
+assem5928_1Mp_c4          15011   89      4153    72      27.68   36.46   0       0       0       0       0       0
