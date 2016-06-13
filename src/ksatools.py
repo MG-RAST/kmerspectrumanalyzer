@@ -69,28 +69,13 @@ def getcolor(index, colorlist):
     return colorlist[l]
 
 def calcmedian(yd, y, num):
-    '''interpolates, returning value of yd corresponding to to num on y'''
-    # assert y and yd are sorted
-    ya = np.argsort(y)[::-1]
-    y = y[ya]
-    yd = yd[ya]
-    try:
-        top = np.max(np.nonzero(y > num))
-    except ValueError:
-        top = None
-    try:
-        bottom = np.min(np.nonzero(y <= num))
-    except ValueError:
-        bottom = None
-    if top != None and bottom != None:
-        cutoff = yd[bottom] + (num - y[bottom]) / (y[top] - y[bottom]) * (yd[top] -yd[bottom])
-    elif top != None and bottom is None:
-        cutoff = ((num *1.0) / (y[top]) * (yd[top]))
-    elif top is None and bottom != None:
-        cutoff = yd[bottom]
-    else:
-        cutoff = 0
-    return cutoff
+    '''wrapper for np.interp; interpolates to return the value of yd corresponding to num on y
+    sorts the data and prepends a 0,0 to get smooth behavior for entire range 0,1.'''
+    ya = np.argsort(y)
+    y2 = np.hstack(([0], y[ya]))
+    y2d = np.hstack(([0], yd[ya]))
+    r = np.interp(num, y2, y2d)
+    return r
 
 def cleanlabel(label):
     '''Sanitizes graph labels of unintersting file extensions'''
@@ -241,6 +226,7 @@ def loadfile(filename):
             except ValueError:
                 matrix = np.loadtxt(filename, skiprows=1, delimiter=",", usecols=(0, 1))
         # return None if the file is empty
+        matrix[np.isinf(matrix)] = 0
         matrix = np.atleast_2d(matrix)
         if matrix.shape[0] == 0:
             return []
@@ -415,6 +401,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         plot1, p, q = (plt.semilogx, cn, cn * c1 * cn)
         style, drawstyle = ("-", "steps-mid")
         xlabel, ylabel = ("kmer abundance", "data quantity")
+        print "XLABEL", xlabel, "YLABEL", ylabel
         legendloc = "upper right"
     elif option == 21:  # stairstep, straight axes version of 1
         plot1, p, q = (plt.plot, cn, cn * c1)
@@ -460,12 +447,12 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         fracboundaries = 1 - np.array(frac)
         sizeboundaries = size
         drawboxes(fracboundaries, 0)
-    if hasattr(opts, "xlabel"):
+    if hasattr(opts, "xlabel") and opts.xlabel is not None:
         xlabel = opts.xlabel
-    if hasattr(opts, "ylabel"):
+    if hasattr(opts, "ylabel") and opts.ylabel is not None:
         ylabel = opts.ylabel
     if hasattr(opts, "suppress"):
-        suppress = True
+        suppress = opts.suppress
     else:
         suppress = False
     # Draw graphs if option >= 0
