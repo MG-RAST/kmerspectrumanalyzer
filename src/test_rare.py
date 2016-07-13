@@ -91,4 +91,7 @@ def test_cmdline2():
     call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 0 -s -o list.frac3s.pdf", shell=True)
     call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 1 -s -o list.size3s.pdf", shell=True)
 
+def test_cmdline3():
+    call("rare.py -g 3 ../repeatresolutionpaper/counts-validationgenomedata/list -s -o list.rare.2s.png", shell=True)
+    call("rare.py -g 3 ../repeatresolutionpaper/counts-validationgenomedata/list -o list.rare.2s.png", shell=True)
 

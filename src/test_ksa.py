@@ -116,7 +116,6 @@ def test_makegraphs_l():
 def test_makegraphs_30():
     p = makegraphs(FIXTURE1, "tempfilename", option=30)
 
-
 def test_cmdline_1():
     call("plotkmerspectrum.py -g -1 ../test00.21", shell=True)
 
@@ -137,19 +136,23 @@ def test_empty2():
     call("echo -n | countkmer21.sh > tempx.21", shell=True)
 
 def test_list():
-    call("plotkmerspectrum.py -l testlist1", shell=True)
-    call("plotkmerspectrum.py -l testlist2", shell=True)
-    call("plotkmerspectrum.py -l testlist3", shell=True)
-    call("plotkmerspectrum.py -l testlist4", shell=True)
-    call("plotkmerspectrum.py -l testlist5", shell=True)
-    call("plotkmerspectrum.py -l testlist6", shell=True)
-    call("plotkmerspectrum.py -l testlist7", shell=True)
-    call("plotkmerspectrum.py -l testlist8", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist1", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist2", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist3", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist4", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist5", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist6", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist7", shell=True)
+    call("plotkmerspectrum.py -l ../test/testlist8", shell=True)
+
+def test_files():
+    call("plotkmerspectrum.py stats.txt", shell=True)
+    call("plotkmerspectrum.py contigstats.txt", shell=True)
+    call("plotkmerspectrum.py test_1.npo", shell=True)
 
 def test_counttoy():
-    call("countkmer21.sh toy.fa", shell=True)
-    call("cat toy.fa | countkmer21.sh >  test-toy-std.21", shell=True)
-
+    call("countkmer21.sh ../test/toy.fa", shell=True)
+    call("cat ../test/toy.fa | countkmer21.sh >  ../test/test-toy-std.21", shell=True)
 
 #def test_cmdline_getmgr():
 #    call(['plotkmerspectrum.py','-l','../test/mgrlist','-i','-g','6','-t','mgm'])
