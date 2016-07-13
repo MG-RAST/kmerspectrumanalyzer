@@ -15,7 +15,6 @@ def fract(aa, epsilon, threshold):
     two-column abudnance table, epsilon and threshold are floats.
     '''
     sys.stderr.write("E %f T %f\n" % (epsilon, threshold))
-
     xr = aa[:, 0]
     xn = aa[:, 1]
     NO = np.sum(xn * xr)
@@ -35,6 +34,19 @@ def fract(aa, epsilon, threshold):
                 p += interim
     return p / NO
 
+def rich(aa, epsilon, threshold):
+    sys.stderr.write("richness E %f T %f\n" % (epsilon, threshold))
+    xr = aa[:, 0]
+    xn = aa[:, 1]
+    NO = np.sum(xn * xr)
+    interim = 0 
+    for i in range(len(xr)):
+        # this is the expected number of nonzero categories after hypergeometric sampling
+#        nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
+        nonzero = (1.-scipy.stats.hypergeom.pmf(0, NO, xr[i], epsilon*NO))
+        interim += nonzero * xn[i]
+    return interim
+
 def calc_resampled_fraction(aa, samplefracs, thresholds):
     '''calculate 2D array of return value of fract by evaluating it
     for each fraction in samplefracs and each threshold in thresholds.
@@ -46,6 +58,21 @@ def calc_resampled_fraction(aa, samplefracs, thresholds):
     for i, frac in enumerate(samplefracs):
         for j, threshold in enumerate(thresholds):
             dummy = fract(aa, frac, threshold)
+            matrix[i][j] = dummy
+    return matrix
+
+def calc_resampled_richness(aa, samplefracs, thresholds):
+    '''calculate 2D array, like calc_resampled_richness, of
+    calculated subsampled richness for each fraction in samplefracs 
+    and each threshold in thresholds.
+    Returns 2d matrix sith shape = len(samplefracs), len(thresholds)
+    aa must be 2d ndarray
+    '''
+    assert aa.shape[1] == 2
+    matrix = np.zeros((len(samplefracs), len(thresholds)))
+    for i, frac in enumerate(samplefracs):
+        for j, threshold in enumerate(thresholds):
+            dummy = rich(aa, frac, threshold)
             matrix[i][j] = dummy
     return matrix
 
@@ -64,8 +91,10 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     SHADED = shaded
     if thresholdlist == None:
         thresholdlist = [1]
-
-    matrix = calc_resampled_fraction(b, samplefractions, thresholdlist)
+    if SHADED != 3:
+        matrix = calc_resampled_fraction(b, samplefractions, thresholdlist)
+    else:
+        matrix = calc_resampled_richness(b, samplefractions, thresholdlist)
     effort = N * samplefractions
     data = np.hstack([np.atleast_2d(effort).T, matrix])
     np.savetxt(sys.stdout, data, fmt="%.3f")
@@ -88,6 +117,10 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
             lab = label
             plt.semilogx(pex, aug, "-", label=lab, color=color)
             plt.ylabel("Nonunique fraction of data")
+        elif SHADED == 3:
+            plt.semilogy(pex, aug, "-", label=lab, color=color)
+            plt.ylabel("Number of unique categories ")
+            plt.xlabel("Sampling effort")
         elif SHADED == 1:
             plt.subplot(numplots, 1, n + 1)
             plt.semilogx(pex, aug, "-", label=lab, color=color)
@@ -149,7 +182,7 @@ if __name__ == "__main__":
 # not lightning fast but should be
     listofthresholds = [1, 3.3, 10, 33, 100, 330, 1000, 3300, 10000]
     listofthresholds = 10**np.arange(0, 4.5, 0.5)
-    if SHADED == 2:
+    if SHADED == 2 or SHADED == 3:
         listofthresholds = [1]
     else:
         listofthresholds = [1, 3, 10, 30]
