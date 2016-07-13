@@ -333,13 +333,13 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     elif option == 5 or option == 25 or option == 24:
         plot1, p, q = (plt.semilogx, yd, 1-zo/No)
         xlabel, ylabel = ("kmer rank (bp)", "cumulative fraction of observed data")
-        plt.xlim((1, 10**10))
+        plt.xlim((1, 10**11))
         plt.ylim(0, 1)
         legendloc = "lower left"
     elif option == 6 or option == 26:
         plot1, p, q = (plt.loglog, b_zd, b_cn)
         xlabel, ylabel = ("kmer rank (bp)", "kmer abundance")
-        plt.xlim((1, 10**10))
+        plt.xlim((1, 10**11))
         if max(b_cn) < 10**8:
             plt.ylim(1, 10**7)
         legendloc = "lower left"
