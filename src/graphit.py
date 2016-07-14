@@ -27,7 +27,7 @@ def plotme(data, graphtype=None, label=None, n=0, opts=None, color=None, style="
     if graphtype == "linear" or graphtype == None:
 #        if opts.markers:
 #            pA = plt.plot(data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.plot(s*data[:, 0], data[:, 1], color=color, label=label, linestyle=style)
+        pA = plt.plot(s * data[:, 0], data[:, 1], color=color, label=label, linestyle=style)
         legendloc = "upper right"
     if graphtype == "semilogy":
         if opts.dot:
@@ -42,6 +42,10 @@ def plotme(data, graphtype=None, label=None, n=0, opts=None, color=None, style="
     if graphtype == "loglog":
         pA = plt.loglog(s*data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
         pA = plt.loglog(s*data[:, 0], data[:, 1], color=color, label=None, linestyle=style, linewidth=opts.thickness)
+        legendloc = "upper right"
+    if graphtype == "diff":
+        pA = plt.plot(data[1:, 0], np.exp(np.diff(np.log(data[:, 1])))/data[1:, 0], ".", color=color, label=label, linestyle=style)
+        pA = plt.plot(data[1:, 0], np.exp(np.diff(np.log(data[:, 1])))/data[1:, 0], color=color, label=Nonte, linestyle=style)
         legendloc = "upper right"
     if not opts.suppress:
         plt.legend()
