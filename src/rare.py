@@ -145,7 +145,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
     return()
 
 if __name__ == "__main__":
-    PARSER = OptionParser("rare.py -- rarefy kmer spectra")
+    PARSER = OptionParser("rare.py [options] countfilaname [countfilename2...]\n   -- computationally rarefy kmer spectra")
     PARSER.add_option("-i", "--interactive", dest="interactive",
                       action="store_true", default=False,
                       help="interactive mode--draw window")
@@ -165,7 +165,9 @@ if __name__ == "__main__":
                       action="store_true", help="output table .rare.csv")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
-
+    if len(ARGS) == 0:
+       sys.stderr.write("Error, requires one or more kmer histogram input filenames.\nrare.py -h lists options\n")
+       sys.exit(1)
     n = 0
     if not OPTS.interactive:
         mpl.use("Agg")
