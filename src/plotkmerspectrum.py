@@ -125,6 +125,8 @@ if __name__ == '__main__':
     else:
         mpl.use('TkAgg')
     import matplotlib.pyplot as plt
+    fig = plt.figure()
+    fig.patch.set_facecolor('white')
     if opts.filetype == "mgm":
         try:
             MGRKEY = os.environ["MGRKEY"]
