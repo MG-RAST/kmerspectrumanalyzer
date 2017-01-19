@@ -5,11 +5,11 @@ test: SRR016860A.fastq.21.fit.csv NC_017625.fna.21 SRR016860A.fastq.21 NC_017625
 
 # retrieve 454 DH1 sequencing run, in three parts
 SRR016860.fastq.gz:
-	wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR016/SRR016860/SRR016860.fastq.gz # 114Mb 
+	curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR016/SRR016860/SRR016860.fastq.gz > SRR016860.fastq.gz# 114Mb 
 SRR016859.fastq.gz:
-	wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR016/SRR016859/SRR016859.fastq.gz # 1.6Mb
+	curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR016/SRR016859/SRR016859.fastq.gz > SRR016859.fastq.gz # 1.6Mb
 SRR016858.fastq.gz:
-	wget ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR016/SRR016858/SRR016858.fastq.gz # 133Mb
+	curl ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR016/SRR016858/SRR016858.fastq.gz > SRR016858.fastq.gz # 133Mb
 SRR016860A.fastq: SRR016860.fastq.gz SRR016858.fastq.gz SRR016859.fastq.gz
 	zcat SRR0168??.fastq.gz  > SRR016860A.fastq
 
@@ -29,7 +29,7 @@ SRR001665_1_X10.fastq: SRR001665_1.fastq
 
 # retrieve reference DH1 genome
 NC_017625.fna:
-	wget ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/ASSEMBLY_BACTERIA/Escherichia_coli/GCF_000023365/NC_017625.fna  # 4.5Mb
+	curl ftp://ftp.ncbi.nih.gov/genomes/archive/old_refseq/ASSEMBLY_BACTERIA/Escherichia_coli/GCF_000023365/NC_017625.fna > NC_017625.fna # 4.5Mb
 
 %.fastq.21: %.fastq
 	countkmer21.sh $<
