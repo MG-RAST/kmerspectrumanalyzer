@@ -77,22 +77,22 @@ foreach my $file (@filenames)
 	}
 
 # Print first (header) row:
-print "0\t";
+print "0";
 foreach my $key1 (sort {$a <=> $b} keys %key1index)
 	{
-	print "$key1\t";
+	print "\t$key1";
 	}
 print "\n";
 
 # Print data table:
 foreach my $key2 (sort {$a <=> $b} keys %key2index) 
 	{
-	print "$key2\t";
+	print "$key2";
 	foreach my $key1 (sort {$a <=> $b} keys %key1index)
 		{
 		# print "$key1\t";
 		if(!(exists($hashref->{$key1}->{$key2}))) { $hashref->{$key1}->{$key2} = 0;}
-		print "$hashref->{$key1}->{$key2}\t";	
+		print "\t$hashref->{$key1}->{$key2}";
 		}
 	print "\n";
 	}
