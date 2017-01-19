@@ -413,6 +413,10 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         plot1, p, q = (plt.semilogy, cn[:-1], fminusparameter)
         xlabel, ylabel = ("kmer abundnace", "fminus paraemter")
         legendloc = "upper right"
+    elif option == 28:
+        plot1, p, q = (plt.plot, b_zo / No, b_cn)
+        xlabel, ylabel = ("fraction of observed data", "kmer abundance")
+        legendloc = "lower left"
     elif option == 30:
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
