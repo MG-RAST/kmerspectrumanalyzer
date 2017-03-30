@@ -41,7 +41,7 @@ if __name__ == '__main__':
         m2 = int(pattern.search(seq_record2.description).group(1))
         g1 = gccontent(str(seq_record1.seq))
         g2 = gccontent(str(seq_record2.seq))
-  #    print "%d\t%d\t%.2f\t%.2f"%(m1, m2, g1, g2)
+  #    print("%d\t%d\t%.2f\t%.2f"%(m1, m2, g1, g2))
         if 1:
             if m1 > 75 and m2 > 75 :
                 SeqIO.write([seq_record1, seq_record2], sys.stdout, "fastq")

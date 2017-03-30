@@ -1,3 +1,6 @@
+import coverage
+coverage.process_startup()
+
 
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
@@ -8,6 +11,7 @@ from ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, c
 
 import numpy as np
 from numpy import array
+import plotkmerspectrum
 
 FIXTURE1 = np.array([[2000, 1000000],
                      [20000, 10000],
@@ -77,7 +81,7 @@ def test_calcmedian():
     y = np.array([10,20,30,40])
     num = 35
     s = calcmedian( yd, y, num )
-    print s
+    print(s)
     assert_true(s == 3.5)
 
 def test_cleanlabel():
@@ -104,7 +108,7 @@ def test_printstratify():
 
 def test_makesgraphs():
     for i in range(-3,27):
-        print "testing visualization {:d}".format(i)
+        print("testing visualization {:d}".format(i))
         p = makegraphs(FIXTURE1, "tempfilename", option = i)
 
 def test_makegraphs_d():
@@ -145,14 +149,17 @@ def test_list():
     call("plotkmerspectrum.py -l ../test/testlist7", shell=True)
     call("plotkmerspectrum.py -l ../test/testlist8", shell=True)
 
+def test_options():
+    call("plotkmerspectrum.py -l ../test/testlist1 -s -x 'X label' -y 'Y label'", shell=True)
+
 def test_files():
-    call("plotkmerspectrum.py stats.txt", shell=True)
+    plotkmerspectrum.__main__("stats.txt") 
     call("plotkmerspectrum.py contigstats.txt", shell=True)
     call("plotkmerspectrum.py test_1.npo", shell=True)
 
 def test_counttoy():
     call("countkmer21.sh ../test/toy.fa", shell=True)
-    call("cat ../test/toy.fa | countkmer21.sh >  ../test/test-toy-std.21", shell=True)
+    call("cat ../test/toy.fa | countkmer21.sh >  ../test/temp-toy-std.21", shell=True)
 
 #def test_cmdline_getmgr():
 #    call(['plotkmerspectrum.py','-l','../test/mgrlist','-i','-g','6','-t','mgm'])

@@ -6,6 +6,7 @@ from subprocess import call
 from numpy import array
 
 from rare import fract, calc_resampled_fraction, plotme
+import stratify
 
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1,1000], [10,1000], [100, 1000]], dtype="float")
@@ -27,7 +28,7 @@ def test_calccumsum_one_zero():
 def test_calccumsum_one_half():
     data = np.array([[100, 1000]], dtype="float")
     result = fract(data, 0.5, 50)
-    print result
+    print(result)
     assert_true(result > 0.3)
     assert_true(result < 0.7)
 
@@ -51,7 +52,7 @@ def test_calc_resampled_fraction():
     samplefracs = np.array([[.01, .03, .1, .3]]).T
     thresholds = np.array([[1,3,10,30,100]]).T
     m = calc_resampled_fraction(FIXTURE, samplefracs, thresholds)
-    print m.shape 
+    print(m.shape)
     assert_true(m.shape[0] == len(samplefracs))
     assert_true(m.shape[1] == len(thresholds))
     m2 = calc_resampled_fraction(FIXTURE2, samplefracs, thresholds)

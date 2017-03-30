@@ -50,4 +50,4 @@ if __name__ == '__main__':
     h = count(m)
 
     for i in sorted(h.keys()):
-        print i, "\t", h[i]
+        print(i, "\t", h[i])

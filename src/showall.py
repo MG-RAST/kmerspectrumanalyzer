@@ -15,7 +15,7 @@ def decimate(a, d):
     except:
         d2 = d
         d1 = d
-    print "D1 %d D2 %d" % (int(d1), int(d2))
+    print("D1 %d D2 %d" % (int(d1), int(d2)))
     r1 = a.shape[0]
     r2 = a.shape[1]
     r1s = int(r1/d1)
@@ -29,7 +29,7 @@ def decimate(a, d):
                 for m in range(0, d2):
                     s = s+a[i*d1+l, j*d2+m]
             b[i].append(s)
-    print "decimate return:", np.array(b).shape
+    print("decimate return:", np.array(b).shape)
     return np.array(b)
 
 def decimate_withcovest(a, covest):
@@ -51,9 +51,9 @@ def decimate_withcovest(a, covest):
                 y_l = np.min([np.where(yax > ymark_l)])
             except ValueError:
                 y_l = 0
-            print i, j, "(", x_l, ":", x_h, ") (", y_l, ":", y_h, ")", xax[x_l], ":", xax[x_h], "\t", yax[y_l], ":", yax[y_h]
+            print(i, j, "(", x_l, ":", x_h, ") (", y_l, ":", y_h, ")", xax[x_l], ":", xax[x_h], "\t", yax[y_l], ":", yax[y_h])
             simple[i][j] = np.sum(a[x_l:x_h, y_l:y_h])
-    print simple
+    print(simple)
     return simple
 
 
@@ -92,11 +92,11 @@ if __name__ == '__main__':
     if opts.verbose:
         sys.stdout.write("Trying to read %s with numpy...\n" % infile)
     data = np.loadtxt(infile)
-    print "data shape ", data.shape
+    print("data shape ", data.shape)
     xax = data[0, :]
     yax = data[:, 0]
     d = data[1:, 1:]
-    print "d shape", d.shape
+    print("d shape", d.shape)
     m = int(opts.m)
     n = int(opts.n)
     if m == 0:
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     reduceddata = decimate(d, [m, n])
     reducedata = 1
     np.savetxt(infile+".all.csv", reduceddata)
-    print "Shape: ", reduceddata.shape
+    print("Shape: ", reduceddata.shape)
     plt.imshow(np.log(reduceddata.T), interpolation="nearest", aspect="auto", origin="lower")
     plt.title(infile, fontsize=18)
     plt.xlabel(xlabel, fontsize=16)
