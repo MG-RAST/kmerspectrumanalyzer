@@ -241,7 +241,7 @@ def printstratify(spectrum, bands=None, flat=False, label=""):
     bands, inclusive of lower bound, excluding upper band
     boundary'''
     bands, frac, size = stratify(spectrum, bands)
-    if flat == False:
+    if flat is False:
         for i in range(len(bands)):
             if i != len(bands)-1:
                 print("{:.04f}\t{: 13.0f}\t{:.0f}-{:.0f}\n".format((frac[i] - frac[i+1]), (
@@ -401,7 +401,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         plot1, p, q = (plt.semilogx, cn, cn * c1 * cn)
         style, drawstyle = ("-", "steps-mid")
         xlabel, ylabel = ("kmer abundance", "data quantity")
-        print "XLABEL", xlabel, "YLABEL", ylabel
         legendloc = "upper right"
     elif option == 21:  # stairstep, straight axes version of 1
         plot1, p, q = (plt.plot, cn, cn * c1)
@@ -409,7 +408,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         xlabel, ylabel = ("kmer abundance", "kmers observed")
         legendloc = "upper right"
     elif option == 27:
-        fminusparameter = np.exp( np.diff(np.log(c1)) - np.log(cn)[1:])
+        fminusparameter = np.exp(np.diff(np.log(c1)) - np.log(cn)[1:])
         plot1, p, q = (plt.semilogy, cn[:-1], fminusparameter)
         xlabel, ylabel = ("kmer abundnace", "fminus paraemter")
         legendloc = "upper right"
