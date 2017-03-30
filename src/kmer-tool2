@@ -26,7 +26,7 @@ def run_cmd(cmd):
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
         raise IOError("%s\n%s" % (" ".join(cmd), stderr))
-    return stdout, stderr
+    return stdout.decode("ascii"), stderr.decode("ascii")
 
 def random_str(size=6):
     '''Retruns random alphanumeric sequence for temporary filenames.'''
