@@ -4,12 +4,24 @@ from nose.tools import assert_equal, assert_almost_equal, assert_true, \
 import numpy as np
 from subprocess import call
 from numpy import array
+import os
 
 from rare import fract, calc_resampled_fraction, plotme
+from ksatools import run_indir
 import stratify
 
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1,1000], [10,1000], [100, 1000]], dtype="float")
+
+def run_indir(cmd, directory=None):
+    cwd = os.getcwd()
+    if directory:
+        os.chdir(directory)
+    else:
+        os.chdir(cwd)
+    call(cmd, shell=True)
+    os.chdir(cwd)
+    return()
 
 # fract(aa, epsilon, threshold)
 def test_calccumsum_one_full():
@@ -62,12 +74,15 @@ def test_calc_resampled_fraction():
 def test_plotme0():
     p = plotme(FIXTURE, "templabel", shaded=0)
     p = plotme(FIXTURE2, "templabel", shaded=0)
+
 def test_plotme1():
     p = plotme(FIXTURE, "templabel", shaded=1)
     p = plotme(FIXTURE2, "templabel", shaded=1)
+
 def test_plotme2():
     p = plotme(FIXTURE, "templabel", shaded=2)
     p = plotme(FIXTURE2, "templabel", shaded=2)
+
 def test_plotme3():
     p = plotme(FIXTURE, "templabel", shaded=3)
     p = plotme(FIXTURE2, "templabel", shaded=3)
@@ -83,16 +98,19 @@ def test_plotmeT():
     p = plotme(FIXTURE2, "templabel", shaded=2, thresholdlist=[1,10,100])
 
 def test_cmdline1():
-    call("rare.py -g 2 ../repeatresolutionpaper/counts-validationgenomedata/list -s -o list.rare.2s.png", shell=True)
-    call("rare.py -g 2 ../repeatresolutionpaper/counts-validationgenomedata/list -o list.rare.2s.png", shell=True)
+    run_indir("rare.py -g 2 -l testlist0 -s -o list.rare.2s.png", '../test')
+    run_indir("rare.py -g 2 -l testlist0 -o list.rare.2s.png", '../test')
+# Take too long
+#    run_indir("rare.py -g 2 -l list -s -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
+#    run_indir("rare.py -g 2 -l list -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
 
 def test_cmdline2():
-    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 0 -o list.frac3.pdf", shell=True)
-    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 1 -o list.size3.pdf", shell=True)
-    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 0 -s -o list.frac3s.pdf", shell=True)
-    call("stratify.py -l ../repeatresolutionpaper/counts-validationgenomedata/list  -g 1 -s -o list.size3s.pdf", shell=True)
+    run_indir("stratify.py -l testlist0 -g 0 -o list.frac3.pdf", "../test")
+    run_indir("stratify.py -l testlist0 -g 1 -o list.size3.pdf", "../test")
+    run_indir("stratify.py -l testlist0 -g 0 -s -o list.frac3s.pdf", "../test")
+    run_indir("stratify.py -l testlist0 -g 1 -s -o list.size3s.pdf", "../test")
 
 def test_cmdline3():
-    call("rare.py -g 3 ../repeatresolutionpaper/counts-validationgenomedata/list -s -o list.rare.2s.png", shell=True)
-    call("rare.py -g 3 ../repeatresolutionpaper/counts-validationgenomedata/list -o list.rare.2s.png", shell=True)
+    run_indir("rare.py -g 3 -l testlist0 -s -o list.rare.2s.png",  "../test")
+    run_indir("rare.py -g 3 -l testlist0 -o list.rare.2s.png",  "../test")
 

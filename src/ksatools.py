@@ -11,6 +11,16 @@ COLORLIST = [
 import sys
 import numpy as np
 
+def run_indir(cmd, directory=None):
+    cwd = os.getcwd()
+    if directory:
+        os.chdir(directory)
+    else:
+        os.chdir(cwd)
+    call(cmd, shell=True)
+    os.chdir(cwd)
+    return()
+
 def renyispectrum(x, spectrum):
     '''Given a two-dimensional spectrum spectrum and a one-dimensional
     vector of Renyi spectrum exponents, return a vector of corresponding

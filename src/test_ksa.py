@@ -1,5 +1,7 @@
-import coverage
-coverage.process_startup()
+#!/usr/bin/env python
+
+#import coverage
+#coverage.process_startup()
 
 
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
@@ -7,11 +9,12 @@ from nose.tools import assert_equal, assert_almost_equal, assert_true, \
 
 from subprocess import call
 
-from ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, printstratify, makegraphs
+from ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, printstratify, makegraphs, run_indir
 
 import numpy as np
 from numpy import array
 import plotkmerspectrum
+import os
 
 FIXTURE1 = np.array([[2000, 1000000],
                      [20000, 10000],
@@ -80,7 +83,7 @@ def test_calcmedian():
     yd = np.array([1,2,3,4])
     y = np.array([10,20,30,40])
     num = 35
-    s = calcmedian( yd, y, num )
+    s = calcmedian( yd, y, num)
     print(s)
     assert_true(s == 3.5)
 
@@ -121,45 +124,54 @@ def test_makegraphs_30():
     p = makegraphs(FIXTURE1, "tempfilename", option=30)
 
 def test_cmdline_1():
-    call("plotkmerspectrum.py -g -1 ../test00.21", shell=True)
+    run_indir("plotkmerspectrum.py -g -1 test00.21", "../test")
 
 def test_cmdline_2():
-    call("plotkmerspectrum.py -g 0 ../test00.21", shell=True)
+    run_indir("plotkmerspectrum.py -g 0 test00.21", "../test")
 
 def test_cmdline_3():
-    call("plotkmerspectrum.py -g 1 ../test00.21 -o temptest00.01.png", shell=True)
+    run_indir("plotkmerspectrum.py -g 1 test00.21 -o temptest00.01.png", "../test")
 
 def test_cmdline_4():
-    call("plotkmerspectrum.py -g 1 ../test00.21 -x xlabel -y ylabel -t title -s -o temptest00.01.pdf", shell=True)
+    run_indir("plotkmerspectrum.py -g 1 test00.21 -x xlabel -y ylabel -n Graph_title -s -o temptest00.01.pdf", '../test')
 
 def test_empty():
-    call("echo | countkmer21.sh > tempy.21", shell=True) 
-
+    run_indir("echo | countkmer21.sh > test-emptyinputy.21",  "../test")
 
 def test_empty2():
-    call("echo -n | countkmer21.sh > tempx.21", shell=True)
+    run_indir("echo -n | countkmer21.sh > test-emptyinputx.21", "../test")
 
-def test_list():
-    call("plotkmerspectrum.py -l ../test/testlist1", shell=True)
-    call("plotkmerspectrum.py -l ../test/testlist2", shell=True)
-    call("plotkmerspectrum.py -l ../test/testlist3", shell=True)
-    call("plotkmerspectrum.py -l ../test/testlist4", shell=True)
-    call("plotkmerspectrum.py -l ../test/testlist5", shell=True)
-    call("plotkmerspectrum.py -l ../test/testlist6", shell=True)
-    call("plotkmerspectrum.py -l ../test/testlist7", shell=True)
-    call("plotkmerspectrum.py -l ../test/testlist8", shell=True)
+def test_list1():
+    run_indir("plotkmerspectrum.py -l testlist1", "../test")
+def test_list2():
+    run_indir("plotkmerspectrum.py -l testlist2", "../test")
+def test_list3():
+    run_indir("plotkmerspectrum.py -l testlist3", "../test")
+def test_list4():
+    run_indir("plotkmerspectrum.py -l testlist4", "../test")
+def test_list5():
+    run_indir("plotkmerspectrum.py -l testlist5", "../test")
+def test_list6():
+    run_indir("plotkmerspectrum.py -l testlist6", "../test")
+def test_list7():
+    run_indir("plotkmerspectrum.py -l testlist7", "../test")
+def test_list8():
+    run_indir("plotkmerspectrum.py -l testlist8", "../test")
 
 def test_options():
-    call("plotkmerspectrum.py -l ../test/testlist1 -s -x 'X label' -y 'Y label'", shell=True)
+    run_indir("plotkmerspectrum.py -l testlist1 -s -x 'X label' -y 'Y label'", "../test")
 
-def test_files():
-    plotkmerspectrum.__main__("stats.txt") 
-    call("plotkmerspectrum.py contigstats.txt", shell=True)
-    call("plotkmerspectrum.py test_1.npo", shell=True)
+def test_file_stats():
+    run_indir("plotkmerspectrum.py stats.txt", "../test")
+def test_file_contigstats():
+    run_indir("plotkmerspectrum.py contigstats.txt", "../test")
+def test_file_npo():
+    run_indir("plotkmerspectrum.py test_1.npo", "../test")
 
 def test_counttoy():
-    call("countkmer21.sh ../test/toy.fa", shell=True)
-    call("cat ../test/toy.fa | countkmer21.sh >  ../test/temp-toy-std.21", shell=True)
+    run_indir("countkmer21.sh toy.fa", "../test")
+def test_counttoy_stream():
+    run_indir("cat toy.fa | countkmer21.sh >  temp-toy-std.21", "../test")
 
 #def test_cmdline_getmgr():
-#    call(['plotkmerspectrum.py','-l','../test/mgrlist','-i','-g','6','-t','mgm'])
+#    run_indir("plotkmerspectrum.py -l mgrlist -i -g 6 -t mgm", "../test")
