@@ -101,7 +101,7 @@ def summarizestrata(labels, spectra):
     return
 
 if __name__ == '__main__':
-    usage = '''spectra.py [options] -l <list of target files, labels>
+    usage = '''stratify.py [options] -l <list of target files, labels>
 '''
     parser = OptionParser(usage)
     parser.add_option(
