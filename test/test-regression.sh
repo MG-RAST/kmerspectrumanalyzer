@@ -11,7 +11,8 @@ ln  SRR033548.fastq.gz  SRR033548A.fastq.gz   # need different names, but don't 
 
 # build the datasets 
 cat NC_017625.fna NC_017625.fna  NC_017625.fna NC_017625.fna  NC_017625.fna NC_017625.fna NC_017625.fna NC_017625.fna NC_017625.fna NC_017625.fna > GENOME10X.fna
-for i in $(seq 10); do cat SRR001665_1.fastq  >> /mnt2/BIG.fastq; done 
+# Generate a 10x duplicate of this dataset 
+for i in $(seq 10); do cat SRR001665_1.fastq  >> BIG.fastq; done
 
 countkmer21.sh GENOME10X.fna       ; mv GENOME10X.fna.21     FASTA-10X-single.21
 countkmer21.sh NC_017625.fna       ; mv NC_017625.fna.21     FASTA-single.21   
