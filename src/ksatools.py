@@ -112,7 +112,12 @@ def drawboxes(breaks, axis, boxcolor=1):
 
 def getmgrkmerspectrum(accessionnumber, mgrkey=None):
     '''Retrieve kmer spectrum from MG-RAST'''
-    import urllib2, json, time
+    import json, time
+    try:
+        from urllib.request import urlopen
+        from urllib.error import HTTPError
+    except ImportError:
+        from urllib2 import urlopen, HTTPError
     assert accessionnumber[0:3] == "mgm", sys.exit(
         "Data error: field %s not in mgm......... accession number format" % accessionnumber)
     some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
@@ -123,8 +128,8 @@ def getmgrkmerspectrum(accessionnumber, mgrkey=None):
 # Ok, exception handling here is a important.  HTTP errors and
 # malformed JSON are likely failure modes.
     try:
-        opener = urllib2.urlopen(some_url)
-    except urllib2.HTTPError as e:
+        opener = urlopen(some_url)
+    except HTTPError as e:
         sys.stderr.write("Error retrieving %s" % some_url)
         sys.stderr.write("Error with HTTP request: %d %s\n%s" % (e.code, e.reason, e.read()))
         return np.atleast_2d(np.array([1, 0]))
