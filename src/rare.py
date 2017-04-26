@@ -97,10 +97,14 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
         matrix = calc_resampled_richness(b, samplefractions, thresholdlist)
     effort = N * samplefractions
     data = np.hstack([np.atleast_2d(effort).T, matrix])
-    np.savetxt(sys.stdout, data, fmt="%.3f")
+#    np.savetxt(sys.stdout, data, fmt="%.3f")   # Numpy can't write to standard out in python3
+    headertext = "subsetsize\t"+"\t".join(map(str, thresholdlist))
+    with open(label+".rare.csv", 'wb') as fp:
+        np.savetxt(fp, data, header=headertext, delimiter="\t")
     if dump:
-        headertext = "subsetsize\t"+"\t".join(map(str, thresholdlist))
-        np.savetxt(label+".rare.csv", data, header=headertext, delimiter="\t")
+        with open(label+".rare.csv") as f:
+            for l in f:
+                print(l)
     pex2 = np.hstack((effort[0], effort, effort[-1]))
     pex = effort
     for i in range(matrix.shape[1]):
@@ -165,7 +169,7 @@ if __name__ == "__main__":
                       action="store_true", help="output table .rare.csv")
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
-    if len(ARGS) == 0:
+    if len(ARGS) == 0 and not OPTS.filelist:
        sys.stderr.write("Error, requires one or more kmer histogram input filenames.\nrare.py -h lists options\n")
        sys.exit(1)
     n = 0
