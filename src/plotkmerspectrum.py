@@ -38,9 +38,8 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
 #                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)
             n += 1
-        except ValueError:   # This catches no data or defective data
+        except ValueError as err:   # This catches no data or defective data
             sys.stderr.write("Error printing stats for %s\n" % filename)
-            print("Unexpected error:" + sys.exc_info()[0])
     else:
         sys.stderr.write("Error with dataset %s\n" % filename)
     return n
@@ -95,7 +94,7 @@ if __name__ == '__main__':
         "-s", "--suppresslegend", dest="suppress", action="store_true",
         default=False, help="supress display of legend")
     parser.add_option(
-        "-n", "--name", dest="title",
+        "-n", "--name", dest="name",
         default=None, help="Name for graph, graph title")
     parser.add_option(
         "-x", "--xlabel", dest="xlabel",

@@ -118,7 +118,8 @@ def writedetails():
     OUTPUTMATRIX = np.hstack((dispx.reshape((len(dispx), 1)),
                               dispy.reshape((len(dispy), 1)),
                               model.reshape((len(model), 1))))
-    np.savetxt("%s.fit.detail.csv" % OUTFILE, OUTPUTMATRIX,
+    with open("%s.fit.detail.csv" % OUTFILE, "wb") as f:  # np.savetxt has some issues
+        np.savetxt(f, OUTPUTMATRIX,
                fmt=['%d', '%.1f', '%.1f'], delimiter="\t")
     print("sumerr\t%f" % sumscorefn(plsq))
 

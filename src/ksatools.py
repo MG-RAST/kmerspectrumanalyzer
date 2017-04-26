@@ -130,13 +130,13 @@ def getmgrkmerspectrum(accessionnumber, mgrkey=None):
     try:
         opener = urlopen(some_url)
     except HTTPError as e:
-        sys.stderr.write("Error retrieving %s" % some_url)
-        sys.stderr.write("Error with HTTP request: %d %s\n%s" % (e.code, e.reason, e.read()))
+        sys.stderr.write("Error retrieving %s\n" % some_url)
+        sys.stderr.write("Error with HTTP request: %d %s\n%s\n" % (e.code, e.reason, e.read()))
         return np.atleast_2d(np.array([1, 0]))
     try:
-        j = json.loads(opener.read())
+        j = json.loads(opener.read().decode("ISO-8859-1"))
     except ValueError:
-        sys.stderr.write("Error parsing %s" % some_url)
+        sys.stderr.write("Error parsing result from %s\n" % some_url)
         j = {}
     try:
         sys.stderr.write("Error with %s\nERROR: %s\n" % (some_url, j["ERROR"]))
@@ -435,7 +435,8 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
             ptype = "%d"
         if min(q) == 1:
             qtype = "%d"
-        np.savetxt(outfile, c, fmt=[ptype, qtype], delimiter="\t",
+        with open(outfile, "wb") as fp:
+             np.savetxt(fp, c, fmt=[ptype, qtype], delimiter="\t",
                    header=xlabel+"\t"+ylabel)
 
     if option == -2 or option == 26 or option == 25:
@@ -477,6 +478,6 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
             plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        if hasattr(opts, "title") and not opts.title is None and n == 0:
-            plt.title(opts.title)
+        if hasattr(opts, "name") and not opts.name is None and n == 0:
+            plt.title(opts.name)
         plt.grid(1)
