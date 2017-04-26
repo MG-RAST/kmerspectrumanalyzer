@@ -2,7 +2,6 @@
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
 import numpy as np
-from subprocess import call
 from numpy import array
 import os
 
@@ -12,16 +11,6 @@ import stratify
 
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1,1000], [10,1000], [100, 1000]], dtype="float")
-
-def run_indir(cmd, directory=None):
-    cwd = os.getcwd()
-    if directory:
-        os.chdir(directory)
-    else:
-        os.chdir(cwd)
-    call(cmd, shell=True)
-    os.chdir(cwd)
-    return()
 
 # fract(aa, epsilon, threshold)
 def test_calccumsum_one_full():

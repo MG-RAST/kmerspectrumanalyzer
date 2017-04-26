@@ -8,8 +8,9 @@ COLORLIST = [
     "m", "k", "BlueViolet", "Coral", "Chartreuse",
     "DarkGrey", "DeepPink", "LightPink"]
 
-import sys
+import sys,os
 import numpy as np
+from subprocess import call
 
 def run_indir(cmd, directory=None):
     cwd = os.getcwd()
