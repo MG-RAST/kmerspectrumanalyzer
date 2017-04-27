@@ -180,7 +180,7 @@ def test_file_npo():
 
 def test_counttoy():
     run_indir("countkmer21.sh toy.fa", TESTDIR)
-    assert os.path.isfile(TESTDIR+"toy.fa.21")
+    assert os.path.isfile(TESTDIR + "toy.fa.21")
 
 def test_counttoy_stream():
     run_indir("cat toy.fa | countkmer21.sh >  temp-toy-std.21", TESTDIR)
