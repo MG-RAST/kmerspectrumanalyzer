@@ -5,12 +5,13 @@ import numpy as np
 from numpy import array
 import os
 
-from rare import fract, calc_resampled_fraction, plotme
-from ksatools import run_indir
-import stratify
+from ksatools.rare import fract, calc_resampled_fraction, plotme
+from ksatools.ksatools import run_indir
+# import ksatools.stratify as stratify
 
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1,1000], [10,1000], [100, 1000]], dtype="float")
+TESTDIR = "data/"
 
 # fract(aa, epsilon, threshold)
 def test_calccumsum_one_full():
@@ -75,9 +76,11 @@ def test_plotme2():
 def test_plotme3():
     p = plotme(FIXTURE, "templabel", shaded=3)
     p = plotme(FIXTURE2, "templabel", shaded=3)
+
 def test_plotmeS():
     p = plotme(FIXTURE, "templabel", shaded=2, suppress=True)
     p = plotme(FIXTURE2, "templabel", shaded=2, suppress=True)
+
 def test_plotmeD():
     p = plotme(FIXTURE, "templabel", shaded=2, dump=True)
     p = plotme(FIXTURE2, "templabel", shaded=2, dump=True)
@@ -87,19 +90,36 @@ def test_plotmeT():
     p = plotme(FIXTURE2, "templabel", shaded=2, thresholdlist=[1,10,100])
 
 def test_cmdline1():
-    run_indir("rare.py -g 2 -l testlist0 -s -o list.rare.2s.png", '../test')
-    run_indir("rare.py -g 2 -l testlist0 -o list.rare.2s.png", '../test')
+    run_indir("rare.py -g 2 -l testlist0 -s -o testlist0.rare.2s.png", TESTDIR)
+    assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
+    os.remove(TESTDIR + "testlist0.rare.2s.png")
+    run_indir("rare.py -g 2 -l testlist0 -o testlist0.rare.2s.png", TESTDIR)
+    assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
+    os.remove(TESTDIR + "testlist0.rare.2s.png")
+
 # Take too long
 #    run_indir("rare.py -g 2 -l list -s -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
 #    run_indir("rare.py -g 2 -l list -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
 
 def test_cmdline2():
-    run_indir("stratify.py -l testlist0 -g 0 -o list.frac3.pdf", "../test")
-    run_indir("stratify.py -l testlist0 -g 1 -o list.size3.pdf", "../test")
-    run_indir("stratify.py -l testlist0 -g 0 -s -o list.frac3s.pdf", "../test")
-    run_indir("stratify.py -l testlist0 -g 1 -s -o list.size3s.pdf", "../test")
+    run_indir("stratify.py -l testlist0 -g 0 -o list.frac3.pdf", TESTDIR)
+    assert os.path.isfile(TESTDIR + "list.frac3.pdf")
+    os.remove(TESTDIR + "list.frac3.pdf")
+    run_indir("stratify.py -l testlist0 -g 1 -o list.size3.pdf", TESTDIR)
+    assert os.path.isfile(TESTDIR + "list.size3.pdf")
+    os.remove(TESTDIR + "list.size3.pdf")
+    run_indir("stratify.py -l testlist0 -g 0 -s -o list.frac3s.pdf", TESTDIR)
+    assert os.path.isfile(TESTDIR + "list.frac3s.pdf")
+    os.remove(TESTDIR + "list.frac3s.pdf")
+    run_indir("stratify.py -l testlist0 -g 1 -s -o list.size3s.pdf", TESTDIR)
+    assert os.path.isfile(TESTDIR + "list.size3s.pdf")
+    os.remove(TESTDIR + "list.size3s.pdf")
 
 def test_cmdline3():
-    run_indir("rare.py -g 3 -l testlist0 -s -o list.rare.2s.png",  "../test")
-    run_indir("rare.py -g 3 -l testlist0 -o list.rare.2s.png",  "../test")
+    run_indir("rare.py -g 3 -l testlist0 -s -o testlist0.rare.2s.png", TESTDIR)
+    assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
+    os.remove(TESTDIR + "testlist0.rare.2s.png")
+    run_indir("rare.py -g 3 -l testlist0 -o testlist0.rare.2s.png", TESTDIR)
+    assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
+    os.remove(TESTDIR + "testlist0.rare.2s.png")
 
