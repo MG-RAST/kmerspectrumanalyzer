@@ -184,7 +184,8 @@ def printstats(a, filename, filehandle=None, n=0):
     cn, c1, yd, yo, zd, zo = calccumsum(a)
     T = zo.max()
     j = cn / T
-    intermediate = - c1 * j * np.log(j)
+    j[np.where(j ==0)] = 1          # avoids zero-log warning, since products of j are used
+    intermediate = - c1 * cn / T * np.log(j)
     # allow calculation with 0 counts in some rows
     intermediate[np.isnan(intermediate)] = 0
     H = np.exp(sum(intermediate))   # antilog Shannon entropy

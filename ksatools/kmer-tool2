@@ -15,6 +15,13 @@ Output: kmer information, one of:
 import sys, os, glob, string, random
 import itertools, subprocess
 import argparse
+try:
+    # Python 2
+    from itertools import izip_longest
+except ImportError:
+    # Python 3
+    from itertools import zip_longest as izip_longest
+
 GB = 1073741824
 BUFFER = 2 * GB     # 2 Gb seq buffer
 TYPES = ['fasta', 'fastq', 'hash']
@@ -80,11 +87,12 @@ def split_fastq(in_fh, file_base, max_size):
     fhdl_set = [open(fhdl_name[curr_file], "w")]
     f = in_fh
     if True:
-        for lines in itertools.izip_longest(*[f]*4):
+        for lines in izip_longest(*[f]*4):
             if firstline == 1:
                 if lines[0][0] == "\n":
                     sys.exit(1)
                 assert lines[0][0] == "@", "Wrong data type!  Error splitting FASTQ!"
+                assert lines[2][0] == "+", "Wrong data type!  Error splitting FASTQ!"
                 firstline = 0
             if (curr_size + curr_buff) >= max_size:
                 fhdl_set[curr_file].write(strbuffer)
