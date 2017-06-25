@@ -12,5 +12,5 @@ setup(name='ksatools',
      )
 
 if sys.version_info < (2, 7):
-      sys.stderr.write("ERROR: ksatools requires Python 2.7 " +
+      sys.stderr.write("ERROR: ksatools requires Python 2.7 ")
 
