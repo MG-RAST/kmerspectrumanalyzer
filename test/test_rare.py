@@ -7,7 +7,6 @@ import os
 
 from ksatools.rare import fract, calc_resampled_fraction, plotme
 from ksatools.ksatools import run_indir
-# import ksatools.stratify as stratify
 
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1,1000], [10,1000], [100, 1000]], dtype="float")
@@ -90,16 +89,16 @@ def test_plotmeT():
     p = plotme(FIXTURE2, "templabel", shaded=2, thresholdlist=[1,10,100])
 
 def test_cmdline1():
-    run_indir("rare.py -g 2 -l testlist0 -s -o testlist0.rare.2s.png", TESTDIR)
+    run_indir("rarify.py -g 2 -l testlist0 -s -o testlist0.rare.2s.png", TESTDIR)
     assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
     os.remove(TESTDIR + "testlist0.rare.2s.png")
-    run_indir("rare.py -g 2 -l testlist0 -o testlist0.rare.2s.png", TESTDIR)
+    run_indir("rarify.py -g 2 -l testlist0 -o testlist0.rare.2s.png", TESTDIR)
     assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
     os.remove(TESTDIR + "testlist0.rare.2s.png")
 
 # Take too long
-#    run_indir("rare.py -g 2 -l list -s -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
-#    run_indir("rare.py -g 2 -l list -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
+#    run_indir("rarify.py -g 2 -l list -s -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
+#    run_indir("rarify.py -g 2 -l list -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
 
 def test_cmdline2():
     run_indir("stratify.py -l testlist0 -g 0 -o testlist0.frac3.pdf", TESTDIR)
@@ -116,10 +115,10 @@ def test_cmdline2():
     os.remove(TESTDIR + "testlist0.size3s.pdf")
 
 def test_cmdline3():
-    run_indir("rare.py -g 3 -l testlist0 -s -o testlist0.rare.2s.png", TESTDIR)
+    run_indir("rarify.py -g 3 -l testlist0 -s -o testlist0.rare.2s.png", TESTDIR)
     assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
     os.remove(TESTDIR + "testlist0.rare.2s.png")
-    run_indir("rare.py -g 3 -l testlist0 -o testlist0.rare.2s.png", TESTDIR)
+    run_indir("rarify.py -g 3 -l testlist0 -o testlist0.rare.2s.png", TESTDIR)
     assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
     os.remove(TESTDIR + "testlist0.rare.2s.png")
 

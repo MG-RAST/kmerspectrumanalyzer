@@ -11,7 +11,7 @@ from ksatools.ksatools import calccumsum, loadfile, renyispectrum, pad, smoothsp
 
 import numpy as np
 from numpy import array
-#import ksatools.plotkmerspectrum
+
 import os
 
 FIXTURE1 = np.array([[2000, 1000000],
@@ -141,9 +141,15 @@ def test_cmdline_4():
 
 def test_empty():
     run_indir("echo | countkmer21.sh > test-emptyinputy.21", TESTDIR)
+#   creates an empty file
+    assert os.stat(TESTDIR + "test-emptyinputy.21").st_size == 0
+    os.remove(TESTDIR + "test-emptyinputy.21")
 
 def test_empty2():
     run_indir("echo -n | countkmer21.sh > test-emptyinputx.21", TESTDIR)
+#   creates an empty file
+    assert os.stat(TESTDIR + "test-emptyinputx.21").st_size == 0
+    os.remove(TESTDIR + "test-emptyinputx.21")
 
 def test_list1():
     run_indir("plotkmerspectrum.py -l testlist1", TESTDIR)
@@ -169,22 +175,32 @@ def test_options():
 def test_file_stats():
     run_indir("plotkmerspectrum.py stats.txt", TESTDIR)
     assert os.path.isfile(TESTDIR+"stats.txt.6.pdf")
+    os.remove(TESTDIR+"stats.txt.6.pdf")
 
 def test_file_contigstats():
     run_indir("plotkmerspectrum.py contigstats.txt", TESTDIR)
     assert os.path.isfile(TESTDIR+"contigstats.txt.6.pdf")
+    os.remove(TESTDIR+"contigstats.txt.6.pdf")
 
 def test_file_npo():
     run_indir("plotkmerspectrum.py test_1.npo", TESTDIR)
     assert os.path.isfile(TESTDIR+"test_1.npo.6.pdf")
+    os.remove(TESTDIR+"test_1.npo.6.pdf")
+
+def test_emptyfile():
+    run_indir("plotkmerspectrum.py  emptyfile", TESTDIR)
+    assert not os.path.isfile(TESTDIR + "emptyfile.21")
 
 def test_counttoy():
     run_indir("countkmer21.sh toy.fa", TESTDIR)
     assert os.path.isfile(TESTDIR + "toy.fa.21")
+    os.remove(TESTDIR + "toy.fa.21")
+
 
 def test_counttoy_stream():
     run_indir("cat toy.fa | countkmer21.sh >  temp-toy-std.21", TESTDIR)
     assert os.path.isfile(TESTDIR+"temp-toy-std.21")
+    os.remove(TESTDIR+"temp-toy-std.21")
 
 #def test_cmdline_getmgr():
 #    run_indir("plotkmerspectrum.py -l mgrlist -i -g 6 -t mgm", "../test")
