@@ -4,7 +4,6 @@
 import numpy as np
 import sys, os
 import scipy.stats
-import ksatools.ksatools 
 import matplotlib as mpl
 from optparse import OptionParser
 
@@ -82,7 +81,7 @@ if __name__ == "__main__":
                         selectedcolor = a[2]
                     else:
                         selectedcolor = COLORS[n%len(COLORS)]
-                    spectrum = ksatools.loadfile(filename)
+                    spectrum = loadfile(filename)
                     if spectrum != []:
                         plotme(spectrum, label=a[1], color=selectedcolor,
                                thresholdlist=listofthresholds,
@@ -95,7 +94,7 @@ if __name__ == "__main__":
         for v in ARGS:
             print("#", v)
             filename = v
-            spectrum = ksatools.loadfile(filename)
+            spectrum = loadfile(filename)
             plotme(spectrum, filename, thresholdlist=listofthresholds,
                    color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS), shaded=SHADED)
             n = n + 1

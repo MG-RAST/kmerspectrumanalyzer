@@ -26,7 +26,7 @@ def plotstratifiedfracs(labels, spectra):
         spectrum = spectra[i]
         sys.stderr.write("Stratifying " + label + "...\n")
         BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
-        band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
+        band, frac, size = stratify(spectrum, bands=BANDS)
         bands.append(band)
         fracs.append(frac)
         sizes.append(size)
@@ -64,7 +64,7 @@ def plotstratifiedsizes(labels, spectra):
         label = labels[i]
         spectrum = spectra[i]
         sys.stderr.write("Stratifying "+label+"...\n")
-        band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
+        band, frac, size = stratify(spectrum, bands=BANDS)
         bands.append(band)
         fracs.append(frac)
         sizes.append(size)
@@ -93,7 +93,7 @@ def summarizestrata(labels, spectra):
     '''
     BANDS = [1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000, 100000, 300000, 1000000]
     for spectrum, label in zip(spectra, labels):
-        band, frac, size = ksatools.stratify(spectrum, bands=BANDS)
+        band, frac, size = stratify(spectrum, bands=BANDS)
         bandsbanner = map(str, BANDS)
         print( "#name\t" + "\t".join(bandsbanner) + "\t" + "\t".join(bandsbanner))
         print( label+"\t" + "\t".join(map(str, frac)) + "\t",)
@@ -134,6 +134,8 @@ if __name__ == '__main__':
 
     (opts, args) = parser.parse_args()
     writetype = opts.writetype
+    if opts.filelist == None:
+        sys.exit(usage) 
     assert writetype == "png" or writetype == "pdf" or writetype == "eps"
     if opts.outfile:
         imagefilename = opts.outfile
