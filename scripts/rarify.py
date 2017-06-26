@@ -4,11 +4,12 @@
 import numpy as np
 import sys, os
 import scipy.stats
-import ksatools
+import ksatools.ksatools 
 import matplotlib as mpl
 from optparse import OptionParser
 
-from ksatools.rare import fract, rich, calc_resampled_fraction, calc_resampled richness, plotme 
+from ksatools.rare import fract, rich, calc_resampled_fraction, calc_resampled_richness, plotme 
+from ksatools.ksatools import loadfile
 
 if __name__ == "__main__":
     PARSER = OptionParser("rare.py [options] countfilaname [countfilename2...]\n   -- computationally rarefy kmer spectra")

@@ -8,7 +8,7 @@ from optparse import OptionParser
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
-from ksatools import pad
+from ksatools.ksatools import pad
 
 def weightedleastsquares(parameters, yvalues, xvalues, order=None):
     '''Returns vector of weighted residuals.  Used for initial fits.'''
