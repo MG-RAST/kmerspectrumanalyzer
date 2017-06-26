@@ -11,8 +11,12 @@ setup(name='ksatools',
       author_email='trimble@anl.gov',
       url='https://github.com/wltrimbl/kmerspectrumanalyzer',
       packages=['ksatools'],
+      scripts=['scripts//kmerspectrumanalyzer.py', 'scripts/plotkmerspectrum.py', 'scripts/rare.py', 
+               'scripts/countkmer15.sh', 'scripts/countkmer21.sh', 'scripts/countkmers15.sh', 
+               'scripts/countkmers21.sh', 'scripts/kmer-tool2'],
      )
 
+
 if sys.version_info < (2, 7):
-      sys.stderr.write("ERROR: ksatools requires Python 2.7 ")
+      sys.stderr.write('ERROR: ksatools requires Python 2.7 or later')
 
