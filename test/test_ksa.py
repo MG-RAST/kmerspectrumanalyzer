@@ -7,9 +7,9 @@
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
 
-from ksatools.ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, printstratify, makegraphs, run_indir
+from ksatools.ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, printstratify, makegraphs, run_indir, show_pretty_graphs
 
-import plotkmerspectrumanalyzer
+#import plotkmerspectrumanalyzer
 
 import numpy as np
 from numpy import array
@@ -21,6 +21,8 @@ FIXTURE1 = np.array([[2000, 1000000],
                      [200000, 100],
                      [1000000, 1],
                      [2000000, 1]], dtype="float")
+FIXTURE2 = loadfile("repeatresolutionpaper/counts-validationgenomedata/SRR000333.fastq.21")
+
 TESTDIR = "test/data/"
 
 def test_calccumsum_pass():
@@ -215,3 +217,12 @@ def test_title():
 
 #def test_cmdline_getmgr():
 #    run_indir("plotkmerspectrum.py -l mgrlist -i -g 6 -t mgm", "../test")
+
+def test_makegraphs_list():
+    p = makegraphs([FIXTURE1, FIXTURE2], ["FIXTURE1", "SRR000331"])
+
+def test_makegraphs_list_5():
+    p = makegraphs([FIXTURE1, FIXTURE2], ["FIXTURE1", "SRR000331"], option=5)
+
+def test_show_pretty_graphs():
+    p = show_pretty_graphs([FIXTURE1, FIXTURE2], ["FIXTURE1", "SRR000331"])

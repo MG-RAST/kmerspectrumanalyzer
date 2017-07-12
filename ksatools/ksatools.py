@@ -289,8 +289,19 @@ def stratify(spectrum, bands=None):
         size.append(np.sum(y[n >= b]))
     return bands, frac, size
 
-def makegraphs(spectrum, filename, option=6, label=None, n=0,
-               dump=False, opts=None, colorlist=COLORLIST, 
+def makegraphs(*args, **kwargs):
+    print(args)
+    spectra, filenames = args
+    if type(spectra) is list:
+        assert type(filenames) is list
+        assert len(filenames) == len(spectra)
+        for i, (spect, filen) in enumerate(zip(spectra, filenames)):
+            makegraph(spect, filen, n=i,  **kwargs)
+    else:
+        makegraph(*args, **kwargs)
+
+def makegraph(spectrum, filename, option=6, label=None, n=0,
+               dump=False, opts=None, colorlist=COLORLIST,
                stylelist=None):
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
@@ -342,6 +353,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
     elif option == 3:
         plot1, p, q = (plt.semilogy, b_zo / No, b_cn)
         xlabel, ylabel = ("fraction of observed data", "kmer abundance")
+        plt.xlim((0, 1))
         legendloc = "lower left"
     elif option == 4: # Fraction of distinct kmers vs abundance  NOT RECOMMENDED
         plot1, p, q = (plt.semilogy, b_zd / Nd, b_cn)
@@ -433,6 +445,7 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         plot1, p, q = (plt.plot, b_zo / No, b_cn)
         xlabel, ylabel = ("fraction of observed data", "kmer abundance")
         legendloc = "lower left"
+        plt.xlim((0, 1))
     elif option == 30:
         lam = np.arange(.01, 10, .01)
         entropyspectrum = np.power(10, renyispectrum(lam, spectrum))
@@ -493,3 +506,12 @@ def makegraphs(spectrum, filename, option=6, label=None, n=0,
         if hasattr(opts, "name") and not opts.name is None and n == 0:
             plt.title(opts.name)
         plt.grid(1)
+
+def show_pretty_graphs(spectra, filenames, labels=None):
+    import matplotlib.pyplot as plt
+    plt.subplot(131)
+    makegraphs(spectra, filenames, option=6)
+    plt.subplot(132)
+    makegraphs(spectra, filenames, option=5)
+    plt.subplot(133)
+    makegraphs(spectra, filenames, option=3)

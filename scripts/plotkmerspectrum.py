@@ -32,7 +32,7 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
             makegraphs(
-                spectrum, filename, opt, label, n=n, dump=opts.dump, 
+                spectrum, filename, option=opt, label=label, n=n, dump=opts.dump,
                 opts=opts, colorlist=colorlist, stylelist=stylelist)
 #            sys.stderr.write("Printing stats in logfile %s %d\n" %
 #                (opts.logfile, n))
@@ -152,7 +152,7 @@ if __name__ == '__main__':
                         stylelist.append((a[3]))
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
                     graphcount = main(
-                        a[0], graphtype, label=a[1], n=graphcount, 
+                        a[0], graphtype, label=a[1], n=graphcount,
                         opts=opts, colorlist=colorlist, stylelist=stylelist)
     else:
         for f in args:
