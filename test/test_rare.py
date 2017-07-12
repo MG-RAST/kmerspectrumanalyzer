@@ -8,9 +8,11 @@ import os
 from ksatools.rare import fract, calc_resampled_fraction, plotme
 from ksatools.ksatools import run_indir
 
+import rarify
+
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1,1000], [10,1000], [100, 1000]], dtype="float")
-TESTDIR = "data/"
+TESTDIR = "test/data/"
 
 # fract(aa, epsilon, threshold)
 def test_calccumsum_one_full():
@@ -88,7 +90,7 @@ def test_plotmeT():
     p = plotme(FIXTURE, "templabel", shaded=2, thresholdlist=[1,10,100])
     p = plotme(FIXTURE2, "templabel", shaded=2, thresholdlist=[1,10,100])
 
-def test_cmdline1():
+def test_cmdline2():
     run_indir("rarify.py -g 2 -l testlist0 -s -o testlist0.rare.2s.png", TESTDIR)
     assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
     os.remove(TESTDIR + "testlist0.rare.2s.png")
@@ -100,7 +102,7 @@ def test_cmdline1():
 #    run_indir("rarify.py -g 2 -l list -s -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
 #    run_indir("rarify.py -g 2 -l list -o list.rare.2s.png", '../repeatresolutionpaper/counts-validationgenomedata')
 
-def test_cmdline2():
+def test_cmdline1():
     run_indir("stratify.py -l testlist0 -g 0 -o testlist0.frac3.pdf", TESTDIR)
     assert os.path.isfile(TESTDIR + "testlist0.frac3.pdf")
     os.remove(TESTDIR + "testlist0.frac3.pdf")
@@ -122,3 +124,7 @@ def test_cmdline3():
     assert os.path.isfile(TESTDIR + "testlist0.rare.2s.png")
     os.remove(TESTDIR + "testlist0.rare.2s.png")
 
+def test_cmdline_4():
+    run_indir("rarify.py -g 4 -l testlist0 -o testlist0.rare.4.png", TESTDIR)
+    assert os.path.isfile(TESTDIR + "testlist0.rare.4.png")
+    os.remove(TESTDIR + "testlist0.rare.4.png")

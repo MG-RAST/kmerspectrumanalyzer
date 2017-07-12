@@ -8,7 +8,7 @@ from ksatools.ksatools import loadfile, calcmedian, calccumsum
 
 import numpy as np
 from numpy import array
-TESTDIR = "data/"
+TESTDIR = "test/data/"
 
 def test_01():
     data = loadfile(TESTDIR + "test01.21")

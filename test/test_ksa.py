@@ -9,6 +9,8 @@ from nose.tools import assert_equal, assert_almost_equal, assert_true, \
 
 from ksatools.ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, printstratify, makegraphs, run_indir
 
+import plotkmerspectrumanalyzer
+
 import numpy as np
 from numpy import array
 
@@ -19,7 +21,7 @@ FIXTURE1 = np.array([[2000, 1000000],
                      [200000, 100],
                      [1000000, 1],
                      [2000000, 1]], dtype="float")
-TESTDIR = "data/"
+TESTDIR = "test/data/"
 
 def test_calccumsum_pass():
     data = FIXTURE1
@@ -110,7 +112,7 @@ def test_printstratify():
     p = printstratify(FIXTURE1)
 
 def test_makesgraphs():
-    for i in range(-3,27):
+    for i in range(-3,29):
         print("testing visualization {:d}".format(i))
         p = makegraphs(FIXTURE1, "tempfilename", option = i)
 
@@ -196,11 +198,20 @@ def test_counttoy():
     assert os.path.isfile(TESTDIR + "toy.fa.21")
     os.remove(TESTDIR + "toy.fa.21")
 
-
 def test_counttoy_stream():
     run_indir("cat toy.fa | countkmer21.sh >  temp-toy-std.21", TESTDIR)
     assert os.path.isfile(TESTDIR+"temp-toy-std.21")
     os.remove(TESTDIR+"temp-toy-std.21")
+
+def test_xlabel():
+    run_indir("plotkmerspectrum.py --xlabel xlabel --ylabel ylabel fak-123", TESTDIR)
+    assert os.path.isfile(TESTDIR + "fak-123.6.pdf")
+    os.remove(TESTDIR + "fak-123.6.pdf")
+
+def test_title():
+    run_indir("plotkmerspectrum.py -n 'fak-123 spectrum' fak-123", TESTDIR)
+    assert os.path.isfile(TESTDIR + "fak-123.6.pdf")
+    os.remove(TESTDIR + "fak-123.6.pdf")
 
 #def test_cmdline_getmgr():
 #    run_indir("plotkmerspectrum.py -l mgrlist -i -g 6 -t mgm", "../test")
