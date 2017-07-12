@@ -2,16 +2,18 @@
 '''Tool to generate computationally-rarefied graphs kmer spectra'''
 
 import numpy as np
-import sys, os
+import sys
+import os
 import scipy.stats
 import matplotlib as mpl
 from optparse import OptionParser
 
-from ksatools.rare import fract, rich, calc_resampled_fraction, calc_resampled_richness, plotme 
+from ksatools.rare import fract, rich, calc_resampled_fraction, calc_resampled_richness, plotme
 from ksatools.ksatools import loadfile
 
 if __name__ == "__main__":
-    PARSER = OptionParser("rare.py [options] countfilaname [countfilename2...]\n   -- computationally rarefy kmer spectra")
+    PARSER = OptionParser(
+        "rare.py [options] countfilaname [countfilename2...]\n   -- computationally rarefy kmer spectra")
     PARSER.add_option("-i", "--interactive", dest="interactive",
                       action="store_true", default=False,
                       help="interactive mode--draw window")
@@ -32,8 +34,9 @@ if __name__ == "__main__":
     (OPTS, ARGS) = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
     if len(ARGS) == 0 and not OPTS.filelist:
-       sys.stderr.write("Error, requires one or more kmer histogram input filenames.\nrare.py -h lists options\n")
-       sys.exit(1)
+        sys.stderr.write(
+            "Error, requires one or more kmer histogram input filenames.\nrare.py -h lists options\n")
+        sys.exit(1)
     n = 0
     if not OPTS.interactive:
         mpl.use("Agg")
@@ -80,7 +83,7 @@ if __name__ == "__main__":
                     if len(a) == 3:
                         selectedcolor = a[2]
                     else:
-                        selectedcolor = COLORS[n%len(COLORS)]
+                        selectedcolor = COLORS[n % len(COLORS)]
                     spectrum = loadfile(filename)
                     if spectrum != []:
                         plotme(spectrum, label=a[1], color=selectedcolor,
@@ -99,5 +102,6 @@ if __name__ == "__main__":
                    color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS), shaded=SHADED)
             n = n + 1
 #        plt.legend(loc="upper left")
-        sys.stderr.write("Warning! printing graphs in default filename " + OUTFILE + "\n")
+        sys.stderr.write(
+            "Warning! printing graphs in default filename " + OUTFILE + "\n")
         plt.savefig(OUTFILE)

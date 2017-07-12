@@ -11,6 +11,7 @@ from optparse import OptionParser
 
 import ksatools
 
+
 def plotstratifiedfracs(labels, spectra):
     '''Given list of labels and list of spectra, splits spectra
     up and produces bar plot of the stratified spectra's usage
@@ -31,15 +32,15 @@ def plotstratifiedfracs(labels, spectra):
         fracs.append(frac)
         sizes.append(size)
     for l in range(len(labels)):
-        for i in range(len(bands[0])-1):
+        for i in range(len(bands[0]) - 1):
             if l == 0:
-                plt.barh(l, (fracs[l][i]-fracs[l][i+1]),
-                         left=(fracs[l][i+1]), color=colors[i],
-                         label=str(bands[0][i])+"-"+str(bands[0][i+1]),
+                plt.barh(l, (fracs[l][i] - fracs[l][i + 1]),
+                         left=(fracs[l][i + 1]), color=colors[i],
+                         label=str(bands[0][i]) + "-" + str(bands[0][i + 1]),
                          alpha=1.0, zorder=0)
             else:
-                plt.barh(l, (fracs[l][i]-fracs[l][i+1]),
-                         left=(fracs[l][i+1]), color=colors[i],
+                plt.barh(l, (fracs[l][i] - fracs[l][i + 1]),
+                         left=(fracs[l][i + 1]), color=colors[i],
                          alpha=1.0, zorder=0)
     pos = np.arange(len(labels)) + 0.5
     plt.yticks(pos, labels)
@@ -48,6 +49,7 @@ def plotstratifiedfracs(labels, spectra):
     if not opts.suppresslegend:
         plt.legend(loc="upper left")
     plt.show()
+
 
 def plotstratifiedsizes(labels, spectra):
     '''Given list of labels and spectra, produces stacked bar graphs
@@ -63,20 +65,20 @@ def plotstratifiedsizes(labels, spectra):
     for i in range(len(labels)):
         label = labels[i]
         spectrum = spectra[i]
-        sys.stderr.write("Stratifying "+label+"...\n")
+        sys.stderr.write("Stratifying " + label + "...\n")
         band, frac, size = stratify(spectrum, bands=BANDS)
         bands.append(band)
         fracs.append(frac)
         sizes.append(size)
     for l in range(len(labels)):
-        for i in range(len(bands[0])-1):
+        for i in range(len(bands[0]) - 1):
             sizec = np.array(sizes[l])
             if l == 0:
-                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]),
-                         color=colors[i], label=str(bands[0][i])+
-                         "-"+str(bands[0][i+1]), log=True)
+                plt.barh(l, (sizec[i + 1] - sizec[i]), left=(sizec[i]),
+                         color=colors[i], label=str(bands[0][i]) +
+                         "-" + str(bands[0][i + 1]), log=True)
             else:
-                plt.barh(l, (sizec[i+1]-sizec[i]), left=(sizec[i]),
+                plt.barh(l, (sizec[i + 1] - sizec[i]), left=(sizec[i]),
                          color=colors[i], log=True)
     pos = np.arange(len(labels)) + 0.5
     plt.xlim((1, 1E9))
@@ -87,18 +89,22 @@ def plotstratifiedsizes(labels, spectra):
         plt.legend()
     plt.show()
 
+
 def summarizestrata(labels, spectra):
     '''Prints one-line table-style summary of cumulative fractions and
     sizes
     '''
-    BANDS = [1, 3, 10, 30, 100, 300, 1000, 3000, 10000, 30000, 100000, 300000, 1000000]
+    BANDS = [1, 3, 10, 30, 100, 300, 1000, 3000,
+             10000, 30000, 100000, 300000, 1000000]
     for spectrum, label in zip(spectra, labels):
         band, frac, size = stratify(spectrum, bands=BANDS)
         bandsbanner = map(str, BANDS)
-        print( "#name\t" + "\t".join(bandsbanner) + "\t" + "\t".join(bandsbanner))
-        print( label+"\t" + "\t".join(map(str, frac)) + "\t",)
-        print( "" + "\t".join(map(str, size)))
+        print("#name\t" + "\t".join(bandsbanner) +
+              "\t" + "\t".join(bandsbanner))
+        print(label + "\t" + "\t".join(map(str, frac)) + "\t",)
+        print("" + "\t".join(map(str, size)))
     return
+
 
 if __name__ == '__main__':
     usage = '''stratify.py [options] -l <list of target files, labels>
@@ -135,13 +141,14 @@ if __name__ == '__main__':
     (opts, args) = parser.parse_args()
     writetype = opts.writetype
     if opts.filelist == None:
-        sys.exit(usage) 
+        sys.exit(usage)
     assert writetype == "png" or writetype == "pdf" or writetype == "eps"
     if opts.outfile:
         imagefilename = opts.outfile
     else:
         imagefilename = opts.filelist + "." + opts.writetype
-        sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
+        sys.stderr.write("Warning, using default filename %s\n" %
+                         (imagefilename,))
     # only invoke interactive backend if requested with -i
     # this stabilizes behavior on non-interactive terminals
     if not opts.interactive:
@@ -156,7 +163,8 @@ if __name__ == '__main__':
     spectra = []
     labels = []
     if opts.filelist:
-        assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
+        assert os.path.isfile(
+            opts.filelist), "File %s does not exist" % opts.filelist
         IN_FILE = open(opts.filelist, "r")
         for line in IN_FILE:
             if line[0] != "#":

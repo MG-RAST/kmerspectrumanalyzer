@@ -11,11 +11,13 @@ import ksatools
 import matplotlib as mpl
 from optparse import OptionParser
 
+
 def getcolor(index, colorlist):
     if colorlist == []:
         colorlist = COLORLIST
     l = index % len(colorlist)
     return colorlist[l]
+
 
 def plotme(data, graphtype=None, label=None, n=0, opts=None, color=None, style="-", scale=1):
     import matplotlib.pyplot as plt
@@ -25,27 +27,36 @@ def plotme(data, graphtype=None, label=None, n=0, opts=None, color=None, style="
     if label == "":
         label = None
     if graphtype == "linear" or graphtype == None:
-#        if opts.markers:
-#            pA = plt.plot(data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.plot(s * data[:, 0], data[:, 1], color=color, label=label, linestyle=style)
+        #        if opts.markers:
+        #            pA = plt.plot(data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
+        pA = plt.plot(s * data[:, 0], data[:, 1],
+                      color=color, label=label, linestyle=style)
         legendloc = "upper right"
     if graphtype == "semilogy":
         if opts.dot:
-            pA = plt.semilogy(s*data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.semilogy(s*data[:, 0], data[:, 1], color=color, label=None, linestyle=style, linewidth=opts.thickness)
+            pA = plt.semilogy(
+                s * data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
+        pA = plt.semilogy(s * data[:, 0], data[:, 1], color=color,
+                          label=None, linestyle=style, linewidth=opts.thickness)
         legendloc = "upper right"
     if graphtype == "semilogx":
         if opts.dot:
-            pA = plt.semilogx(data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.semilogx(s*data[:, 0], data[:, 1], color=color, label=label, linestyle=style, linewidth=opts.thickness)
+            pA = plt.semilogx(data[:, 0], data[:, 1], ".",
+                              color=color, label=label, linestyle=style)
+        pA = plt.semilogx(s * data[:, 0], data[:, 1], color=color,
+                          label=label, linestyle=style, linewidth=opts.thickness)
         legendloc = "upper right"
     if graphtype == "loglog":
-        pA = plt.loglog(s*data[:, 0], data[:, 1], ".", color=color, label=label, linestyle=style)
-        pA = plt.loglog(s*data[:, 0], data[:, 1], color=color, label=None, linestyle=style, linewidth=opts.thickness)
+        pA = plt.loglog(s * data[:, 0], data[:, 1], ".",
+                        color=color, label=label, linestyle=style)
+        pA = plt.loglog(s * data[:, 0], data[:, 1], color=color,
+                        label=None, linestyle=style, linewidth=opts.thickness)
         legendloc = "upper right"
     if graphtype == "diff":
-        pA = plt.plot(data[1:, 0], np.exp(np.diff(np.log(data[:, 1])))/data[1:, 0], ".", color=color, label=label, linestyle=style)
-        pA = plt.plot(data[1:, 0], np.exp(np.diff(np.log(data[:, 1])))/data[1:, 0], color=color, label=Nonte, linestyle=style)
+        pA = plt.plot(data[1:, 0], np.exp(np.diff(np.log(data[:, 1]))) /
+                      data[1:, 0], ".", color=color, label=label, linestyle=style)
+        pA = plt.plot(data[1:, 0], np.exp(np.diff(
+            np.log(data[:, 1]))) / data[1:, 0], color=color, label=Nonte, linestyle=style)
         legendloc = "upper right"
     if not opts.suppress:
         plt.legend()
@@ -57,6 +68,7 @@ def plotme(data, graphtype=None, label=None, n=0, opts=None, color=None, style="
     plt.xlabel(opts.xlabel, fontsize=18)
     plt.ylabel(opts.ylabel, fontsize=18)
     plt.grid(1)
+
 
 if __name__ == '__main__':
     usage = "graphit.py <options> <arguments>"
@@ -152,4 +164,3 @@ if __name__ == '__main__':
     else:
         sys.stderr.write("Printing graphs in " + OPTS.outfile + "\n")
         plt.savefig(OPTS.outfile)
-

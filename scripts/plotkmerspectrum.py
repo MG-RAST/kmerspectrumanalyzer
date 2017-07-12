@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 '''Tool to generate graphs of kmer spectra'''
 
-import sys, os
+import sys
+import os
 import numpy as np
 import matplotlib as mpl
 from optparse import OptionParser
 
 from ksatools.ksatools import getmgrkmerspectrum, printstats, loadfile, makegraphs
+
 
 def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
          stylelist=None):
@@ -43,6 +45,7 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
     else:
         sys.stderr.write("Error with dataset %s\n" % filename)
     return n
+
 
 if __name__ == '__main__':
     usage = '''usage: plotkmerspectrum.py [options] <datafile> [<datafile2> <datafile3>...]
@@ -116,7 +119,8 @@ if __name__ == '__main__':
         imagefilename = "%s.%d.%s" % (opts.filelist, graphtype, writetype)
     else:
         imagefilename = "%s.%d.%s" % (args[0], graphtype, writetype)
-        sys.stderr.write("Warning, using default filename %s\n" % (imagefilename,))
+        sys.stderr.write("Warning, using default filename %s\n" %
+                         (imagefilename,))
     # only invoke interactive backend if requested with -i
     # this stabilizes behavior on non-interactive terminals
     if not opts.interactive:
@@ -138,7 +142,8 @@ if __name__ == '__main__':
     colorlist = []
     stylelist = []
     if opts.filelist:
-        assert os.path.isfile(opts.filelist), "File %s does not exist" % opts.filelist
+        assert os.path.isfile(
+            opts.filelist), "File %s does not exist" % opts.filelist
         IN_FILE = open(opts.filelist, "r")
         for line in IN_FILE:
             if line[0] != "#":

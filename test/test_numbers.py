@@ -10,9 +10,9 @@ import numpy as np
 from numpy import array
 TESTDIR = "test/data/"
 
+
 def test_01():
     data = loadfile(TESTDIR + "test01.21")
     cn, c1, yd, yo, zd, zo = calccumsum(data)
-   
-    pass
 
+    pass

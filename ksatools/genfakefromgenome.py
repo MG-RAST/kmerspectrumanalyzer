@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
-import sys, os
+import sys
+import os
 from scipy import stats
 import numpy as np
 from optparse import OptionParser
+
 
 def count(x):
     '''Adds list of elements to a dictionary counting the occurrences of each'''
@@ -15,26 +17,31 @@ def count(x):
             countdict[element] = 1
     return countdict
 
+
 def nbinompdf(xvalues, poissonlambda, alpha):
     '''Negative binomial with lambda, alpha parameterization.'''
-    return np.exp(stats.nbinom.logpmf(xvalues, 1/alpha, 1 / (1 + poissonlambda * alpha)))
+    return np.exp(stats.nbinom.logpmf(xvalues, 1 / alpha, 1 / (1 + poissonlambda * alpha)))
+
 
 def nbinomrvs(poissonlambda, alpha, size=1):
     '''Negative binomial with lambda, alpha parameterization.'''
-    return       stats.nbinom.rvs(1/alpha, 1 / (1 + poissonlambda * alpha), size=size)
+    return stats.nbinom.rvs(1 / alpha, 1 / (1 + poissonlambda * alpha), size=size)
+
 
 if __name__ == '__main__':
     usage = "usage: %prog -i <input sequence file> <coverage>"
     parser = OptionParser(usage)
-    parser.add_option("-i", "--input", dest="infile", default=None, help="Input genome spectrum.")
-    parser.add_option("-s", "--shape", dest="shape", default=.04, help="Shape parameter.")
+    parser.add_option("-i", "--input", dest="infile",
+                      default=None, help="Input genome spectrum.")
+    parser.add_option("-s", "--shape", dest="shape",
+                      default=.04, help="Shape parameter.")
 
     (opts, args) = parser.parse_args()
     coverage = float(args[0])
     filename = opts.infile
     if not (filename and os.path.isfile(filename)):
         parser.error("Missing input file")
-    sys.stderr.write("Generating fake data from %s\n"%filename)
+    sys.stderr.write("Generating fake data from %s\n" % filename)
     shap = float(opts.shape)
     m = []
     for l in open(opts.infile):
@@ -46,7 +53,7 @@ if __name__ == '__main__':
             h = l.split(" ")
             n = int(h[0])
         a_n = int(h[1])
-        m.extend(nbinomrvs(coverage * n, shap/n, size=a_n))
+        m.extend(nbinomrvs(coverage * n, shap / n, size=a_n))
     h = count(m)
 
     for i in sorted(h.keys()):

@@ -12,8 +12,12 @@ Output: kmer information, one of:
        6: ratio-to-largest
 """
 
-import sys, os, glob, string, random
-import itertools, subprocess
+import sys
+import os
+import glob
+import string
+import random
+import subprocess
 import argparse
 try:
     # Python 2
@@ -27,18 +31,22 @@ BUFFER = 2 * GB     # 2 Gb seq buffer
 TYPES = ['fasta', 'fastq', 'hash']
 FORMATS = ['hash', 'stats', 'dump', 'histo']
 
+
 def run_cmd(cmd):
     '''Wrapper for Popen, returns stdout, stderr'''
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
     if proc.returncode != 0:
         raise IOError("%s\n%s" % (" ".join(cmd), stderr))
     return stdout.decode("ascii"), stderr.decode("ascii")
 
+
 def random_str(size=6):
     '''Retruns random alphanumeric sequence for temporary filenames.'''
     chars = string.ascii_letters + string.digits
     return ''.join(random.choice(chars) for x in range(size))
+
 
 def split_fasta(in_fh, file_base, max_size):
     '''Splits fasta file into files of approx max_size bytes.
@@ -76,6 +84,7 @@ def split_fasta(in_fh, file_base, max_size):
         fh.close()
     return fhdl_name
 
+
 def split_fastq(in_fh, file_base, max_size):
     '''Splits fastq file into files of approx max_size bytes.'''
     curr_size = 0
@@ -87,7 +96,7 @@ def split_fastq(in_fh, file_base, max_size):
     fhdl_set = [open(fhdl_name[curr_file], "w")]
     f = in_fh
     if True:
-        for lines in izip_longest(*[f]*4):
+        for lines in izip_longest(*[f] * 4):
             if firstline == 1:
                 if lines[0][0] == "\n":
                     sys.exit(1)
@@ -116,6 +125,7 @@ def split_fastq(in_fh, file_base, max_size):
         fh.close()
     return fhdl_name
 
+
 def split_seq_file(seq_fh, max_size, seq_type, tmpdir):
     '''splits sequence file by calling split_fasta or split_fastq.
     Returns list of filenames resulting from the split.'''
@@ -125,6 +135,7 @@ def split_seq_file(seq_fh, max_size, seq_type, tmpdir):
     elif seq_type == 'fastq':
         file_set = split_fastq(seq_fh, file_base, max_size)
     return file_set
+
 
 def merge_hash_set(hash_set, tmpdir):
     ''' Runs jellyfish merge on a list of hash files.  Returns a filename
@@ -145,6 +156,7 @@ def merge_hash_set(hash_set, tmpdir):
         sys.exit(0)
     return merge_file
 
+
 def ranked_histo(data_str):
     sum_col_1 = 0
     sum_col_2 = 0
@@ -161,47 +173,63 @@ def ranked_histo(data_str):
     data_matrix.reverse()
     return data_matrix
 
+
 def kmer_count(infile, procs, length, size, count, tmpdir):
     '''
     Arguments infile, procs, length, size, count, tmpdir
     returns filename of merged kmer hashes'''
     jf_base = os.path.join(tmpdir, random_str() + '.js.part')
-    jf_cmd = ['jellyfish', 'count', '-C', '-t', str(procs), '-m', str(length), 
-        '-c', str(count), '-s', size, '-o', jf_base, infile]
+    jf_cmd = ['jellyfish', 'count', '-C', '-t', str(procs), '-m', str(length),
+              '-c', str(count), '-s', size, '-o', jf_base, infile]
     _sout, _serr = run_cmd(jf_cmd)
     parts = glob.glob(jf_base + '*')
     return merge_hash_set(parts, tmpdir)
 
+
 def main(args):
     usage = "usage: kmer-tool [options] -i <input file> -o <output file>"
     parser = argparse.ArgumentParser(description=usage)
-    parser.add_argument("-i", "--input", dest="input", default="-", type=argparse.FileType("r"), help="Input file, sequence (fasta/fastq) or binary count hash.")
-    parser.add_argument("-o", "--output", dest="output", default=None, type=argparse.FileType('w'), help="Output file.")
-    parser.add_argument("-t", "--type", dest="type", default='fasta', help="Input file type, one of: %s [default 'fasta']" % (", ".join(TYPES)))
-    parser.add_argument("-m", "--max", dest="max", default=10.0, type=float, help="Maximum size (in Gb) to count, files larger are split [default 10.0].")
-    parser.add_argument("-p", "--procs", dest="procs", default=4, type=int, help="Number of processors to use [default 4].")
-    parser.add_argument("-l", "--length", dest="length", default=None, type=int, help="Length of kmer to use.")
-    parser.add_argument("-s", "--size", dest="size", default="1000000000", help="Size of hash to use, number of unique kmers [default '1G']")
-    parser.add_argument("-c", "--count", dest="count", default=12, type=int, help="Count size in bits [default '12']")
-    parser.add_argument("-f", "--format", dest="format", default='histo', help="Output format, one of: %s [default 'histo']" % (", ".join(FORMATS)))
-    parser.add_argument("--histo_max", dest="histo_max", default=10000000, type=int, help="Max count value for histogram [default 10000000]")
-    parser.add_argument("-r", "--ranked", dest="ranked", action="store_true", default=False, help="histo output includes additional transformations for ranked plot")
-    parser.add_argument("-d", "--tmpdir", dest="tmpdir", default=None, help="Dir to store intermediate files [default is dir of output file]")
+    parser.add_argument("-i", "--input", dest="input", default="-", type=argparse.FileType(
+        "r"), help="Input file, sequence (fasta/fastq) or binary count hash.")
+    parser.add_argument("-o", "--output", dest="output", default=None,
+                        type=argparse.FileType('w'), help="Output file.")
+    parser.add_argument("-t", "--type", dest="type", default='fasta',
+                        help="Input file type, one of: %s [default 'fasta']" % (", ".join(TYPES)))
+    parser.add_argument("-m", "--max", dest="max", default=10.0, type=float,
+                        help="Maximum size (in Gb) to count, files larger are split [default 10.0].")
+    parser.add_argument("-p", "--procs", dest="procs", default=4,
+                        type=int, help="Number of processors to use [default 4].")
+    parser.add_argument("-l", "--length", dest="length",
+                        default=None, type=int, help="Length of kmer to use.")
+    parser.add_argument("-s", "--size", dest="size", default="1000000000",
+                        help="Size of hash to use, number of unique kmers [default '1G']")
+    parser.add_argument("-c", "--count", dest="count", default=12,
+                        type=int, help="Count size in bits [default '12']")
+    parser.add_argument("-f", "--format", dest="format", default='histo',
+                        help="Output format, one of: %s [default 'histo']" % (", ".join(FORMATS)))
+    parser.add_argument("--histo_max", dest="histo_max", default=10000000,
+                        type=int, help="Max count value for histogram [default 10000000]")
+    parser.add_argument("-r", "--ranked", dest="ranked", action="store_true", default=False,
+                        help="histo output includes additional transformations for ranked plot")
+    parser.add_argument("-d", "--tmpdir", dest="tmpdir", default=None,
+                        help="Dir to store intermediate files [default is dir of output file]")
 
     args = parser.parse_args()
-    if sys.version_info < (2,6):
-        raise Exception("Python version 2.6 or later is required for kmer-tool2")
+    if sys.version_info < (2, 6):
+        raise Exception(
+            "Python version 2.6 or later is required for kmer-tool2")
     if args.output == None:
         parser.error("[error] missing output files")
     if not args.type in TYPES:
-        parser.error("[error] missing input type, use one of: %s" % (", ".join(TYPES)))
+        parser.error("[error] missing input type, use one of: %s" %
+                     (", ".join(TYPES)))
     if not args.format in FORMATS:
-        parser.error("[error] missing output format, use one of: %s" %(", ".join(FORMATS)))
+        parser.error("[error] missing output format, use one of: %s" %
+                     (", ".join(FORMATS)))
     if (args.type != 'hash') and (not args.length or (args.length < 2)):
         parser.error("[error] missing / invalid kmer length")
     if (args.type == 'hash') and (args.format == 'hash'):
         parser.error("[error] both input and output is binary hash")
-
 
     if args.procs < 1:
         args.procs = 1
@@ -217,21 +245,23 @@ def main(args):
         # check file size, split if too large
         max_size = args.max * GB
         if args.input is sys.stdin:
-            input_set = split_seq_file(args.input, max_size, args.type, args.tmpdir)
+            input_set = split_seq_file(
+                args.input, max_size, args.type, args.tmpdir)
         else:
             # If file is small enough, bypass splitting
-            if  os.fstat(args.input.fileno()).st_size < max_size:   
+            if os.fstat(args.input.fileno()).st_size < max_size:
                 args.input.close()
                 input_set = [args.input.name]
             else:
-                input_set = split_seq_file(args.input, max_size, args.type, args.tmpdir)
+                input_set = split_seq_file(
+                    args.input, max_size, args.type, args.tmpdir)
 
         # get hash set
         hash_set = []
         for ifile in input_set:
             if (os.path.getsize(ifile) > 0) and os.path.isfile(ifile):
                 hash_set.append(kmer_count(ifile, args.procs, args.length,
-                     args.size, args.count, args.tmpdir))
+                                           args.size, args.count, args.tmpdir))
         jf_hash = merge_hash_set(hash_set, args.tmpdir)
         # cleanup
         if len(input_set) > 1:
@@ -268,6 +298,7 @@ def main(args):
 #          return 1
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
