@@ -5,9 +5,9 @@ basepair-by-depth distributions from kmer spectra
 
 import sys
 import os
+import argparse
 import numpy as np
 import matplotlib as mpl
-from optparse import OptionParser
 
 from ksatools.ksatools import loadfile, stratify
 
@@ -109,43 +109,42 @@ def summarizestrata(labels, spectra):
 if __name__ == '__main__':
     usage = '''stratify.py [options] <list of target files, labels>
 '''
-    parser = OptionParser(usage)
-    parser.add_option(
+    parser = argparse.ArgumentParser(description=usage)
+    parser.add_argument(
         "-v", "--verbose", dest="verbose", action="store_true",
         default=False, help="verbose")
-    parser.add_option(
+    parser.add_argument(
         "-o", "--outfile", dest="outfile", action="store",
         default=None, help="output file name")
-    parser.add_option(
-        "-g", "--graph", dest="option", action="store", type="int",
+    parser.add_argument(
+        "-g", "--graph", dest="option", action="store", type=int,
         default="0", help="graph type 0 = fraction, 1 = basepairs")
-    parser.add_option(
+    parser.add_argument(
         "-i", "--interactive", dest="interactive", action="store_true",
         default=False, help="interactive mode--draw window")
-#    parser.add_option(
-#        "-l", "--list", dest="filelist",
-#        default=None, help="file containing list of targets and labels")
-    parser.add_option(
+    parser.add_argument(
+        "-l", "--list", dest="filelist",
+        default=None, help="file containing list of targets and labels")
+    parser.add_argument(
         "-t", "--type", dest="filetype",
         default="file", help="type for file list (file,mgm)")
-    parser.add_option(
+    parser.add_argument(
         "-w", "--writetype", dest="writetype",
         default="pdf", help="file type for output (pdf,png)")
-    parser.add_option(
+    parser.add_argument(
         "-s", "--suppresslegend", dest="suppresslegend", action="store_true",
         default=False, help="supress display of legend")
-    parser.add_option(
+    parser.add_argument(
         "-n", "--name", dest="title",
         default=None, help="Name for graph, graph title")
 
-    (opts, args) = parser.parse_args()
+    opts = parser.parse_args()
     writetype = opts.writetype
     if opts.filelist == None:
         sys.exit(usage)
     filelist = args[0]
     if filelist == None:
         sys.exit(usage) 
->>>>>>> 30d1c64... whitespace cleanup:ksatools/stratify.py
     assert writetype == "png" or writetype == "pdf" or writetype == "eps"
     if opts.outfile:
         imagefilename = opts.outfile

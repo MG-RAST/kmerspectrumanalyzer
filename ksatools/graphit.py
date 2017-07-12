@@ -9,7 +9,7 @@ import sys
 import numpy as np
 import ksatools
 import matplotlib as mpl
-from optparse import OptionParser
+import argparse
 
 
 def getcolor(index, colorlist):
@@ -72,41 +72,42 @@ def plotme(data, graphtype=None, label=None, n=0, opts=None, color=None, style="
 
 if __name__ == '__main__':
     usage = "graphit.py <options> <arguments>"
-    parser = OptionParser(usage)
-    parser.add_option("-x", "--xlabel", dest="xlabel", action="store",
+    parser = argparse.ArgumentParser(usage)
+    parser.add_argument("files", nargs='*', type="str")
+    parser.add_argument("-x", "--xlabel", dest="xlabel", action="store",
                       default="x label", help="")
-    parser.add_option("-y", "--ylabel", dest="ylabel", action="store",
+    parser.add_argument("-y", "--ylabel", dest="ylabel", action="store",
                       default="y label", help="")
-    parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
                       default=False, help="verbose")
-    parser.add_option("-o", "--outfile", dest="outfile", action="store",
+    parser.add_argument("-o", "--outfile", dest="outfile", action="store",
                       default="test.png", help="dump table with outputs ")
-    parser.add_option("-g", "--graphtype", dest="graphtype", action="store",
+    parser.add_argument("-g", "--graphtype", dest="graphtype", action="store",
                       default=None, help="graph type")
-    parser.add_option("-i", "--interactive", dest="interactive", action="store_true",
+    parser.add_argument("-i", "--interactive", dest="interactive", action="store_true",
                       default=False, help="interactive mode--draw window")
-    parser.add_option("-l", "--list", dest="filelist",
+    parser.add_argument("-l", "--list", dest="filelist",
                       default=None, help="file containing list of targets and labels")
-    parser.add_option("-t", "--thickness", dest="thickness",
+    parser.add_argument("-t", "--thickness", dest="thickness",
                       default=2, help="line thickness for traces")
-    parser.add_option("-w", "--writetype", dest="writetype",
+    parser.add_argument("-w", "--writetype", dest="writetype",
                       default="pdf", help="file type for output (pdf,png)")
-    parser.add_option("-p", "--plotlegend", dest="plotlegend",
+    parser.add_argument("-p", "--plotlegend", dest="plotlegend",
                       default=None, help="Overall number at top of graph")
-    parser.add_option("-s", "--suppresslegend", dest="suppress", action="store_true",
+    parser.add_argument("-s", "--suppresslegend", dest="suppress", action="store_true",
                       default=False, help="supress display of legend")
-    parser.add_option("-n", "--name", dest="title",
+    parser.add_argument("-n", "--name", dest="title",
                       default=None, help="Name for graph, graph title")
-    parser.add_option("-c", "--scale", dest="scale",
+    parser.add_argument("-c", "--scale", dest="scale",
                       default=False, action="store_true", help="Multiply by col 2")
-    parser.add_option("--xlim", dest="xlim",
+    parser.add_argument("--xlim", dest="xlim",
                       default="", type="str", help="xlimits: comma-separated")
-    parser.add_option("--ylim", dest="ylim",
+    parser.add_argument("--ylim", dest="ylim",
                       default="", type="str", help="ylimits: comma-separated")
-    parser.add_option("-d", "--dot", dest="dot",
+    parser.add_argument("-d", "--dot", dest="dot",
                       default=False, action="store_true", help="plot dots")
 
-    (OPTS, ARGS) = parser.parse_args()
+    OPTS = parser.parse_args()
     SCALE = OPTS.scale
     if not OPTS.interactive:
         mpl.use("Agg")
@@ -149,7 +150,7 @@ if __name__ == '__main__':
     if OPTS.suppress == 0:
         plt.legend(loc="upper left")
     else:
-        for v in ARGS:
+        for v in OPTS.files:
             print(v)
             filename = v
             spectrum = ksatools.loadfile(filename)

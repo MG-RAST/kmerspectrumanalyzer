@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 import os
-from optparse import OptionParser
+import argparse
 
 
 def decimate(a, d):
@@ -63,26 +63,27 @@ def decimate_withcovest(a, covest):
 
 if __name__ == '__main__':
     usage = "usage: %prog <input 2d matrix > -o <output file>"
-    parser = OptionParser(usage)
-    parser.add_option("-o", "--output", dest="outfile", default=None,
+    parser = argparse.ArgumentParser(usage)
+    parser.add_argument("infile", type=argparse.FileType, help="input 2d matrix") 
+    parser.add_argument("-o", "--output", dest="outfile", default=None,
                       help="Output file.")
-    parser.add_option("-i", "--interactive", dest="interact", default=False,
+    parser.add_argument("-i", "--interactive", dest="interact", default=False,
                       action="store_true", help="Interactive")
-    parser.add_option("-g", "--graphtype", dest="graphtype", default="1000",
+    parser.add_argument("-g", "--graphtype", dest="graphtype", default="1000",
                       help="graph type : 1000, 100, raw")
-    parser.add_option("-m", "--m", dest="m", default=1,
+    parser.add_argument("-m", "--m", dest="m", default=1,
                       help="axis 1 decimator")
-    parser.add_option("-n", "--n", dest="n", default=1,
+    parser.add_argument("-n", "--n", dest="n", default=1,
                       help="axis 2 decimator")
-    parser.add_option("-x", "--xlabel", dest="xlabel",
+    parser.add_argument("-x", "--xlabel", dest="xlabel",
                       default=None, help="xaxis label")
-    parser.add_option("-y", "--ylabel", dest="ylabel",
+    parser.add_argument("-y", "--ylabel", dest="ylabel",
                       default=None, help="yaxis label")
-    parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
                       default=True, help="Verbose [default off]")
 
-    (opts, args) = parser.parse_args()
-    infile = args[0]
+    args = parser.parse_args()
+    infile = args.infile
     if not (infile and os.path.isfile(infile)):
         parser.error("Missing input file")
     if opts.xlabel != None:

@@ -6,34 +6,35 @@ import sys
 import os
 import scipy.stats
 import matplotlib as mpl
-from optparse import OptionParser
+import argparse
 
 from ksatools.rare import fract, rich, calc_resampled_fraction, calc_resampled_richness, plotme
 from ksatools.ksatools import loadfile
 
 if __name__ == "__main__":
-    PARSER = OptionParser(
+    PARSER = argparse.ArgumentParser(description=
         "rare.py [options] countfilaname [countfilename2...]\n   -- computationally rarefy kmer spectra")
-    PARSER.add_option("-i", "--interactive", dest="interactive",
+#    PARSER.add_argument("filelist", type=argparse.FileType, help="file list" ) 
+    PARSER.add_argument("-i", "--interactive", dest="interactive",
                       action="store_true", default=False,
                       help="interactive mode--draw window")
-    PARSER.add_option("-l", "--list", dest="filelist", default=None,
+    PARSER.add_argument("-l", "--list", dest="filelist", default=None,
                       help="file containing list of targets and labels")
-    PARSER.add_option("-g", "--graphtype", dest="graphtype", default=1,
+    PARSER.add_argument("-g", "--graphtype", dest="graphtype", default=1,
                       help="graph type 1: shaded 2: non-shaded 3: kmer richness")
-    PARSER.add_option("-s", "--suppress", dest="suppresslegend", default=False,
+    PARSER.add_argument("-s", "--suppress", dest="suppresslegend", default=False,
                       action="store_true", help="suppress legend")
-    PARSER.add_option("-c", "--colors", dest="colors",
+    PARSER.add_argument("-c", "--colors", dest="colors",
                       help="comma-separated color list")
-    PARSER.add_option("-t", "--threshold", dest="threshold", type="int",
+    PARSER.add_argument("-t", "--threshold", dest="threshold", type=int,
                       help="threshold")
-    PARSER.add_option("-o", "--output", dest="outfile", default="",
+    PARSER.add_argument("-o", "--output", dest="outfile", default="",
                       help="filename for output")
-    PARSER.add_option("-d", "--dump", dest="dump", default=None,
+    PARSER.add_argument("-d", "--dump", dest="dump", default=None,
                       action="store_true", help="output table .rare.csv")
-    (OPTS, ARGS) = PARSER.parse_args()
+    OPTS = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
-    if len(ARGS) == 0 and not OPTS.filelist:
+    if not OPTS.filelist:
         sys.stderr.write(
             "Error, requires one or more kmer histogram input filenames.\nrare.py -h lists options\n")
         sys.exit(1)
@@ -94,14 +95,14 @@ if __name__ == "__main__":
             plt.legend(loc="upper left")
         plt.savefig(OUTFILE)
     else:
-        for v in ARGS:
-            print("#", v)
-            filename = v
-            spectrum = loadfile(filename)
-            plotme(spectrum, filename, thresholdlist=listofthresholds,
-                   color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS), shaded=SHADED)
-            n = n + 1
+#        for v in ARGS:
+#            print("#", v)
+#            filename = v
+#            spectrum = loadfile(filename)
+#            plotme(spectrum, filename, thresholdlist=listofthresholds,
+#                   color=COLORS[n], dump=OPTS.dump, numplots=len(ARGS), shaded=SHADED)
+#            n = n + 1
 #        plt.legend(loc="upper left")
         sys.stderr.write(
-            "Warning! printing graphs in default filename " + OUTFILE + "\n")
-        plt.savefig(OUTFILE)
+            "Warning! multiple filenames no longer supported \n")
+#        plt.savefig(OUTFILE)

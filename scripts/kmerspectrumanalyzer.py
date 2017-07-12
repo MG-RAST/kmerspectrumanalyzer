@@ -3,9 +3,9 @@
 import numpy as np
 import sys
 import os
+import argparse
 from scipy import stats
 from scipy.optimize import leastsq
-from optparse import OptionParser
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
@@ -167,34 +167,35 @@ def plotfit():
 
 if __name__ == '__main__':
     USAGE = "usage: kmerspectrumanalyzer.py [options] <input table filename> "
-    PARSER = OptionParser(USAGE)
-    PARSER.add_option("-q", "--likelihood", dest="likelihood",
+    PARSER = argparse.ArgumentParser(USAGE)
+    PARSER.add_argument("infile", type=argparse.FileType('r'), help="input file") 
+    PARSER.add_argument("-q", "--likelihood", dest="likelihood",
                       action="store_true", default=False,
                       help="Use likeliehood (slower)")
-    PARSER.add_option("-g", "--guess", dest="guess",
+    PARSER.add_argument("-g", "--guess", dest="guess",
                       default=None, help="Initial coverage guess (overrides auto-guessing)")
-    PARSER.add_option("-l", "--lowcutoff", dest="lowcutoff",
+    PARSER.add_argument("-l", "--lowcutoff", dest="lowcutoff",
                       default=10, help="Low-coverage soft cutoff (default 10)")
-    PARSER.add_option("-e", "--errorbars", dest="errorbars",
+    PARSER.add_argument("-e", "--errorbars", dest="errorbars",
                       action="store_true", default=False, help="Estimate uncertainty ")
-    PARSER.add_option("-n", "--num", dest="num",
+    PARSER.add_argument("-n", "--num", dest="num",
                       default=10, help="number of multiplicity terms to fit")
-    PARSER.add_option("-b", "--bypass", dest="bypass",
+    PARSER.add_argument("-b", "--bypass", dest="bypass",
                       default=2, help="second peak to fit for manual reordering")
-    PARSER.add_option("-c", "--cutoff", dest="cutoff",
+    PARSER.add_argument("-c", "--cutoff", dest="cutoff",
                       default="0,0", help="max,min manual hard coverage cutoffs")
-    PARSER.add_option("-i", "--interactive", dest="interactive",
+    PARSER.add_argument("-i", "--interactive", dest="interactive",
                       action="store_true", default=False, help="interactive plot")
-    PARSER.add_option("-p", "--positiveconstrained", dest="constrained",
+    PARSER.add_argument("-p", "--positiveconstrained", dest="constrained",
                       action="store_false", default=True, help="constrained fit")
-    PARSER.add_option("-o", "--outstem", dest="outstem",
+    PARSER.add_argument("-o", "--outstem", dest="outstem",
                       default=None, help="output file stem")
-    PARSER.add_option("-v", "--verbose", dest="verbose", action="store_true",
+    PARSER.add_argument("-v", "--verbose", dest="verbose", action="store_true",
                       default=False, help="verbose")
 
-    (OPTS, ARGS) = PARSER.parse_args()
+    OPTS = PARSER.parse_args()
     try:
-        INFILE = ARGS[0]
+        INFILE = OPTS.infile
     except IndexError:
         PARSER.error("Missing table filename input argument \n%s\n" % USAGE)
     if not (INFILE and os.path.isfile(INFILE)):
