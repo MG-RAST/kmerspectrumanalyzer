@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib as mpl
 from optparse import OptionParser
 
-import ksatools
+from ksatools.ksatools import loadfile, stratify
 
 
 def plotstratifiedfracs(labels, spectra):
@@ -107,7 +107,7 @@ def summarizestrata(labels, spectra):
 
 
 if __name__ == '__main__':
-    usage = '''stratify.py [options] -l <list of target files, labels>
+    usage = '''stratify.py [options] <list of target files, labels>
 '''
     parser = OptionParser(usage)
     parser.add_option(
@@ -122,9 +122,9 @@ if __name__ == '__main__':
     parser.add_option(
         "-i", "--interactive", dest="interactive", action="store_true",
         default=False, help="interactive mode--draw window")
-    parser.add_option(
-        "-l", "--list", dest="filelist",
-        default=None, help="file containing list of targets and labels")
+#    parser.add_option(
+#        "-l", "--list", dest="filelist",
+#        default=None, help="file containing list of targets and labels")
     parser.add_option(
         "-t", "--type", dest="filetype",
         default="file", help="type for file list (file,mgm)")
@@ -142,6 +142,10 @@ if __name__ == '__main__':
     writetype = opts.writetype
     if opts.filelist == None:
         sys.exit(usage)
+    filelist = args[0]
+    if filelist == None:
+        sys.exit(usage) 
+>>>>>>> 30d1c64... whitespace cleanup:ksatools/stratify.py
     assert writetype == "png" or writetype == "pdf" or writetype == "eps"
     if opts.outfile:
         imagefilename = opts.outfile
@@ -173,7 +177,7 @@ if __name__ == '__main__':
                     if len(a) == 1:
                         a.append(a[0])
                     sys.stderr.write("%s\t%s\n" % (a[0], a[1]))
-                    contents = ksatools.loadfile(a[0])
+                    contents = loadfile(a[0])
                     if contents != []:
                         spectra.append(contents)
                         labels.append(a[1])

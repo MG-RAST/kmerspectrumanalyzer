@@ -80,7 +80,7 @@ if __name__ == '__main__':
                       default=None, help="yaxis label")
     parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
                       default=True, help="Verbose [default off]")
- 
+
     (opts, args) = parser.parse_args()
     infile = args[0]
     if not (infile and os.path.isfile(infile)):

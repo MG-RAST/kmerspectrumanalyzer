@@ -44,7 +44,7 @@ def rich(aa, epsilon, threshold):
     xr = aa[:, 0]
     xn = aa[:, 1]
     NO = np.sum(xn * xr)
-    interim = 0 
+    interim = 0
     for i in range(len(xr)):
         # this is the expected number of nonzero categories after hypergeometric sampling
         #        nonzero = (1.-scipy.stats.hypergeom.cdf(0.5, NO, xr[i], epsilon*NO))
@@ -70,7 +70,7 @@ def calc_resampled_fraction(aa, samplefracs, thresholds):
 
 def calc_resampled_richness(aa, samplefracs, thresholds):
     '''calculate 2D array, like calc_resampled_richness, of
-    calculated subsampled richness for each fraction in samplefracs 
+    calculated subsampled richness for each fraction in samplefracs
     and each threshold in thresholds.
     Returns 2d matrix sith shape = len(samplefracs), len(thresholds)
     aa must be 2d ndarray
