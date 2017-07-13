@@ -89,6 +89,7 @@ def test_plotme3():
     p = plotme(FIXTURE, "templabel", shaded=3)
     p = plotme(FIXTURE2, "templabel", shaded=3)
 
+
 def test_plotme4():
     p = plotme(FIXTURE, "templabel", shaded=4)
     p = plotme(FIXTURE2, "templabel", shaded=4)

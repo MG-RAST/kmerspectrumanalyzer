@@ -41,50 +41,61 @@ def test_calccumsum_float():
     data = FIXTURE1
     cn, c1, yd, yo, zd, zo = calccumsum(data)
 
+
 def test_calccumsum_int():
     data = FIXTURE3
     cn, c1, yd, yo, zd, zo = calccumsum(data)
+
 
 def test_calccumsum_bad1():
     data = FIXTUREBAD1
     with assert_raises(ValueError):
         cn, c1, yd, yo, zd, zo = calccumsum(data)
 
+
 def test_calccumsum_bad2():
     data = FIXTUREBAD2
-    with assert_raises(ValueError): 
+    with assert_raises(ValueError):
         cn, c1, yd, yo, zd, zo = calccumsum(data)
+
 
 def test_calccumsum_bad3():
     data = FIXTUREBAD3
     print(type(data), data)
-    with assert_raises(ValueError): 
+    with assert_raises(ValueError):
         cn, c1, yd, yo, zd, zo = calccumsum(data)
+
 
 def test_loadfile_SRR():
     FIXTURE2 = loadfile(
         "repeatresolutionpaper/counts-validationgenomedata/SRR000333.fastq.21")
+
 
 def test_loadfile_empty():
     fixture = loadfile(TESTDIR + "emptyfile")
     print(type(fixture))
     assert fixture == []
 
+
 def test_loadfile_npo():
     fixture = loadfile(TESTDIR + "test_1.npo")
-    assert type(fixture) ==  np.ndarray
+    assert type(fixture) == np.ndarray
+
 
 def test_loadfile_stats():
     fixture = loadfile(TESTDIR + "stats.txt")
-    assert type(fixture) ==  np.ndarray
+    assert type(fixture) == np.ndarray
+
 
 def test_loadfile_khmer():
     fixture = loadfile(TESTDIR + "test_khmer.21")
-    assert type(fixture) ==  np.ndarray
+    assert type(fixture) == np.ndarray
+
 
 def test_missingfile():
     fixture = loadfile("nonexistentfile")
     assert fixture == []
+
 
 def test_calccumsum_00_file():
     data = loadfile(TESTDIR + "test00.21")
@@ -178,9 +189,11 @@ def test_getmgrkmerspectrum_fail():
 def test_printstats():
     p = printstats(FIXTURE1, "tempstatsout.txt")
 
+
 def test_printstats_fh():
     with open("tempstatsoutfh.txt", 'w') as fh:
         p = printstats(FIXTURE1, "tempstatsout", fh)
+
 
 def test_printstratify():
     p = printstratify(FIXTURE1)
@@ -195,18 +208,24 @@ def test_makesgraphs():
 def test_makegraphs_6d():
     p = makegraphs(FIXTURE1, "tempfilename", option=6, dump=True)
 
+
 def test_makegraphs_labels():
-    p = makegraphs(FIXTURE1, "tempfilename", ylabel="Y label", xlabel="X label")
+    p = makegraphs(FIXTURE1, "tempfilename",
+                   ylabel="Y label", xlabel="X label")
+
 
 def test_makegraphs_m2d():
-    p = makegraphs(FIXTURE1, "tempfilename", option=-2, dump=True, suppress=True)
+    p = makegraphs(FIXTURE1, "tempfilename", option=-
+                   2, dump=True, suppress=True)
 
 
 def test_makegraphs_label():
     p = makegraphs(FIXTURE1, "tempfilename", option=6, label="ridiculouslabel")
 
+
 def test_makegraphs_name():
-    p = makegraphs(FIXTURE1, "tempfilename", option=6, label="ridiculouslabel", name="graph title")
+    p = makegraphs(FIXTURE1, "tempfilename", option=6,
+                   label="ridiculouslabel", name="graph title")
 
 
 def test_makegraphs_30():
@@ -279,8 +298,10 @@ def test_list7():
 def test_list8():
     run_indir("plotkmerspectrum.py -l testlist8", TESTDIR)
 
+
 def test_many():
     run_indir("plotkmerspectrum.py fak-1 fak-2 fak-3 fak-0", TESTDIR)
+
 
 def test_options():
     run_indir(
@@ -333,6 +354,7 @@ def test_title():
     run_indir("plotkmerspectrum.py -n 'fak-123 spectrum' fak-123", TESTDIR)
     assert os.path.isfile(TESTDIR + "fak-123.6.pdf")
     os.remove(TESTDIR + "fak-123.6.pdf")
+
 
 def test_cmdline_getmgr():
     run_indir("plotkmerspectrum.py -l mgrlist -i -g 6 -t mgm")

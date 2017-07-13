@@ -48,7 +48,7 @@ def pad(xvalues, yvalues, fill=True):
     xv = np.arange(1, int(1.5 * max(xvalues)))
     yv = np.zeros(shape=int(1.5 * max(xvalues) - 1), dtype=int)
 
-    if fill == True:
+    if fill is True:
         for i, x in enumerate(xvalues):
             yv[np.where(xv == x)[0][0]] = yvalues[i]
         xout = list(xv)
@@ -146,7 +146,7 @@ def getmgrkmerspectrum(accessionnumber, mgrkey=None):
     assert accessionnumber[0:3] == "mgm", sys.exit(
         "Data error: field %s not in mgm......... accession number format" % accessionnumber)
     some_url = "http://api.metagenomics.anl.gov/api.cgi/metagenome/%s?verbosity=full" % accessionnumber
-    if mgrkey != None:
+    if mgrkey is not None:
         some_url = some_url + "&auth=%s" % mgrkey
     sys.stderr.write("Sending request for " + some_url + "\n")
     time.sleep(1)
