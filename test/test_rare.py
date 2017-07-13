@@ -1,14 +1,13 @@
 
-from nose.tools import assert_equal, assert_almost_equal, assert_true, \
-    assert_false, assert_raises, assert_is_instance
+import os
 import numpy as np
 from numpy import array
-import os
+
+from nose.tools import assert_equal, assert_almost_equal, assert_true, \
+    assert_false, assert_raises, assert_is_instance
 
 from ksatools.rare import fract, calc_resampled_fraction, plotme
 from ksatools.ksatools import run_indir
-
-import rarify
 
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1, 1000], [10, 1000], [100, 1000]], dtype="float")
@@ -89,6 +88,10 @@ def test_plotme2():
 def test_plotme3():
     p = plotme(FIXTURE, "templabel", shaded=3)
     p = plotme(FIXTURE2, "templabel", shaded=3)
+
+def test_plotme4():
+    p = plotme(FIXTURE, "templabel", shaded=4)
+    p = plotme(FIXTURE2, "templabel", shaded=4)
 
 
 def test_plotmeS():

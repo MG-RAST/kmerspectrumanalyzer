@@ -3,35 +3,88 @@
 #import coverage
 # coverage.process_startup()
 
+import os
+import numpy as np
+from numpy import array
 
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
 
 from ksatools.ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, printstratify, makegraphs, run_indir, show_pretty_graphs
 
-#import plotkmerspectrumanalyzer
 
-import numpy as np
-from numpy import array
-
-import os
+TESTDIR = "test/data/"
 
 FIXTURE1 = np.array([[2000, 1000000],
                      [20000, 10000],
                      [200000, 100],
                      [1000000, 1],
                      [2000000, 1]], dtype="float")
+
+FIXTURE3 = np.array([[2000, 1000000],
+                     [20000, 10000],
+                     [200000, 100],
+                     [1000000, 1],
+                     [2000000, 1]], dtype="int")
+
+FIXTUREBAD1 = np.array([[0, 0]], dtype="int")
+
+FIXTUREBAD2 = np.array([[0, 0]], dtype="float")
+
+FIXTUREBAD3 = loadfile(TESTDIR + "testF1.21")
+
 FIXTURE2 = loadfile(
     "repeatresolutionpaper/counts-validationgenomedata/SRR000333.fastq.21")
 
-TESTDIR = "test/data/"
 
-
-def test_calccumsum_pass():
+def test_calccumsum_float():
     data = FIXTURE1
     cn, c1, yd, yo, zd, zo = calccumsum(data)
-    pass
 
+def test_calccumsum_int():
+    data = FIXTURE3
+    cn, c1, yd, yo, zd, zo = calccumsum(data)
+
+def test_calccumsum_bad1():
+    data = FIXTUREBAD1
+    with assert_raises(ValueError):
+        cn, c1, yd, yo, zd, zo = calccumsum(data)
+
+def test_calccumsum_bad2():
+    data = FIXTUREBAD2
+    with assert_raises(ValueError): 
+        cn, c1, yd, yo, zd, zo = calccumsum(data)
+
+def test_calccumsum_bad3():
+    data = FIXTUREBAD3
+    print(type(data), data)
+    with assert_raises(ValueError): 
+        cn, c1, yd, yo, zd, zo = calccumsum(data)
+
+def test_loadfile_SRR():
+    FIXTURE2 = loadfile(
+        "repeatresolutionpaper/counts-validationgenomedata/SRR000333.fastq.21")
+
+def test_loadfile_empty():
+    fixture = loadfile(TESTDIR + "emptyfile")
+    print(type(fixture))
+    assert fixture == []
+
+def test_loadfile_npo():
+    fixture = loadfile(TESTDIR + "test_1.npo")
+    assert type(fixture) ==  np.ndarray
+
+def test_loadfile_stats():
+    fixture = loadfile(TESTDIR + "stats.txt")
+    assert type(fixture) ==  np.ndarray
+
+def test_loadfile_khmer():
+    fixture = loadfile(TESTDIR + "test_khmer.21")
+    assert type(fixture) ==  np.ndarray
+
+def test_missingfile():
+    fixture = loadfile("nonexistentfile")
+    assert fixture == []
 
 def test_calccumsum_00_file():
     data = loadfile(TESTDIR + "test00.21")
@@ -125,6 +178,9 @@ def test_getmgrkmerspectrum_fail():
 def test_printstats():
     p = printstats(FIXTURE1, "tempstatsout.txt")
 
+def test_printstats_fh():
+    with open("tempstatsoutfh.txt", 'w') as fh:
+        p = printstats(FIXTURE1, "tempstatsout", fh)
 
 def test_printstratify():
     p = printstratify(FIXTURE1)
@@ -136,34 +192,43 @@ def test_makesgraphs():
         p = makegraphs(FIXTURE1, "tempfilename", option=i)
 
 
-def test_makegraphs_d():
+def test_makegraphs_6d():
     p = makegraphs(FIXTURE1, "tempfilename", option=6, dump=True)
 
+def test_makegraphs_labels():
+    p = makegraphs(FIXTURE1, "tempfilename", ylabel="Y label", xlabel="X label")
 
-def test_makegraphs_l():
+def test_makegraphs_m2d():
+    p = makegraphs(FIXTURE1, "tempfilename", option=-2, dump=True, suppress=True)
+
+
+def test_makegraphs_label():
     p = makegraphs(FIXTURE1, "tempfilename", option=6, label="ridiculouslabel")
+
+def test_makegraphs_name():
+    p = makegraphs(FIXTURE1, "tempfilename", option=6, label="ridiculouslabel", name="graph title")
 
 
 def test_makegraphs_30():
     p = makegraphs(FIXTURE1, "tempfilename", option=30)
 
 
-def test_cmdline_1():
+def test_cmdline_gm1():
     run_indir("plotkmerspectrum.py -g -1 test00.21", TESTDIR)
     assert os.path.isfile(TESTDIR + "kmers.log")
 
 
-def test_cmdline_2():
+def test_cmdline_g0():
     run_indir("plotkmerspectrum.py -g 0 test00.21", TESTDIR)
     assert os.path.isfile(TESTDIR + "test00.21.0.pdf")
 
 
-def test_cmdline_3():
+def test_cmdline_pngout():
     run_indir("plotkmerspectrum.py -g 1 test00.21 -o temptest00 -w png", TESTDIR)
     assert os.path.isfile(TESTDIR + "temptest00.1.png")
 
 
-def test_cmdline_4():
+def test_cmdline_xlabel_title():
     run_indir(
         "plotkmerspectrum.py -g 1 test00.21 -x xlabel -y ylabel -n Graph_title -s -o temptest00", TESTDIR)
     assert os.path.isfile(TESTDIR + "temptest00.1.pdf")
@@ -214,6 +279,8 @@ def test_list7():
 def test_list8():
     run_indir("plotkmerspectrum.py -l testlist8", TESTDIR)
 
+def test_many():
+    run_indir("plotkmerspectrum.py fak-1 fak-2 fak-3 fak-0", TESTDIR)
 
 def test_options():
     run_indir(
@@ -267,8 +334,8 @@ def test_title():
     assert os.path.isfile(TESTDIR + "fak-123.6.pdf")
     os.remove(TESTDIR + "fak-123.6.pdf")
 
-# def test_cmdline_getmgr():
-#    run_indir("plotkmerspectrum.py -l mgrlist -i -g 6 -t mgm", "../test")
+def test_cmdline_getmgr():
+    run_indir("plotkmerspectrum.py -l mgrlist -i -g 6 -t mgm")
 
 
 def test_makegraphs_list():

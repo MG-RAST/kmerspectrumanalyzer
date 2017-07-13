@@ -270,7 +270,7 @@ def loadfile(filename):
         # return None if the file is empty
         matrix[np.isinf(matrix)] = 0
         matrix = np.atleast_2d(matrix)
-        if matrix.shape[0] == 0:
+        if matrix.shape[1] == 0:
             return []
         else:
             return matrix
@@ -331,7 +331,8 @@ def makegraphs(*args, **kwargs):
 
 def makegraph(spectrum, filename, option=6, label=None, n=0,
               dump=False, opts=None, colorlist=COLORLIST,
-              stylelist=None):
+              stylelist=None, name=None, suppress=False,
+              xlabel=None, ylabel=None):
     '''Draw graphs, one at a time, and add them to the current plot.
     spectrum contains the data; filename is the file stem for saving
     option determines the type of graph; label labels each trace;

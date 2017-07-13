@@ -142,9 +142,9 @@ if __name__ == '__main__':
     writetype = opts.writetype
     if opts.filelist == None:
         sys.exit(usage)
-    filelist = args[0]
+    filelist = opts.filelist
     if filelist == None:
-        sys.exit(usage) 
+        sys.exit(usage)
     assert writetype == "png" or writetype == "pdf" or writetype == "eps"
     if opts.outfile:
         imagefilename = opts.outfile
