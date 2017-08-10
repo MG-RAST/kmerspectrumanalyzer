@@ -205,9 +205,10 @@ def test_makesgraphs():
         p = makegraphs(FIXTURE1, "tempfilename", option=i)
 
 
-def test_makegraphs_6d():
+def test_makegraphs_6d(capsys):
     p = makegraphs(FIXTURE1, "tempfilename", option=6, dump=True)
-
+    out, err = capsys.readouterr()
+    assert len(out) < 30
 
 def test_makegraphs_labels():
     p = makegraphs(FIXTURE1, "tempfilename",

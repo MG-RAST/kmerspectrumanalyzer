@@ -318,7 +318,6 @@ def stratify(spectrum, bands=None):
 
 
 def makegraphs(*args, **kwargs):
-    print(args)
     spectra, filenames = args
     if type(spectra) is list:
         assert type(filenames) is list
