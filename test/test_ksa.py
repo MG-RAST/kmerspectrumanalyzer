@@ -7,6 +7,9 @@ import os
 import numpy as np
 from numpy import array
 
+import matplotlib as mpl
+mpl.use("Agg")
+
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
 

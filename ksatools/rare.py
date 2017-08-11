@@ -6,7 +6,6 @@ import sys
 import os
 import scipy.stats
 import ksatools
-import matplotlib as mpl
 from optparse import OptionParser
 
 
