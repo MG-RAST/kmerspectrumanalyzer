@@ -13,10 +13,9 @@ mpl.use("Agg")
 from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
 
-from ksatools.ksatools import calccumsum, loadfile, renyispectrum, pad, smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, printstratify, makegraphs, run_indir, show_pretty_graphs
-
-
-TESTDIR = "test/data/"
+from ksatools.ksatools import calccumsum, loadfile, renyispectrum, pad, \
+    smoothspectrum, calcmedian, cleanlabel, getmgrkmerspectrum, printstats, \
+    printstratify, makegraphs, run_indir, show_pretty_graphs, TESTDIR
 
 FIXTURE1 = np.array([[2000, 1000000],
                      [20000, 10000],

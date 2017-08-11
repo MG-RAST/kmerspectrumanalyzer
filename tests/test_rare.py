@@ -10,11 +10,10 @@ from nose.tools import assert_equal, assert_almost_equal, assert_true, \
     assert_false, assert_raises, assert_is_instance
 
 from ksatools.rare import fract, calc_resampled_fraction, plotme
-from ksatools.ksatools import run_indir
+from ksatools.ksatools import run_indir, TESTDIR
 
 FIXTURE = np.array([[100, 1000]], dtype="float")
 FIXTURE2 = np.array([[1, 1000], [10, 1000], [100, 1000]], dtype="float")
-TESTDIR = "test/data/"
 
 # fract(aa, epsilon, threshold)
 

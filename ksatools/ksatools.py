@@ -8,6 +8,8 @@ COLORLIST = [
     "m", "k", "BlueViolet", "Coral", "Chartreuse",
     "DarkGrey", "DeepPink", "LightPink"]
 
+TESTDIR = "tests/data/"
+
 import sys
 import os
 import numpy as np

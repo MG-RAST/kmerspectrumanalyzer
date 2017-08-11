@@ -14,4 +14,4 @@ test:
 	coverage run -m py.test
 
 clean:
-	rm *.fastq.? ../test/*.fastq.?
+	rm tests/data/*.fastq.?

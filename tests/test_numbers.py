@@ -4,11 +4,10 @@ from nose.tools import assert_equal, assert_almost_equal, assert_true, \
 
 from subprocess import call
 
-from ksatools.ksatools import loadfile, calcmedian, calccumsum
+from ksatools.ksatools import loadfile, calcmedian, calccumsum, TESTDIR
 
 import numpy as np
 from numpy import array
-TESTDIR = "test/data/"
 
 
 def test_01():
