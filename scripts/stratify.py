@@ -10,7 +10,7 @@ import argparse
 import numpy as np
 import matplotlib as mpl
 
-from ksatools.ksatools import loadfile, stratify
+from ksatools.ksatools import loadfile, stratify, cleanlabel
 
 
 def plotstratifiedfracs(inlabels, inspectra):
@@ -23,8 +23,9 @@ def plotstratifiedfracs(inlabels, inspectra):
     fracs = []
     sizes = []
     plt.grid(linestyle="-", axis="x", zorder=-10)
+    cleanlabels = [cleanlabel(l) for l in inlabels]
     for i in range(len(inlabels)):
-        label = inlabels[i]
+        label = cleanlabels[i]
         spectrum = inspectra[i]
         sys.stderr.write("Stratifying " + label + "...\n")
         BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
@@ -44,7 +45,7 @@ def plotstratifiedfracs(inlabels, inspectra):
                          left=(fracs[l][i + 1]), color=colors[i],
                          alpha=1.0, zorder=0)
     pos = [i + .05 for i in np.arange(len(inlabels))]
-    plt.yticks(pos, inlabels)
+    plt.yticks(pos, cleanlabels)
     plt.xlabel("Cumulative data fraction")
     plt.tight_layout()
     if not opts.suppresslegend:
@@ -63,8 +64,9 @@ def plotstratifiedsizes(inlabels, inspectra):
     fracs = []
     sizes = []
     BANDS = [1, 3, 30, 300, 3000, 30000, 30000000]
+    cleanlabels = [cleanlabel(l) for l in inlabels] 
     for i in range(len(inlabels)):
-        label = inlabels[i]
+        label = cleanlabels[i]
         spectrum = inspectra[i]
         sys.stderr.write("Stratifying " + label + "...\n")
         band, frac, size = stratify(spectrum, bands=BANDS)
@@ -83,7 +85,7 @@ def plotstratifiedsizes(inlabels, inspectra):
                          color=colors[i], log=True)
     pos = np.arange(len(inlabels)) + 0.5
     plt.xlim((1, 1E9))
-    plt.yticks(pos, inlabels)
+    plt.yticks(pos, cleanlabels)
     plt.xlabel("Distinct kmers (basepairs)")
     plt.tight_layout()
     if not opts.suppresslegend:

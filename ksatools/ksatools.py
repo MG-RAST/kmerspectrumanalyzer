@@ -102,10 +102,13 @@ def calcmedian(yd, y, num):
 def cleanlabel(label):
     '''Sanitizes graph labels of unintersting file extensions'''
     suffixes = [".histhist", ".fastq", "_info_contigstats.txt",
-                ".stats.txt", ".txt", ".csv", ".037.kmerhistogram"]
+                ".stats.txt", ".txt", ".csv", ".037.kmerhistogram",
+                "_001", ".21"]
     for suffix in suffixes:
         if label.find(suffix) > 0:
             label = label[0:(label.find(suffix))]
+    if label[-3:] == ".21":
+        label = label[:-3]
     return label
 
 
