@@ -3,8 +3,10 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import sys, os
-from optparse import OptionParser
+import sys
+import os
+import argparse
+
 
 def decimate(a, d):
     '''subroutine to reduce the dimensionality of a rectangular (2d histogram) matrix
@@ -15,11 +17,11 @@ def decimate(a, d):
     except:
         d2 = d
         d1 = d
-    print "D1 %d D2 %d" % (int(d1), int(d2))
+    print("D1 %d D2 %d" % (int(d1), int(d2)))
     r1 = a.shape[0]
     r2 = a.shape[1]
-    r1s = int(r1/d1)
-    r2s = int(r2/d2)
+    r1s = int(r1 / d1)
+    r2s = int(r2 / d2)
     b = []
     for i in range(0, r1s):
         b.append([])
@@ -27,10 +29,11 @@ def decimate(a, d):
             s = 0
             for l in range(0, d1):
                 for m in range(0, d2):
-                    s = s+a[i*d1+l, j*d2+m]
+                    s = s + a[i * d1 + l, j * d2 + m]
             b[i].append(s)
-    print "decimate return:", np.array(b).shape
+    print("decimate return:", np.array(b).shape)
     return np.array(b)
+
 
 def decimate_withcovest(a, covest):
     '''attempt to discretize the 2d spectrum when the central abundance is known'''
@@ -51,30 +54,36 @@ def decimate_withcovest(a, covest):
                 y_l = np.min([np.where(yax > ymark_l)])
             except ValueError:
                 y_l = 0
-            print i, j, "(", x_l, ":", x_h, ") (", y_l, ":", y_h, ")", xax[x_l], ":", xax[x_h], "\t", yax[y_l], ":", yax[y_h]
+            print(i, j, "(", x_l, ":", x_h, ") (", y_l, ":", y_h, ")",
+                  xax[x_l], ":", xax[x_h], "\t", yax[y_l], ":", yax[y_h])
             simple[i][j] = np.sum(a[x_l:x_h, y_l:y_h])
-    print simple
+    print(simple)
     return simple
 
 
 if __name__ == '__main__':
     usage = "usage: %prog <input 2d matrix > -o <output file>"
-    parser = OptionParser(usage)
-    parser.add_option("-o", "--output", dest="outfile", default=None,
+    parser = argparse.ArgumentParser(usage)
+    parser.add_argument("infile", type=argparse.FileType, help="input 2d matrix") 
+    parser.add_argument("-o", "--output", dest="outfile", default=None,
                       help="Output file.")
-    parser.add_option("-i", "--interactive", dest="interact", default=False,
+    parser.add_argument("-i", "--interactive", dest="interact", default=False,
                       action="store_true", help="Interactive")
-    parser.add_option("-g", "--graphtype", dest="graphtype", default="1000",
+    parser.add_argument("-g", "--graphtype", dest="graphtype", default="1000",
                       help="graph type : 1000, 100, raw")
-    parser.add_option("-m", "--m", dest="m", default=1, help="axis 1 decimator")
-    parser.add_option("-n", "--n", dest="n", default=1, help="axis 2 decimator")
-    parser.add_option("-x", "--xlabel", dest="xlabel", default=None, help="xaxis label")
-    parser.add_option("-y", "--ylabel", dest="ylabel", default=None, help="yaxis label")
-    parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
+    parser.add_argument("-m", "--m", dest="m", default=1,
+                      help="axis 1 decimator")
+    parser.add_argument("-n", "--n", dest="n", default=1,
+                      help="axis 2 decimator")
+    parser.add_argument("-x", "--xlabel", dest="xlabel",
+                      default=None, help="xaxis label")
+    parser.add_argument("-y", "--ylabel", dest="ylabel",
+                      default=None, help="yaxis label")
+    parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
                       default=True, help="Verbose [default off]")
- 
-    (opts, args) = parser.parse_args()
-    infile = args[0]
+
+    args = parser.parse_args()
+    infile = args.infile
     if not (infile and os.path.isfile(infile)):
         parser.error("Missing input file")
     if opts.xlabel != None:
@@ -92,22 +101,23 @@ if __name__ == '__main__':
     if opts.verbose:
         sys.stdout.write("Trying to read %s with numpy...\n" % infile)
     data = np.loadtxt(infile)
-    print "data shape ", data.shape
+    print("data shape ", data.shape)
     xax = data[0, :]
     yax = data[:, 0]
     d = data[1:, 1:]
-    print "d shape", d.shape
+    print("d shape", d.shape)
     m = int(opts.m)
     n = int(opts.n)
     if m == 0:
-        m = max(1, int(d.shape[0]/100))
+        m = max(1, int(d.shape[0] / 100))
     if n == 0:
-        n = max(1, int(d.shape[1]/100))
+        n = max(1, int(d.shape[1] / 100))
     reduceddata = decimate(d, [m, n])
     reducedata = 1
-    np.savetxt(infile+".all.csv", reduceddata)
-    print "Shape: ", reduceddata.shape
-    plt.imshow(np.log(reduceddata.T), interpolation="nearest", aspect="auto", origin="lower")
+    np.savetxt(infile + ".all.csv", reduceddata)
+    print("Shape: ", reduceddata.shape)
+    plt.imshow(np.log(reduceddata.T), interpolation="nearest",
+               aspect="auto", origin="lower")
     plt.title(infile, fontsize=18)
     plt.xlabel(xlabel, fontsize=16)
     plt.ylabel(ylabel, fontsize=16)
@@ -117,11 +127,12 @@ if __name__ == '__main__':
         plt.ylim([0, 1000])
     if opts.interact:
         plt.show()
-    plt.savefig(outfile+".al1.png")
+    plt.savefig(outfile + ".al1.png")
 
     if 0:
         sim = decimate_withcovest(d, (84.5, 80.3))
         plt.clf()
-        plt.imshow(np.log(sim), interpolation="nearest", aspect="auto", origin="lower")
+        plt.imshow(np.log(sim), interpolation="nearest",
+                   aspect="auto", origin="lower")
         plt.show()
         np.savetxt("output.csv", sim)

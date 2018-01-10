@@ -7,3 +7,5 @@ tifffile.py
 *.aux
 scraps
 .*.swp
+.* 
+temp*

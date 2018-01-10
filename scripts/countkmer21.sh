@@ -11,18 +11,6 @@ Usage: countkmer${k}.sh one.fasta
        countkmer${k}.sh one.fasta [two.fasta ...]
        cat one.fastq two.fastq | countkmer${k}.sh > onetwo.21"
 
-if [[ $filename == *".fasta" ]]
-then
-FILETYPE=fasta
-fi
-if [[ $filename == *".fna" ]]
-then
-FILETYPE=fasta
-fi
-if [[ $filename == *".fa" ]]
-then
-FILETYPE=fasta
-fi
 
 if [ $# -lt 1 ]
     then
@@ -39,6 +27,19 @@ if [ $# -lt 1 ]
 else  # one or more argument
     for filename in $@ 
         do
+        FILETYPE=fastq   
+        if [[ $filename == *".fasta" ]]
+        then
+        FILETYPE=fasta
+        fi
+        if [[ $filename == *".fna" ]]
+        then
+        FILETYPE=fasta
+        fi
+        if [[ $filename == *".fa" ]]
+        then
+        FILETYPE=fasta
+        fi
         if [[ ! -e $filename ]] 
             then 
             echo "Error: Input filename $filename does not exist."

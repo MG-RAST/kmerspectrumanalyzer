@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 
-import sys, os
+import sys
+import os
 from optparse import OptionParser
 from Bio import SeqIO
 from string import maketrans
+
 
 def lesserkmer(s):
     '''returns the lesser of a kmer and its reverse complement'''
@@ -13,6 +15,7 @@ def lesserkmer(s):
     else:
         return s
 
+
 def revc(s):
     '''returns reverse complement of a sequence'''
     intab = "AaCcGgTt"
@@ -20,6 +23,7 @@ def revc(s):
     trantab = maketrans(intab, outtab)
     t = s.translate(trantab)[::-1]
     return t
+
 
 def gccontent(sq):
     '''returns float gc content of sequence'''
@@ -34,9 +38,10 @@ def gccontent(sq):
         r = 0
     return r
 
+
 def read_index(filename):
     gian = {}
-    sys.stderr.write("Processing table %s  ...\n"%(filename,))
+    sys.stderr.write("Processing table %s  ...\n" % (filename,))
     in_idx = open(filename)
     for l in in_idx:
         if l[0] != "#":
@@ -44,11 +49,12 @@ def read_index(filename):
             gian[s[0]] = int(s[1])
     return gian
 
+
 def kmerabundance(seq, index):
     '''looks up kmer abundance of each kmer in sequence, returns summary statistics'''
     a = []
     for i in range(0, len(seq) - k):
-        word = seq[i:i+k]
+        word = seq[i:i + k]
         w = lesserkmer(word)
         try:
             a.append(index[w])
@@ -73,7 +79,8 @@ def kmerabundance(seq, index):
         average = 0
     except ZeroDivisionError:
         average = 0
-    return  (minimum, median, maximum, average)
+    return (minimum, median, maximum, average)
+
 
 if __name__ == '__main__':
     usage = "usage: %prog -1 <file1> [-2 <file2>] -i <index>  [-o <outstem>] -l <cutoff>\n  Note: generates outstem.hi.fastq and outstem.lo.fastq"
@@ -99,7 +106,7 @@ if __name__ == '__main__':
     if not opts.one:
         parser.error("Missing input filename")
     if not os.path.isfile(opts.one):
-        parser.error("Missing input file %s"% opts.one)
+        parser.error("Missing input file %s" % opts.one)
     if opts.two and os.path.isfile(opts.two):
         in_two = open(opts.two)
     if not opts.cutoff:
@@ -109,10 +116,13 @@ if __name__ == '__main__':
         opts.outstem = opts.one
     in_one = open(opts.one)
     in_idx = open(opts.index)
-    if opts.verbose or 1: sys.stderr.write("Processing sequences %s and table %s  ...\n"%(opts.one, opts.index))
-    sys.stderr.write("Opening output files %s.hi.%s and %s.hi.%s\n"% (opts.outstem, typ, opts.outstem, typ))
-    out_high = open("%s.hi.%s"% (opts.outstem, typ), "w")
-    out_low1 = open("%s.lo.%s"% (opts.outstem, typ), "w")
+    if opts.verbose or 1:
+        sys.stderr.write(
+            "Processing sequences %s and table %s  ...\n" % (opts.one, opts.index))
+    sys.stderr.write("Opening output files %s.hi.%s and %s.hi.%s\n" %
+                     (opts.outstem, typ, opts.outstem, typ))
+    out_high = open("%s.hi.%s" % (opts.outstem, typ), "w")
+    out_low1 = open("%s.lo.%s" % (opts.outstem, typ), "w")
     giant = {}
     sys.stderr.write("Reading index...\n")
     indexlist = opts.index.split(",")
@@ -140,8 +150,10 @@ if __name__ == '__main__':
         if seq1.find("N") == -1 and seq2.find("N") == -1:
             (min1, med1, max1, avg1) = kmerabundance(seq1, indexes[0])
             (min2, med2, max2, avg2) = kmerabundance(seq2, indexes[0])
-            seq_record1.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d" % (seq_record1.description, k, med1, k, max1, k, min1)
-            seq_record2.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d" % (seq_record2.description, k, med2, k, max2, k, min2)
+            seq_record1.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d" % (
+                seq_record1.description, k, med1, k, max1, k, min1)
+            seq_record2.description = "%s\tmed%dmer=%d\tmax%dmer=%d\tmin%dmer=%d" % (
+                seq_record2.description, k, med2, k, max2, k, min2)
             if med1 > float(opts.cutoff) and med2 > float(opts.cutoff):
                 SeqIO.write([seq_record1, seq_record2], out_high, typ)
             else:
