@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 '''Tool to generate computationally-rarefied graphs kmer spectra'''
 
-import numpy as np
 import sys
 import os
 import scipy.stats
-import ksatools
 from optparse import OptionParser
+import numpy as np
+import ksatools
 
 
 def fract(aa, epsilon, threshold):
@@ -96,7 +96,7 @@ def plotme(b, label, color=None, thresholdlist=None, numplots=4,
 # Throw away unecessary samples
     samplefractions = np.hstack((samplefractions[samplefractions < 1], 1))
     SHADED = shaded
-    if thresholdlist == None:
+    if thresholdlist is None:
         thresholdlist = [1]
     if SHADED != 3:
         matrix = calc_resampled_fraction(b, samplefractions, thresholdlist)

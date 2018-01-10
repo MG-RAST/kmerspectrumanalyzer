@@ -12,8 +12,8 @@ TESTDIR = "tests/data/"
 
 import sys
 import os
-import numpy as np
 from subprocess import call
+import numpy as np
 
 
 def run_indir(cmd, directory=None):
@@ -328,7 +328,7 @@ def makegraphs(*args, **kwargs):
         assert type(filenames) is list
         assert len(filenames) == len(spectra)
         for i, (spect, filen) in enumerate(zip(spectra, filenames)):
-            makegraph(spect, filen, n=i,  **kwargs)
+            makegraph(spect, filen, n=i, **kwargs)
     else:
         makegraph(*args, **kwargs)
 
@@ -539,7 +539,7 @@ def makegraph(spectrum, filename, option=6, label=None, n=0,
             plt.legend(loc=legendloc)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
-        if hasattr(opts, "name") and not opts.name is None and n == 0:
+        if (hasattr(opts, "name") and opts.name is not None) and n == 0:
             plt.title(opts.name)
         plt.grid(1)
 

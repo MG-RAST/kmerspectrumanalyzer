@@ -169,8 +169,8 @@ if __name__ == '__main__':
     spectra = []
     labels = []
     if opts.filelist:
-        assert os.path.isfile(
-            opts.filelist), "File %s does not exist" % opts.filelist
+        if not os.path.isfile(opts.filelist):
+            sys.exit("File {} does not exist".format(opts.filelist))
         IN_FILE = open(opts.filelist, "r")
         for line in IN_FILE:
             if line[0] != "#":

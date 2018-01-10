@@ -3,7 +3,7 @@
 
 import sys
 import os
-import argparse 
+import argparse
 import numpy as np
 import matplotlib as mpl
 
@@ -34,8 +34,9 @@ def main(filename, opt=6, label=None, n=0, opts=None, colorlist=[],
         sys.stderr.write("Making graphs for %s\n" % filename)
         try:
             makegraphs(
-                spectrum, filename, option=opt, label=label, n=n, dump=opts.dump,
-                opts=opts, colorlist=colorlist, stylelist=stylelist)
+                spectrum, filename, option=opt, label=label, n=n,
+                dump=opts.dump, opts=opts, colorlist=colorlist,
+                stylelist=stylelist)
 #            sys.stderr.write("Printing stats in logfile %s %d\n" %
 #                (opts.logfile, n))
             printstats(spectrum, filename, filehandle=logfh, n=n)

@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 '''Tool to generate computationally-rarefied graphs kmer spectra'''
 
-import numpy as np
 import sys
 import os
-import scipy.stats
-import matplotlib as mpl
 import argparse
+
+import matplotlib as mpl
+import numpy as np
+import scipy.stats
 
 from ksatools.rare import fract, rich, calc_resampled_fraction, calc_resampled_richness, plotme
 from ksatools.ksatools import loadfile
@@ -14,24 +15,23 @@ from ksatools.ksatools import loadfile
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser(description=
         "rare.py [options] countfilaname [countfilename2...]\n   -- computationally rarefy kmer spectra")
-#    PARSER.add_argument("filelist", type=argparse.FileType, help="file list" ) 
     PARSER.add_argument("-i", "--interactive", dest="interactive",
-                      action="store_true", default=False,
-                      help="interactive mode--draw window")
+                        action="store_true", default=False,
+                        help="interactive mode--draw window")
     PARSER.add_argument("-l", "--list", dest="filelist", default=None,
-                      help="file containing list of targets and labels")
+                        help="file containing list of targets and labels")
     PARSER.add_argument("-g", "--graphtype", dest="graphtype", default=1,
-                      help="graph type 1: shaded 2: non-shaded 3: kmer richness")
+                        help="graph type 1: shaded 2: non-shaded 3: kmer richness")
     PARSER.add_argument("-s", "--suppress", dest="suppresslegend", default=False,
-                      action="store_true", help="suppress legend")
+                        action="store_true", help="suppress legend")
     PARSER.add_argument("-c", "--colors", dest="colors",
-                      help="comma-separated color list")
+                        help="comma-separated color list")
     PARSER.add_argument("-t", "--threshold", dest="threshold", type=int,
-                      help="threshold")
+                        help="threshold")
     PARSER.add_argument("-o", "--output", dest="outfile", default="",
-                      help="filename for output")
+                        help="filename for output")
     PARSER.add_argument("-d", "--dump", dest="dump", default=None,
-                      action="store_true", help="output table .rare.csv")
+                        action="store_true", help="output table .rare.csv")
     OPTS = PARSER.parse_args()
     SHADED = int(OPTS.graphtype)
     if not OPTS.filelist:

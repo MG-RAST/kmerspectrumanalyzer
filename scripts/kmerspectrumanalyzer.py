@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 '''This is a curve-fitting tool for interpreting kmer spectra'''
-import numpy as np
 import sys
 import os
 import argparse
+
+import numpy as np
 from scipy import stats
 from scipy.optimize import leastsq
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
+
 from ksatools.ksatools import pad
 
 
@@ -80,7 +82,7 @@ def nbinompdf(xvalues, poissonlambda, alpha):
 
 def pevaln(xvalues, parameters, multipleorder=None):
     '''Main fit function, returns vector.'''
-    if multipleorder == None:
+    if multipleorder is None:
         multipleorder = range(1, len(parameters) - 2 + 1)
     cov = np.max([0, parameters[0]])
     shap = np.max([0, parameters[1]])
@@ -168,30 +170,30 @@ def plotfit():
 if __name__ == '__main__':
     USAGE = "usage: kmerspectrumanalyzer.py [options] <input table filename> "
     PARSER = argparse.ArgumentParser(USAGE)
-    PARSER.add_argument("infile", type=argparse.FileType('r'), help="input file") 
+    PARSER.add_argument("infile", type=argparse.FileType('r'), help="input file")
     PARSER.add_argument("-q", "--likelihood", dest="likelihood",
-                      action="store_true", default=False,
-                      help="Use likeliehood (slower)")
+                        action="store_true", default=False,
+                        help="Use likeliehood (slower)")
     PARSER.add_argument("-g", "--guess", dest="guess",
-                      default=None, help="Initial coverage guess (overrides auto-guessing)")
+                        default=None, help="Initial coverage guess (overrides auto-guessing)")
     PARSER.add_argument("-l", "--lowcutoff", dest="lowcutoff",
-                      default=10, help="Low-coverage soft cutoff (default 10)")
+                        default=10, help="Low-coverage soft cutoff (default 10)")
     PARSER.add_argument("-e", "--errorbars", dest="errorbars",
-                      action="store_true", default=False, help="Estimate uncertainty ")
+                        action="store_true", default=False, help="Estimate uncertainty ")
     PARSER.add_argument("-n", "--num", dest="num",
-                      default=10, help="number of multiplicity terms to fit")
+                        default=10, help="number of multiplicity terms to fit")
     PARSER.add_argument("-b", "--bypass", dest="bypass",
-                      default=2, help="second peak to fit for manual reordering")
+                        default=2, help="second peak to fit for manual reordering")
     PARSER.add_argument("-c", "--cutoff", dest="cutoff",
-                      default="0,0", help="max,min manual hard coverage cutoffs")
+                        default="0,0", help="max,min manual hard coverage cutoffs")
     PARSER.add_argument("-i", "--interactive", dest="interactive",
-                      action="store_true", default=False, help="interactive plot")
+                        action="store_true", default=False, help="interactive plot")
     PARSER.add_argument("-p", "--positiveconstrained", dest="constrained",
-                      action="store_false", default=True, help="constrained fit")
+                        action="store_false", default=True, help="constrained fit")
     PARSER.add_argument("-o", "--outstem", dest="outstem",
-                      default=None, help="output file stem")
+                        default=None, help="output file stem")
     PARSER.add_argument("-v", "--verbose", dest="verbose", action="store_true",
-                      default=False, help="verbose")
+                        default=False, help="verbose")
 
     OPTS = PARSER.parse_args()
     try:
@@ -208,7 +210,7 @@ if __name__ == '__main__':
     NUMBEROFTERMS = int(OPTS.num)
     SECONDPEAK = int(OPTS.bypass)
     OUTFILE = OPTS.outstem
-    if OUTFILE == None:
+    if OUTFILE is None:
         OUTFILE = INFILE
     print("INFILE", INFILE)
     print("OUTFILE", OUTFILE)
