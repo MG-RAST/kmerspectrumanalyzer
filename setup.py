@@ -5,7 +5,7 @@ import sys
 from setuptools import setup
 
 setup(name='ksatools',
-      version='1.0',
+      version='1.01',
       description='Kmer spectrum analyzer',
       author='W Trimble',
       author_email='trimble@anl.gov',
@@ -16,8 +16,4 @@ setup(name='ksatools',
                'scripts/countkmers21.sh', 'scripts/kmer-tool2', 'scripts/rarify.py' ],
       install_requires=  ['numpy >= 1.6', 'matplotlib >= 1.3', 'scipy >= 0.13']
      )
-
-
-if sys.version_info < (2, 7):
-      sys.stderr.write('ERROR: ksatools requires Python 2.7 or later')
 
